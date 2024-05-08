@@ -1,0 +1,58 @@
+<mat-form-field class="w-100 mb-1" style="margin-top: 5vh">
+  <mat-label>Gerät suchen</mat-label>
+  <input #searchInput matInput placeholder="Z.B. FF2" [(ngModel)]="deviceSearch"
+         (ngModelChange)="filterDevices()">
+</mat-form-field>
+
+<div style="margin-top: 3vh; margin-left: 5em; margin-right: 5em">
+  <div class="row mb-4">
+    <div class="col-10">
+      <h1>Aktuelle Geräte</h1>
+    </div>
+    <div class="col-2 d-flex">
+      <button *ngIf="!showForm"
+              (click)="showCreateForm()"
+              style="background-color: #2f80ed; color: white"
+              mat-raised-button>Gerät hinzufügen</button>
+    </div>
+  </div>
+  <div class="row">
+    <div [class.col-lg-12]="!showForm" [class.col-lg-8]="showForm">
+      <table class="table">
+        <thead>
+        <tr class="row">
+          <th class="col-2">Geräte-Nummer</th>
+          <th class="col-2">Name</th>
+          <th class="col-4">Ort</th>
+          <th class="col-2">Status</th>
+          <th class="col-2">Verwalten</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let device of filteredDevices" class="row">
+          <td class="col-2">{{ device.id?.toString() }}</td>
+          <td class="col-2">{{ device.name }}</td>
+          <td class="col-4">{{ device.location | json }}</td>
+          <td class="col-2">{{ device.status?.deviceState }}</td>
+          <td class="col-2">
+            <mat-icon (click)="openEditModal(device)"
+                      class="material-icons-outlined"
+                      matTooltip="Gerät bearbeiten"
+                      matTooltipPosition="above">edit</mat-icon>
+            <span class="ms-3"></span>
+            <mat-icon (click)="openDeleteModal(device)"
+                      class="material-icons-outlined delete-button"
+                      matTooltip="Gerät löschen"
+                      matTooltipPosition="above">delete</mat-icon>
+            <span class="ms-3"></span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="showForm" class="col-lg-4">
+      <app-add-device (closeModalEvent)="closeForm()"></app-add-device>
+    </div>
+  </div>
+</div>
+

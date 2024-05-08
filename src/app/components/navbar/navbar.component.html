@@ -1,0 +1,33 @@
+<mat-toolbar style="background-color: black; color: white">
+  <button mat-icon-button (click)="toggleAndRotate()" [disableRipple]="true">
+    <mat-icon [class.rotate-icon]="isMenuOpen || !isMenuOpen" [style.transform]="isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
+  </button>
+  <h1>FDM</h1>
+  <mat-icon class="fire-icon">local_fire_department</mat-icon>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="push" [autoFocus]="false">
+    <mat-list>
+      <mat-list-item style="background-color: transparent">
+        <a mat-list-item href="/fdm/dashboard">
+          <span class="entry">
+            <mat-icon>home</mat-icon>
+            <span>Dashboard</span>
+          </span>
+        </a>
+      </mat-list-item>
+      <hr>
+      <mat-list-item>
+        <a mat-list-item>
+          <span class="entry">
+            <mat-icon>fire_truck</mat-icon>
+            <span>Fahrzeuge</span>
+          </span>
+        </a>
+      </mat-list-item>
+    </mat-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

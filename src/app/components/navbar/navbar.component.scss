@@ -1,0 +1,78 @@
+h1 {
+  padding: 0 1rem;
+}
+
+mat-toolbar{
+  position: fixed;
+  height: 5%;
+  z-index: 2;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+//Move the content down so that it won't be hidden by the toolbar
+mat-sidenav {
+  width: 30vh;
+  @media screen and (min-width: 600px) {
+    padding-top: 4rem;
+  }
+
+  .entry{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.separator {
+  position: absolute;
+  bottom: 5rem; /* Positionieren Sie die Trennlinie */
+  width: 100%;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  z-index: 2; /* Setzen Sie die z-Index-Eigenschaft */
+}
+
+.settings {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 3em;
+}
+
+mat-list-item :hover {
+  background-color: lightgrey;
+  border-radius: 3px;
+}
+
+button:focus {
+  outline: none;
+}
+
+@keyframes changeColor {
+  0% {
+    color: red;
+  }
+  10% {
+    color: orangered;
+  }
+  25% {
+    color: orange;
+  }
+  50% {
+    color: #FFD700;
+  }
+  75% {
+    color: #FFD700;
+  }
+  85% {
+    color: orange;
+  }
+  100% {
+    color: orangered;
+  }
+}
+
+.fire-icon {
+  animation: changeColor 3s infinite;
+}
