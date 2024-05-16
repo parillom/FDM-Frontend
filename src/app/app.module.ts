@@ -23,10 +23,11 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {BsModalService} from 'ngx-bootstrap/modal';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ToastrModule} from 'ngx-toastr';
-import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component';
+import {DeleteDialogComponent} from './components/delete-dialog/delete-dialog.component';
+import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add-multiple-devices.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.
     DashboardComponent,
     EditDialogComponent,
     AddDeviceComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    AddMultipleDevicesComponent
   ],
   imports: [
     BrowserModule,

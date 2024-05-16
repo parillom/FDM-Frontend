@@ -7,6 +7,7 @@ import {LocationService} from '../../services/location.service';
 import {Vehicle} from '../../models/Vehicle';
 import {VehicleService} from '../../services/vehicle.service';
 import {DeviceState} from '../../models/DeviceState';
+import {DeviceService} from '../../services/device.service';
 
 @Component({
   selector: 'app-add-device',
@@ -22,19 +23,17 @@ export class AddDeviceComponent implements OnInit {
   filteredVehicles?: Device[] = [];
   searchLocation: string = '';
   addOneDevice: boolean = true;
-  showLocationInput: boolean = false;
-  showVehicleInput: boolean = false;
-  showStateSelector: boolean = false;
+  locationSelected: boolean = false;
 
   locations?: Location[];
   vehicles?: Vehicle[];
 
   @Output() closeModalEvent = new EventEmitter<void>();
 
-  createDeviceForm: FormGroup = new FormGroup({
+  deviceForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
-    location: new FormControl('', Validators.required),
-    vehicle: new FormControl('', Validators.required),
+    location: new FormControl<string | null>(null),
+    vehicle: new FormControl<string | null>(null, Validators.required),
     state: new FormControl('', Validators.required),
     searchLocation: new FormControl(''),
     searchVehicle: new FormControl(''),
@@ -42,13 +41,15 @@ export class AddDeviceComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<AddDeviceComponent>,
               private locationService: LocationService,
-              private vehicleService: VehicleService) {
+              private vehicleService: VehicleService,
+              private deviceService: DeviceService) {
   }
 
   ngOnInit() {
     this.getLocations();
     this.getVehicles();
     this.onlyShowFirstFive();
+    this.setStateValue();
   }
 
   private getLocations() {
@@ -74,90 +75,101 @@ export class AddDeviceComponent implements OnInit {
   }
 
   filterLocations() {
-    const searchLocation = this.createDeviceForm.get('searchLocation')?.value;
+    const searchLocation = this.deviceForm.get('searchLocation')?.value;
     this.filteredLocations = this.locations?.filter(location =>
-      location.name!.toLowerCase().includes(searchLocation)
+      location.name!.toLowerCase().includes(searchLocation.toLowerCase())
     );
   }
 
   filterVehicles() {
-    const searchVehicle = this.createDeviceForm.get('searchVehicle')?.value;
+    const searchVehicle = this.deviceForm.get('searchVehicle')?.value;
     this.filteredVehicles = this.vehicles?.filter(location =>
-      location.name!.toLowerCase().includes(searchVehicle)
+      location.name!.toLowerCase().includes(searchVehicle.toLowerCase())
     );
   }
 
   setLocationInput(device: Device) {
-    this.createDeviceForm.patchValue({
+    this.deviceForm.patchValue({
       location: device.name
     });
     this.showLocations = false;
   }
 
   setVehicleInput(vehicle: Vehicle) {
-    this.createDeviceForm.patchValue({
+    this.deviceForm.patchValue({
       vehicle: vehicle.name
     });
     this.showVehicles = false;
   }
 
   saveDevice() {
-    if (this.createDeviceForm.valid) {
-      const deviceData = this.createDeviceForm.value;
+    const deviceData = this.deviceForm.value;
+    if (this.locationSelected && deviceData.location) {
+      this.deviceForm.patchValue({
+        vehicle: null
+      });
+    } else if (!this.locationSelected && deviceData.vehicle) {
+      this.deviceForm.patchValue({
+        location: null
+      });
+
+    }
+
+    if (this.deviceForm.valid) {
       delete deviceData.searchLocation;
       delete deviceData.searchVehicle;
+
+      this.device.vehicle?.name = deviceData.location;
+      console.log(this.device.location?.name, deviceData.location)
       this.device = deviceData;
-      console.log(this.device);
+
+      this.deviceService.addDevice(this.device).subscribe();
     }
   }
 
   handleVehicleClick() {
-    this.showVehicles =! this.showVehicles;
-    this.showVehicleInput = true;
-    this.showLocationInput = false;
-    this.showLocations = false;
-    this.showStateSelector = true;
-    this.createDeviceForm.get('vehicle')?.setValidators(Validators.required);
+    this.deviceForm.get('vehicle')?.setValidators(Validators.required);
     this.handleLocationInput();
+    this.locationSelected = false;
+    this.showVehicles = false;
     this.setStateValue();
 
+  }
+
+  showVehiclesList() {
+    this.showVehicles =! this.showVehicles;
   }
 
   private handleLocationInput() {
-    this.createDeviceForm.get('location')?.clearValidators();
-    this.createDeviceForm.get('location')?.updateValueAndValidity();
-    this.createDeviceForm.patchValue({
-      location: ''
-    });
+    this.deviceForm.get('location')?.clearValidators();
+    this.deviceForm.get('location')?.updateValueAndValidity();
   }
 
   handleLocationClick() {
-    this.showLocations =! this.showLocations;
-    this.showLocationInput = true;
-    this.showVehicleInput = false;
-    this.showVehicles = false;
-    this.showStateSelector = true;
-    this.createDeviceForm.get('location')?.setValidators(Validators.required);
-    this.handleVehicleInput();
+    this.deviceForm.get('location')?.setValidators(Validators.required);
+    this.locationSelected = true;
+    this.showLocations = false;
     this.setStateValue();
+    this.handleVehicleInput();
+  }
+
+  showLocationsList() {
+    this.showLocations =! this.showLocations;
   }
 
   private handleVehicleInput() {
-    this.createDeviceForm.get('vehicle')?.clearValidators();
-    this.createDeviceForm.get('vehicle')?.updateValueAndValidity();
-    this.createDeviceForm.patchValue({
-      vehicle: ''
-    });
+    this.deviceForm.get('vehicle')?.clearValidators();
+    this.deviceForm.get('vehicle')?.updateValueAndValidity();
   }
 
-  private setStateValue() {
-    if (this.showLocations) {
-      this.createDeviceForm.patchValue({
+  public setStateValue() {
+    if (this.locationSelected) {
+      this.deviceForm.patchValue({
         state: DeviceState.STORAGE
       });
     }
-    if (this.showVehicles) {
-      this.createDeviceForm.patchValue({
+    if (!this.locationSelected) {
+      this.deviceForm.patchValue({
         state: DeviceState.ACTIVE
       });
     }

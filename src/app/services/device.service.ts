@@ -16,8 +16,8 @@ export class DeviceService {
     return this.http.get<Device[]>(`${COMMON_DEVICE_URL}/get-all`);
   }
 
-  addDevice(device: Device) {
-    return this.http.post<Device[]>(`${COMMON_DEVICE_URL}/create`, device);
+  addDevice(device: Device): Observable<string> {
+    return this.http.post<string>(`${COMMON_DEVICE_URL}/create`, device);
   }
 
   delete(device: Device): Observable<string> {

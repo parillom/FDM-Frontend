@@ -30,37 +30,57 @@
       <hr>
     </div>
 
-    <form *ngIf="addOneDevice" [formGroup]="createDeviceForm">
+    <div *ngIf="addOneDevice" class="mb-3">
+      <p>Gerät zuordnen</p>
+      <div class="d-flex btn-group" role="group">
+        <button [ngClass]="{ 'selectedButton': !locationSelected, 'notSelectedButton': locationSelected }"
+                type="button"
+                class="btn col-3"
+                (click)="handleVehicleClick()">
+          Fahrzeug
+        </button>
+        <button [ngClass]="{ 'selectedButton': locationSelected, 'notSelectedButton': !locationSelected }"
+                type="button"
+                class="btn col-3"
+                (click)="handleLocationClick()">
+          Ort
+        </button>
+      </div>
+    </div>
+
+    <form *ngIf="addOneDevice" [formGroup]="deviceForm">
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input formControlName="name" matInput>
-          <mat-error *ngIf="createDeviceForm.get('name')?.invalid && createDeviceForm.get('name')?.touched">
+          <mat-error *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
             <strong>Name ist ein Pflichtfeld!</strong>
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field *ngIf="showVehicleInput">
+        <mat-form-field *ngIf="!locationSelected">
           <mat-label>Fahrzeug</mat-label>
           <input formControlName="vehicle" matInput>
           <mat-error
-            *ngIf="createDeviceForm.get('vehicle')?.invalid && createDeviceForm.get('vehicle')?.touched">
+            *ngIf="deviceForm.get('vehicle')?.invalid && deviceForm.get('vehicle')?.touched">
             <strong>Fahrzeug ist ein Pflichtfeld!</strong>
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field *ngIf="showLocationInput">
+        <mat-form-field *ngIf="locationSelected">
           <mat-label>Ort</mat-label>
           <input formControlName="location" matInput>
           <mat-error
-            *ngIf="createDeviceForm.get('location')?.invalid && createDeviceForm.get('location')?.touched">
+            *ngIf="deviceForm.get('location')?.invalid && deviceForm.get('location')?.touched">
             <strong>Ort ist ein Pflichtfeld!</strong>
           </mat-error>
         </mat-form-field>
 
         <div class="d-flex mb-4 flex-wrap mt-2">
-          <button class="me-2 mb-2 mb-md-0" mat-raised-button (click)="handleLocationClick()">Orte</button>
-          <button mat-raised-button (click)="handleVehicleClick()">Fahrzeuge</button>
+          <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0" mat-raised-button (click)="showLocationsList()">
+            Orte
+          </button>
+          <button *ngIf="!locationSelected" mat-raised-button (click)="showVehiclesList()">Fahrzeuge</button>
         </div>
 
         <div *ngIf="showLocations">
@@ -75,9 +95,7 @@
             </mat-form-field>
           </div>
           <div *ngFor="let location of filteredLocations">
-            <div (click)="setLocationInput(location)" class="d-flex custom-div cursor-pointer p-1">
-              <p>{{location.name}}</p>
-            </div>
+            <mat-option (click)="setLocationInput(location)">{{location.name}}</mat-option>
           </div>
           <hr>
         </div>
@@ -94,53 +112,39 @@
             </mat-form-field>
           </div>
           <div *ngFor="let vehicle of filteredVehicles">
-            <div (click)="setVehicleInput(vehicle)" class="d-flex custom-div cursor-pointer p-1">
-              <p>{{vehicle.name}}</p>
-            </div>
+            <mat-option (click)="setVehicleInput(vehicle)">{{vehicle.name}}</mat-option>
           </div>
           <hr>
         </div>
 
-        <mat-form-field *ngIf="showStateSelector">
+
+        <mat-form-field>
           <mat-label>Status</mat-label>
           <mat-select formControlName="state">
-            <mat-option *ngIf="showVehicleInput" value="ACTIVE">AKTIV</mat-option>
-            <mat-option *ngIf="showLocationInput" value="STORAGE">LAGER</mat-option>
-            <mat-option *ngIf="showLocationInput" value="REESTABLISH">RETABLIEREN</mat-option>
+            <mat-option *ngIf="!locationSelected" value="ACTIVE">AKTIV</mat-option>
+            <mat-option *ngIf="locationSelected" value="STORAGE">LAGER</mat-option>
+            <mat-option *ngIf="locationSelected" value="REESTABLISH">RETABLIEREN</mat-option>
           </mat-select>
           <mat-error
-            *ngIf="createDeviceForm.get('state')?.invalid && createDeviceForm.get('state')?.touched">
+            *ngIf="deviceForm.get('state')?.invalid && deviceForm.get('state')?.touched">
             <strong>Status ist ein Pflichtfeld!</strong>
           </mat-error>
         </mat-form-field>
       </div>
+
       <div mat-dialog-actions class="d-flex justify-content-end">
         <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
         <button type="submit"
                 class="text-white"
                 mat-raised-button
                 (click)="saveDevice()"
-                [disabled]="createDeviceForm.invalid"
                 style="background-color: #2f80ed">
           Speichern
         </button>
       </div>
     </form>
 
-    <div *ngIf="!addOneDevice">
-      <input type="file">
-      <div mat-dialog-actions class="d-flex justify-content-end">
-        <div matDialogActions class="d-flex justify-content-end align-items-center">
-          <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
-          <button type="button"
-                  class="text-white"
-                  mat-raised-button
-                  style="background-color: #2f80ed">
-            Speichern
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+    <app-add-multiple-devices *ngIf="!addOneDevice"></app-add-multiple-devices>
 
+  </div>
 </div>
