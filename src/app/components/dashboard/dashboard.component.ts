@@ -3,6 +3,10 @@ import {DeviceService} from '../../services/device.service';
 import {Device} from '../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
 import {EditDialogComponent} from '../edit-dialog/edit-dialog.component';
+import {AddDeviceComponent} from '../add-device/add-device.component';
+import {ToastrService} from 'ngx-toastr';
+import {DeleteDialogComponent} from '../delete-dialog/delete-dialog.component';
+import {DeviceState} from '../../models/DeviceState';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,12 +19,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   devices?: Device[] = [];
   filteredDevices?: Device[] = [];
-  showForm?: boolean = false;
+  formShowing?: boolean = false;
   deviceSearch?: '';
 
   constructor(private deviceService: DeviceService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private toastr: ToastrService) {
   }
+
   ngOnInit() {
     this.getAllDevices();
   }
@@ -50,24 +56,74 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     );
   }
 
-  showCreateForm() {
-    this.showForm = true;
+  openCreateForm() {
+    const addDeviceDialog = this.dialog.open(AddDeviceComponent, {
+      width: '400px',
+      height: 'auto',
+      autoFocus: false,
+      hasBackdrop: false,
+    });
+    addDeviceDialog.afterClosed().subscribe(() => {
+      this.formShowing = false;
+    });
+    this.formShowing = true;
   }
 
   openEditModal(device: Device) {
-    const modal = this.dialog.open(EditDialogComponent, {
-      width: '30%',
-      height: '45%',
+    this.dialog.open(EditDialogComponent, {
+      width: '400px',
+      height: 'auto',
+      hasBackdrop: false,
       data: {
         device: device
       }
-    })
+    });
   }
 
   openDeleteModal(device: Device) {
+    const deleteDeviceDialog = this.dialog.open(DeleteDialogComponent, {
+      width: '400px',
+      height: 'auto',
+      hasBackdrop: false,
+      autoFocus: false,
+      data: {
+        device: device
+      }
+    });
+
+    deleteDeviceDialog.componentInstance.delete!.subscribe(res => {
+      if (res) {
+        this.deviceService.delete(device).subscribe(res => {
+          if (res === 'OK') {
+            this.toastr.success(`Gerät ${device.name} erfolgreich gelöscht!`);
+            this.getAllDevices();
+            deleteDeviceDialog.close();
+          }
+        });
+      }
+    });
   }
 
-  closeForm() {
-    this.showForm = false;
+  getDeviceState(device: Device): string {
+    let state = 'UNKNOWN';
+    switch (device.status?.deviceState) {
+      case DeviceState.ACTIVE: {
+        state = 'AKTIV';
+        break;
+      }
+      case DeviceState.STORAGE: {
+        state = 'LAGER';
+        break;
+      }
+      case DeviceState.REESTABLISH: {
+        state = 'RETABLIEREN';
+        break;
+      }
+    }
+    return state;
+  }
+
+  refreshDevices() {
+    this.getAllDevices();
   }
 }

@@ -1,33 +1,34 @@
-<h1 mat-dialog-title>Gerät {{device?.name}} bearbeiten</h1>
-<div mat-dialog-content [formGroup]="editDeviceForm">
-  <div>
-    <mat-form-field class="w-100">
-      <mat-label>Gerätename</mat-label>
-      <input (input)="checkDeviceName()" formControlName="name" id="deviceName" matInput autofocus>
-    </mat-form-field>
+<div class="container">
+  <h1 mat-dialog-title>Gerät {{device?.name}} bearbeiten</h1>
+  <div mat-dialog-content [formGroup]="editDeviceForm">
+      <mat-form-field class="w-100">
+        <mat-label>Gerätename</mat-label>
+        <input (input)="checkDeviceName()" formControlName="name" id="deviceName" matInput autofocus>
+      </mat-form-field>
+    <div>
+      <mat-form-field class="w-100">
+        <mat-label>Geräte-Standort</mat-label>
+        <input formControlName="location" matInput>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field>
+        <mat-label>Geräte-Status</mat-label>
+        <mat-select [(value)]="selectedState">
+          <mat-option value="ACTIVE" (click)="onStateChanged(DeviceState.ACTIVE)">ACTIVE</mat-option>
+          <mat-option value="STORAGE" (click)="onStateChanged(DeviceState.STORAGE)">STORAGE</mat-option>
+          <mat-option value="REESTABLISH" (click)="onStateChanged(DeviceState.REESTABLISH)">REESTABLISH</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-icon matTooltip="Gerät löschen"
+              matTooltipPosition="above"
+              class="delete-button material-icons-outlined">delete
+    </mat-icon>
   </div>
-  <div>
-    <mat-form-field class="w-100">
-      <mat-label>Geräte-Standort</mat-label>
-      <input formControlName="location" matInput>
-    </mat-form-field>
-  </div>
-  <div>
-    <mat-form-field>
-      <mat-label>Geräte-Status</mat-label>
-      <mat-select [(value)]="selectedState">
-        <mat-option value="ACTIVE" (click)="onStateChanged(DeviceState.ACTIVE)">ACTIVE</mat-option>
-        <mat-option value="STORAGE" (click)="onStateChanged(DeviceState.STORAGE)">STORAGE</mat-option>
-        <mat-option value="REESTABLISH" (click)="onStateChanged(DeviceState.REESTABLISH)">REESTABLISH</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <mat-icon matTooltip="Gerät löschen"
-            matTooltipPosition="above"
-            class="delete-button material-icons-outlined">delete</mat-icon>
 </div>
-<hr>
-<div mat-dialog-actions class="d-flex justify-content-end">
-  <button mat-raised-button>Schliessen</button>
-  <button mat-raised-button [disabled]="!formDirty" style="background-color: #2f80ed; color: white">Speichern</button>
-</div>
+  <hr>
+  <div mat-dialog-actions class="d-flex justify-content-end">
+    <button mat-raised-button>Schliessen</button>
+    <button mat-raised-button [disabled]="!formDirty" style="background-color: #2f80ed; color: white">Speichern</button>
+  </div>

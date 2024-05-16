@@ -4,10 +4,12 @@
 
 import {State} from './State';
 import {Location} from './Location';
+import {Vehicle} from './Vehicle';
 
 export class Device {
   id?: number;
   name?: string;
   location?: Location;
   status?: State;
+  vehicle?: Vehicle;
 }

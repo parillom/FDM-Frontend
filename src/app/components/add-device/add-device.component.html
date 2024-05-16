@@ -1,28 +1,146 @@
-<div>
-  <mat-card class="p-3 ms-3 me-3 card-background">
-    <div class="row">
-      <div class="col-10">
-        <h1>Gerät hinzufügen</h1>
-      </div>
-      <div (click)="closeForm()" class="col-2 onHover">
-        <button class="mb-1" mat-icon-button><mat-icon>close</mat-icon></button>
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="d-flex justify-content-between align-items-center">
+    <p class="fs-5" mat-dialog-title>Gerät hinzufügen</p>
+    <div class="d-flex align-items-center">
+      <div class="cursor-pointer me-2">
+        <button (click)="closeDialog()" mat-icon-button>
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
     </div>
-    <mat-form-field>
-      <mat-label>Input</mat-label>
-      <input matInput autofocus>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Textarea</mat-label>
-      <input matInput>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Textarea</mat-label>
-      <input matInput>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Textarea</mat-label>
-      <input matInput>
-    </mat-form-field>
-  </mat-card>
+  </div>
+
+  <div mat-dialog-content>
+    <div class="d-flex row btn-group" role="group">
+      <button [ngClass]="{ 'selectedButton': addOneDevice, 'notSelectedButton': !addOneDevice }"
+              type="button"
+              class="btn col-6"
+              (click)="addOneDevice = true">
+        Ein Gerät
+      </button>
+      <button [ngClass]="{ 'selectedButton': !addOneDevice, 'notSelectedButton': addOneDevice }"
+              type="button"
+              class="btn col-6"
+              (click)="addOneDevice = false">
+        Mehrere Geräte
+      </button>
+    </div>
+
+    <div>
+      <hr>
+    </div>
+
+    <form *ngIf="addOneDevice" [formGroup]="createDeviceForm">
+      <div class="d-flex flex-column flex-wrap">
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input formControlName="name" matInput>
+          <mat-error *ngIf="createDeviceForm.get('name')?.invalid && createDeviceForm.get('name')?.touched">
+            <strong>Name ist ein Pflichtfeld!</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="showVehicleInput">
+          <mat-label>Fahrzeug</mat-label>
+          <input formControlName="vehicle" matInput>
+          <mat-error
+            *ngIf="createDeviceForm.get('vehicle')?.invalid && createDeviceForm.get('vehicle')?.touched">
+            <strong>Fahrzeug ist ein Pflichtfeld!</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="showLocationInput">
+          <mat-label>Ort</mat-label>
+          <input formControlName="location" matInput>
+          <mat-error
+            *ngIf="createDeviceForm.get('location')?.invalid && createDeviceForm.get('location')?.touched">
+            <strong>Ort ist ein Pflichtfeld!</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <div class="d-flex mb-4 flex-wrap mt-2">
+          <button class="me-2 mb-2 mb-md-0" mat-raised-button (click)="handleLocationClick()">Orte</button>
+          <button mat-raised-button (click)="handleVehicleClick()">Fahrzeuge</button>
+        </div>
+
+        <div *ngIf="showLocations">
+          <div class="d-flex row">
+            <mat-form-field class="w-75 col-9">
+              <input
+                matInput
+                class="mb-2"
+                placeholder="Ort suchen"
+                formControlName="searchLocation"
+                (input)="filterLocations()">
+            </mat-form-field>
+          </div>
+          <div *ngFor="let location of filteredLocations">
+            <div (click)="setLocationInput(location)" class="d-flex custom-div cursor-pointer p-1">
+              <p>{{location.name}}</p>
+            </div>
+          </div>
+          <hr>
+        </div>
+
+        <div *ngIf="showVehicles">
+          <div class="d-flex row">
+            <mat-form-field class="w-75 col-9">
+              <input
+                matInput
+                class="mb-2"
+                placeholder="Fahrzeug suchen"
+                formControlName="searchVehicle"
+                (input)="filterVehicles()">
+            </mat-form-field>
+          </div>
+          <div *ngFor="let vehicle of filteredVehicles">
+            <div (click)="setVehicleInput(vehicle)" class="d-flex custom-div cursor-pointer p-1">
+              <p>{{vehicle.name}}</p>
+            </div>
+          </div>
+          <hr>
+        </div>
+
+        <mat-form-field *ngIf="showStateSelector">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="state">
+            <mat-option *ngIf="showVehicleInput" value="ACTIVE">AKTIV</mat-option>
+            <mat-option *ngIf="showLocationInput" value="STORAGE">LAGER</mat-option>
+            <mat-option *ngIf="showLocationInput" value="REESTABLISH">RETABLIEREN</mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="createDeviceForm.get('state')?.invalid && createDeviceForm.get('state')?.touched">
+            <strong>Status ist ein Pflichtfeld!</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-actions class="d-flex justify-content-end">
+        <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+        <button type="submit"
+                class="text-white"
+                mat-raised-button
+                (click)="saveDevice()"
+                [disabled]="createDeviceForm.invalid"
+                style="background-color: #2f80ed">
+          Speichern
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="!addOneDevice">
+      <input type="file">
+      <div mat-dialog-actions class="d-flex justify-content-end">
+        <div matDialogActions class="d-flex justify-content-end align-items-center">
+          <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+          <button type="button"
+                  class="text-white"
+                  mat-raised-button
+                  style="background-color: #2f80ed">
+            Speichern
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -24,6 +24,9 @@ import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/mater
 import {MatOption, MatSelect} from '@angular/material/select';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {ToastrModule} from 'ngx-toastr';
+import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NavbarComponent,
     DashboardComponent,
     EditDialogComponent,
-    AddDeviceComponent
+    AddDeviceComponent,
+    DeleteDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +58,14 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ReactiveFormsModule,
     MatSelect,
     MatOption,
-    NgbModule
+    NgbModule,
+    DragDropModule,
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true
+    }),
   ],
   providers: [
     BsModalService,

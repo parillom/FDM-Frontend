@@ -12,7 +12,6 @@ mat-sidenav-container {
   height: 100%;
 }
 
-//Move the content down so that it won't be hidden by the toolbar
 mat-sidenav {
   width: 30vh;
   @media screen and (min-width: 600px) {
@@ -28,10 +27,10 @@ mat-sidenav {
 
 .separator {
   position: absolute;
-  bottom: 5rem; /* Positionieren Sie die Trennlinie */
+  bottom: 5rem;
   width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
-  z-index: 2; /* Setzen Sie die z-Index-Eigenschaft */
+  z-index: 2;
 }
 
 .settings {
