@@ -9,7 +9,7 @@ import {Vehicle} from './Vehicle';
 export class Device {
   id?: number;
   name?: string;
-  location?: Location;
+  location?: Location | null;
   status?: State;
-  vehicle?: Vehicle;
+  vehicle?: Vehicle | null;
 }

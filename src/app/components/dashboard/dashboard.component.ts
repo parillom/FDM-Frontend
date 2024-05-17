@@ -67,6 +67,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.formShowing = false;
     });
     this.formShowing = true;
+
+    addDeviceDialog.componentInstance.createdSuccessful.subscribe(value => {
+      if (value) {
+        this.getAllDevices();
+      }
+    })
   }
 
   openEditModal(device: Device) {
@@ -125,5 +131,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   refreshDevices() {
     this.getAllDevices();
+  }
+
+  getLocationText(device: Device) {
+    let locationText: string
+    if (!device.location) {
+      locationText = 'nicht definiert';
+    } else {
+      locationText = device.location.name!;
+    }
+    return locationText;
+  }
+
+  getVehicleText(device: Device) {
+    let vehicleText: string
+    if (!device.vehicle) {
+      vehicleText = 'nicht definiert';
+    } else {
+      vehicleText = device.vehicle.name!;
+    }
+    return vehicleText;
   }
 }

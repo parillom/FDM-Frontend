@@ -23,7 +23,7 @@
   </div>
   <div class="row">
     <div class="table-responsive mb-5">
-      <table class="table table-hover text-nowrap">
+      <table class="table table-hover">
         <thead>
         <tr class="row">
           <th class="col-2">Geräte-Nummer</th>
@@ -38,8 +38,8 @@
         <tr *ngFor="let device of filteredDevices" class="row">
           <td class="col-2">{{device.id?.toString() }}</td>
           <td class="col-2">{{device.name }}</td>
-          <td class="col-2">{{device.location?.name}}</td>
-          <td class="col-2">{{device.vehicle?.name}}</td>
+          <td class="col-2">{{getLocationText(device)}}</td>
+          <td class="col-2">{{getVehicleText(device)}}</td>
           <td class="col-2">{{getDeviceState(device)}}</td>
           <td class="col-2">
             <mat-icon (click)="openEditModal(device)"

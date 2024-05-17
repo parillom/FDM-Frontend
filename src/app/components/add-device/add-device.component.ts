@@ -8,6 +8,7 @@ import {Vehicle} from '../../models/Vehicle';
 import {VehicleService} from '../../services/vehicle.service';
 import {DeviceState} from '../../models/DeviceState';
 import {DeviceService} from '../../services/device.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-device',
@@ -29,6 +30,7 @@ export class AddDeviceComponent implements OnInit {
   vehicles?: Vehicle[];
 
   @Output() closeModalEvent = new EventEmitter<void>();
+  @Output() createdSuccessful = new EventEmitter<boolean>();
 
   deviceForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -42,7 +44,8 @@ export class AddDeviceComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<AddDeviceComponent>,
               private locationService: LocationService,
               private vehicleService: VehicleService,
-              private deviceService: DeviceService) {
+              private deviceService: DeviceService,
+              private toastr: ToastrService) {
   }
 
   ngOnInit() {
@@ -103,27 +106,37 @@ export class AddDeviceComponent implements OnInit {
   }
 
   saveDevice() {
-    const deviceData = this.deviceForm.value;
-    if (this.locationSelected && deviceData.location) {
-      this.deviceForm.patchValue({
-        vehicle: null
-      });
-    } else if (!this.locationSelected && deviceData.vehicle) {
-      this.deviceForm.patchValue({
-        location: null
-      });
-
-    }
-
     if (this.deviceForm.valid) {
+      const deviceData = this.deviceForm.value;
+
       delete deviceData.searchLocation;
       delete deviceData.searchVehicle;
 
-      this.device.vehicle?.name = deviceData.location;
-      console.log(this.device.location?.name, deviceData.location)
-      this.device = deviceData;
+      const deviceToSave = {} as Device;
+      deviceToSave.location = {} as Location;
+      deviceToSave.vehicle = {} as Vehicle;
+      deviceToSave.name = deviceData.name;
+      deviceToSave.location.name = deviceData.location;
+      deviceToSave.vehicle.name = deviceData.vehicle;
 
-      this.deviceService.addDevice(this.device).subscribe();
+      if (!deviceData.vehicle) {
+        deviceToSave.vehicle = null;
+      }
+      if (!deviceData.location) {
+        deviceToSave.location = null;
+      }
+
+      this.deviceService.addDevice(deviceToSave).subscribe(device => {
+        if (device) {
+          this.toastr.success(`Gerät ${device.name} erfolgreich erstellt!`);
+          this.createdSuccessful.emit(true);
+          this.getLocations();
+          this.getVehicles();
+        } else {
+          this.toastr.error(`Gerät ${deviceToSave.name} konnte nicht erstellt werden!`);
+          this.createdSuccessful.emit(false);
+        }
+      })
     }
   }
 
@@ -132,8 +145,8 @@ export class AddDeviceComponent implements OnInit {
     this.handleLocationInput();
     this.locationSelected = false;
     this.showVehicles = false;
+    this.showLocations = false;
     this.setStateValue();
-
   }
 
   showVehiclesList() {
@@ -142,6 +155,7 @@ export class AddDeviceComponent implements OnInit {
 
   private handleLocationInput() {
     this.deviceForm.get('location')?.clearValidators();
+    this.deviceForm.get('location')?.setValue(null);
     this.deviceForm.get('location')?.updateValueAndValidity();
   }
 
@@ -149,6 +163,7 @@ export class AddDeviceComponent implements OnInit {
     this.deviceForm.get('location')?.setValidators(Validators.required);
     this.locationSelected = true;
     this.showLocations = false;
+    this.showVehicles = false;
     this.setStateValue();
     this.handleVehicleInput();
   }
@@ -159,6 +174,7 @@ export class AddDeviceComponent implements OnInit {
 
   private handleVehicleInput() {
     this.deviceForm.get('vehicle')?.clearValidators();
+    this.deviceForm.get('vehicle')?.setValue(null);
     this.deviceForm.get('vehicle')?.updateValueAndValidity();
   }
 
@@ -179,4 +195,7 @@ export class AddDeviceComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  resetForm() {
+    this.deviceForm.reset();
+  }
 }

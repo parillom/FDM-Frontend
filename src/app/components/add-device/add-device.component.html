@@ -31,7 +31,14 @@
     </div>
 
     <div *ngIf="addOneDevice" class="mb-3">
-      <p>Gerät zuordnen</p>
+      <div class="d-flex align-items-center justify-content-between">
+        <p class="m-0">Gerät zuordnen</p>
+        <button (click)="resetForm()" mat-icon-button
+                matTooltip="Formular zurücksetzen"
+                matTooltipPosition="above">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
       <div class="d-flex btn-group" role="group">
         <button [ngClass]="{ 'selectedButton': !locationSelected, 'notSelectedButton': locationSelected }"
                 type="button"
@@ -77,10 +84,17 @@
         </mat-form-field>
 
         <div class="d-flex mb-4 flex-wrap mt-2">
-          <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0" mat-raised-button (click)="showLocationsList()">
+          <button *ngIf="!locationSelected"
+                  mat-raised-button
+                  (click)="showVehiclesList()"
+                  [disabled]="vehicles?.length === 0">
+            Fahrzeuge</button>
+          <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0"
+                  mat-raised-button
+                  (click)="showLocationsList()"
+                  [disabled]="locations?.length === 0">
             Orte
           </button>
-          <button *ngIf="!locationSelected" mat-raised-button (click)="showVehiclesList()">Fahrzeuge</button>
         </div>
 
         <div *ngIf="showLocations">
