@@ -1,6 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Device} from '../../models/Device';
+import {State} from '../../models/State';
 import {Location} from '../../models/Location';
 import {MatDialogRef} from '@angular/material/dialog';
 import {LocationService} from '../../services/location.service';
@@ -9,6 +10,8 @@ import {VehicleService} from '../../services/vehicle.service';
 import {DeviceState} from '../../models/DeviceState';
 import {DeviceService} from '../../services/device.service';
 import {ToastrService} from 'ngx-toastr';
+import {ModelAndError} from '../../models/ModelAndError';
+import {ErrorHandlerService} from '../../services/error-handler.service';
 
 @Component({
   selector: 'app-add-device',
@@ -25,6 +28,7 @@ export class AddDeviceComponent implements OnInit {
   searchLocation: string = '';
   addOneDevice: boolean = true;
   locationSelected: boolean = false;
+  isSubmitting: boolean = false;
 
   locations?: Location[];
   vehicles?: Vehicle[];
@@ -45,13 +49,13 @@ export class AddDeviceComponent implements OnInit {
               private locationService: LocationService,
               private vehicleService: VehicleService,
               private deviceService: DeviceService,
-              private toastr: ToastrService) {
+              private toastr: ToastrService,
+              private errorHandler: ErrorHandlerService) {
   }
 
   ngOnInit() {
     this.getLocations();
     this.getVehicles();
-    this.onlyShowFirstFive();
     this.setStateValue();
   }
 
@@ -73,22 +77,26 @@ export class AddDeviceComponent implements OnInit {
     });
   }
 
-  private onlyShowFirstFive() {
-    this.filteredLocations = this.locations?.slice(0, 5);
-  }
-
   filterLocations() {
     const searchLocation = this.deviceForm.get('searchLocation')?.value;
-    this.filteredLocations = this.locations?.filter(location =>
-      location.name!.toLowerCase().includes(searchLocation.toLowerCase())
-    );
+    if (searchLocation.trim() === '') {
+      this.filteredLocations = this.locations?.slice(0, 5);
+    } else {
+      this.filteredLocations = this.locations?.filter(location =>
+        location.name!.toLowerCase().includes(searchLocation.toLowerCase())
+      );
+    }
   }
 
   filterVehicles() {
     const searchVehicle = this.deviceForm.get('searchVehicle')?.value;
-    this.filteredVehicles = this.vehicles?.filter(location =>
-      location.name!.toLowerCase().includes(searchVehicle.toLowerCase())
-    );
+    if (searchVehicle.trim() === '') {
+      this.filteredVehicles = this.vehicles?.slice(0, 5);
+    } else {
+      this.filteredVehicles = this.vehicles?.filter(location =>
+        location.name!.toLowerCase().includes(searchVehicle.toLowerCase())
+      );
+    }
   }
 
   setLocationInput(device: Device) {
@@ -107,6 +115,7 @@ export class AddDeviceComponent implements OnInit {
 
   saveDevice() {
     if (this.deviceForm.valid) {
+      this.isSubmitting = true;
       const deviceData = this.deviceForm.value;
 
       delete deviceData.searchLocation;
@@ -115,9 +124,11 @@ export class AddDeviceComponent implements OnInit {
       const deviceToSave = {} as Device;
       deviceToSave.location = {} as Location;
       deviceToSave.vehicle = {} as Vehicle;
+      deviceToSave.state = {} as State;
       deviceToSave.name = deviceData.name;
       deviceToSave.location.name = deviceData.location;
       deviceToSave.vehicle.name = deviceData.vehicle;
+      deviceToSave.state.deviceState = deviceData.state;
 
       if (!deviceData.vehicle) {
         deviceToSave.vehicle = null;
@@ -126,18 +137,25 @@ export class AddDeviceComponent implements OnInit {
         deviceToSave.location = null;
       }
 
-      this.deviceService.addDevice(deviceToSave).subscribe(device => {
-        if (device) {
-          this.toastr.success(`Gerät ${device.name} erfolgreich erstellt!`);
+      this.deviceService.addDevice(deviceToSave).subscribe(res => {
+        if (this.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage!)
+          this.createdSuccessful.emit(false);
+          this.isSubmitting = false;
+        } else {
+          this.toastr.success(`Gerät ${res.object.name} erfolgreich erstellt!`);
           this.createdSuccessful.emit(true);
+          this.deviceForm.get('name')?.reset();
           this.getLocations();
           this.getVehicles();
-        } else {
-          this.toastr.error(`Gerät ${deviceToSave.name} konnte nicht erstellt werden!`);
-          this.createdSuccessful.emit(false);
+          this.isSubmitting = false;
         }
-      })
+      });
     }
+  }
+
+  hasError(model: ModelAndError): boolean {
+    return !!(!model.object && model.errorMessage);
   }
 
   handleVehicleClick() {
@@ -150,7 +168,8 @@ export class AddDeviceComponent implements OnInit {
   }
 
   showVehiclesList() {
-    this.showVehicles =! this.showVehicles;
+    this.showVehicles = !this.showVehicles;
+    this.filteredVehicles = this.vehicles?.slice(0, 5);
   }
 
   private handleLocationInput() {
@@ -169,7 +188,8 @@ export class AddDeviceComponent implements OnInit {
   }
 
   showLocationsList() {
-    this.showLocations =! this.showLocations;
+    this.showLocations = !this.showLocations;
+    this.filteredLocations = this.locations?.slice(0, 5);
   }
 
   private handleVehicleInput() {
@@ -198,4 +218,5 @@ export class AddDeviceComponent implements OnInit {
   resetForm() {
     this.deviceForm.reset();
   }
+
 }

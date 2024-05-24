@@ -33,7 +33,7 @@ export class EditDialogComponent implements OnInit{
 
   private setStateInitValue() {
     if (this.device) {
-      switch (this.device.status?.deviceState) {
+      switch (this.device.state?.deviceState) {
         case DeviceState.ACTIVE:
           this.selectedState = 'ACTIVE';
           break;
@@ -51,7 +51,7 @@ export class EditDialogComponent implements OnInit{
   }
 
   onStateChanged(state: DeviceState) {
-    this.formDirty = state !== this.device?.status?.deviceState;
+    this.formDirty = state !== this.device?.state?.deviceState;
   }
 
   checkDeviceName() {

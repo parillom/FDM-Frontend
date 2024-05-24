@@ -15,7 +15,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatListModule} from '@angular/material/list';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClientModule, provideHttpClient} from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withInterceptors} from '@angular/common/http';
 import {MatCard} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -28,6 +28,9 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ToastrModule} from 'ngx-toastr';
 import {DeleteDialogComponent} from './components/delete-dialog/delete-dialog.component';
 import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add-multiple-devices.component';
+import {errorInterceptor} from './services/interceptor/error.interceptor';
+import {DeleteMultipleDevicesDialog} from './components/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,9 @@ import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add
     EditDialogComponent,
     AddDeviceComponent,
     DeleteDialogComponent,
-    AddMultipleDevicesComponent
+    AddMultipleDevicesComponent,
+    DeleteMultipleDevicesDialog,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -65,6 +70,7 @@ import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-top-right',
+      titleClass: '',
       preventDuplicates: true,
       progressBar: true
     }),
@@ -72,7 +78,9 @@ import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add
   providers: [
     BsModalService,
     provideAnimationsAsync(),
-    provideHttpClient()
+    provideHttpClient(
+      withInterceptors([errorInterceptor])
+    ),
   ],
   bootstrap: [AppComponent]
 })

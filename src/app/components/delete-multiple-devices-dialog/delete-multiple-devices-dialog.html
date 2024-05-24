@@ -1,0 +1,36 @@
+<div class="me-2" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="d-flex justify-content-between align-items-center">
+    <p class="fs-5" mat-dialog-title>Geräte Löschen ({{devicesToDelete.length}})</p>
+    <div class="d-flex align-items-center">
+      <div (click)="closeDialog()" class="cursor-pointer">
+        <button mat-icon-button>
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-content>
+    <p>Möchten sie die folgenden Geräte wirklich löschen?</p>
+    <div>
+      <hr>
+    </div>
+
+    <div *ngFor="let device of devicesToDelete">
+      <div class="d-flex">
+        <p class="me-4">Geräte-ID: {{device.id}}</p>
+        <p>Gerätename: {{device.name}}</p>
+      </div>
+      <mat-icon (click)="removeDevice(device)" matTooltip="Gerät aus Liste entfernen" matTooltipPosition="above" class="text-danger cursor-pointer">remove</mat-icon>
+      <hr>
+    </div>
+
+  </div>
+  <div matDialogActions class="d-flex justify-content-end align-items-center">
+    <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+    <button [disabled]="devicesToDelete.length < 1"
+            class="text-white"
+            color="warn"
+            mat-raised-button
+            (click)="openConfirmDialog()">Löschen</button>
+  </div>
+</div>

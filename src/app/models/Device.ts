@@ -10,6 +10,6 @@ export class Device {
   id?: number;
   name?: string;
   location?: Location | null;
-  status?: State;
+  state?: State;
   vehicle?: Vehicle | null;
 }

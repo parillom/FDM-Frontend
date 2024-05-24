@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatSidenav} from '@angular/material/sidenav';
 
 @Component({
@@ -7,12 +7,12 @@ import {MatSidenav} from '@angular/material/sidenav';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  isMenuOpen: boolean = false;
+  isMenuOpen?: boolean = true;
   @ViewChild('sidenav') sidenav?: MatSidenav;
 
   toggleAndRotate() {
     this.sidenav?.toggle();
-    this.isMenuOpen = !this.isMenuOpen;
+    this.isMenuOpen =! this.isMenuOpen;
   }
 
 }

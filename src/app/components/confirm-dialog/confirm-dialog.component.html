@@ -1,0 +1,23 @@
+<div class="me-2" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="d-flex justify-content-between align-items-center">
+    <div></div>
+    <div class="d-flex align-items-center">
+      <div (click)="closeDialog()" class="cursor-pointer">
+        <button mat-icon-button>
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-content>
+    <p>Möchten sie den Vorgang bestätigen?</p>
+    <div>
+      <hr>
+    </div>
+  </div>
+  <div matDialogActions class="d-flex justify-content-end align-items-center">
+    <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+    <button style="background-color: #2f80ed;" color="warn" mat-raised-button (click)="confirmHandle()">Bestätigen</button>
+  </div>
+</div>
+

@@ -75,3 +75,7 @@ button:focus {
 .fire-icon {
   animation: changeColor 3s infinite;
 }
+
+.mat-icon {
+  transition: transform 0.3s ease;
+}

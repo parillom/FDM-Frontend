@@ -59,9 +59,9 @@
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>
-          <input formControlName="name" matInput>
-          <mat-error *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
-            <strong>Name ist ein Pflichtfeld!</strong>
+          <input class="mb-0" formControlName="name" matInput>
+          <mat-error class="mt-0" *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
+            Name ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
@@ -70,7 +70,7 @@
           <input formControlName="vehicle" matInput>
           <mat-error
             *ngIf="deviceForm.get('vehicle')?.invalid && deviceForm.get('vehicle')?.touched">
-            <strong>Fahrzeug ist ein Pflichtfeld!</strong>
+            Fahrzeug ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
@@ -79,7 +79,7 @@
           <input formControlName="location" matInput>
           <mat-error
             *ngIf="deviceForm.get('location')?.invalid && deviceForm.get('location')?.touched">
-            <strong>Ort ist ein Pflichtfeld!</strong>
+            Ort ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
@@ -99,7 +99,7 @@
 
         <div *ngIf="showLocations">
           <div class="d-flex row">
-            <mat-form-field class="w-75 col-9">
+            <mat-form-field *ngIf="locations?.length! > 5" class="w-75 col-9">
               <input
                 matInput
                 class="mb-2"
@@ -116,7 +116,7 @@
 
         <div *ngIf="showVehicles">
           <div class="d-flex row">
-            <mat-form-field class="w-75 col-9">
+            <mat-form-field *ngIf="vehicles?.length! > 5" class="w-75 col-9">
               <input
                 matInput
                 class="mb-2"
@@ -151,6 +151,7 @@
         <button type="submit"
                 class="text-white"
                 mat-raised-button
+                [disabled]="isSubmitting"
                 (click)="saveDevice()"
                 style="background-color: #2f80ed">
           Speichern
