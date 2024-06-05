@@ -1,0 +1,41 @@
+<div class="row">
+  <mat-form-field class="col-12 col-sm-3">
+    <mat-label>Fahrzeug</mat-label>
+    <input #vehicleSearch
+           id="vehicleSearch"
+           type="text"
+           placeholder="Wählen"
+           matInput
+           [matAutocomplete]="veh"
+           [disabled]="!stateIsActive && !showInputs"
+           (input)="filter(true)"
+           (focus)="filter(true)">
+    <mat-autocomplete #veh="matAutocomplete">
+      <mat-option *ngFor="let vehicle of filteredVehicles"
+                  [value]="vehicle.name"
+                  (click)="filterName(vehicle.name, true)">
+        {{vehicle.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field class="col-12 col-sm-3">
+    <mat-label>Ort</mat-label>
+    <input #locationSearch
+           id="locationSearch"
+           type="text"
+           placeholder="Wählen"
+           matInput
+           [disabled]="stateIsActive && !showInputs"
+           [matAutocomplete]="loc"
+           (input)="filter(false)"
+           (focus)="filter(false)">
+    <mat-autocomplete #loc="matAutocomplete">
+      <mat-option *ngFor="let location of filteredLocations"
+                  [value]="location.name"
+                  (click)="filterName(location.name, false)">
+        {{location.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
