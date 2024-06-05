@@ -1,6 +1,6 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <div class="d-flex justify-content-between align-items-center">
-    <p class="fs-5" mat-dialog-title>Gerät hinzufügen</p>
+    <p class="fs-5" mat-dialog-title>Gerät/e hinzufügen</p>
     <div class="d-flex align-items-center">
       <div class="cursor-pointer me-2">
         <button (click)="closeDialog()" mat-icon-button>
@@ -141,7 +141,7 @@
           </mat-select>
           <mat-error
             *ngIf="deviceForm.get('state')?.invalid && deviceForm.get('state')?.touched">
-            <strong>Status ist ein Pflichtfeld!</strong>
+            Status ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
       </div>
@@ -149,7 +149,7 @@
       <div mat-dialog-actions class="d-flex justify-content-end">
         <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
         <button type="submit"
-                class="text-white"
+                class="btn text-white"
                 mat-raised-button
                 [disabled]="isSubmitting"
                 (click)="saveDevice()"
@@ -159,7 +159,7 @@
       </div>
     </form>
 
-    <app-add-multiple-devices *ngIf="!addOneDevice"></app-add-multiple-devices>
+    <app-add-multiple-devices *ngIf="!addOneDevice" (devicesCreated)="checkIfMultipleDevicesCreated($event)"></app-add-multiple-devices>
 
   </div>
 </div>

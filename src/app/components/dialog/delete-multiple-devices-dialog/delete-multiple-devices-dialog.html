@@ -28,7 +28,7 @@
   <div matDialogActions class="d-flex justify-content-end align-items-center">
     <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
     <button [disabled]="devicesToDelete.length < 1"
-            class="text-white"
+            class="btn text-white"
             color="warn"
             mat-raised-button
             (click)="openConfirmDialog()">Löschen</button>

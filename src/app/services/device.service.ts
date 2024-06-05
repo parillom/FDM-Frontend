@@ -25,6 +25,10 @@ export class DeviceService {
     return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/create`, device);
   }
 
+  addManyDevices(devices: Device[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/create-many`, devices);
+  }
+
   delete(device: Device): Observable<string> {
     return this.http.post<string>(`${COMMON_DEVICE_URL}/delete`, device);
   }
@@ -32,5 +36,6 @@ export class DeviceService {
   deleteDevices(devicesToDelete: (number | undefined)[]): Observable<string> {
     return this.http.post<string>(`${COMMON_DEVICE_URL}/delete-many`, devicesToDelete);
   }
+
 }
 

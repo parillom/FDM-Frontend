@@ -2,12 +2,16 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {DeviceService} from '../../services/device.service';
 import {Device} from '../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
-import {EditDialogComponent} from '../edit-dialog/edit-dialog.component';
+import {EditDialogComponent} from '../dialog/edit-dialog/edit-dialog.component';
 import {AddDeviceComponent} from '../add-device/add-device.component';
 import {ToastrService} from 'ngx-toastr';
-import {DeleteDialogComponent} from '../delete-dialog/delete-dialog.component';
+import {DeleteDialogComponent} from '../dialog/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../models/DeviceState';
-import {DeleteMultipleDevicesDialog} from '../delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {DeleteMultipleDevicesDialog} from '../dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {LocationService} from '../../services/location.service';
+import {Location} from '../../models/Location';
+import {VehicleService} from '../../services/vehicle.service';
+import {Vehicle} from '../../models/Vehicle';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,18 +24,32 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   devices?: Device[] = [];
   filteredDevices?: Device[] = [];
+  locations: Location[] = [];
+  filteredLocations: Location[] = [];
+  vehicles: Vehicle[] = [];
+  filteredVehicles: Vehicle[] = [];
   formShowing?: boolean = false;
   deviceSearch?: '';
   devicesToDelete: Device[] = [];
   isChecked = false;
+  currLocationOrVehicle = '';
+
+  protected readonly DeviceState = DeviceState;
+  activeState?: DeviceState;
+  stateFilterEqualsActive: boolean = false;
+
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
-              private toastr: ToastrService) {
+              private toastr: ToastrService,
+              private locationService: LocationService,
+              private vehicleService: VehicleService) {
   }
 
   ngOnInit() {
     this.getAllDevices();
+    this.getAllLocations();
+    this.getAllVehicles();
   }
 
   ngAfterViewInit() {
@@ -49,14 +67,58 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  getAllLocations() {
+    this.locationService.getAllLocations().subscribe(res => {
+      if (res) {
+        this.locations = res;
+        this.filteredLocations = this.locations;
+      }
+    });
+  }
+
+  getAllVehicles() {
+    this.vehicleService.getAllVehicles().subscribe(res => {
+      if (res) {
+        this.vehicles = res;
+        this.filteredVehicles = this.vehicles;
+      }
+    });
+  }
+
+  stateFilterChanged(value: DeviceState) {
+    this.activeState = value;
+    if (this.currLocationOrVehicle) {
+      this.stateFilterEqualsActive = this.activeState === DeviceState.ACTIVE;
+      this.filteredDevices = this.devices!.filter(device => {
+        const stateMatches = device.state?.deviceState === this.activeState;
+        const locationMatches = device.location?.name === this.currLocationOrVehicle;
+        const vehicleMatches = device.vehicle?.name === this.currLocationOrVehicle;
+
+        return stateMatches && (locationMatches || vehicleMatches);
+      });
+    } else {
+      this.filterDevices();
+    }
+  }
+
   filterDevices() {
     const deviceSearchId = Number(this.deviceSearch!);
-    this.filteredDevices = this.devices?.filter(device =>
-      device.id === deviceSearchId ||
-      device.name?.toLowerCase().includes(this.deviceSearch!.toLowerCase()) ||
-      device.location?.name?.toLowerCase().includes(this.deviceSearch!.toLowerCase()) ||
-      device.state?.deviceState?.toLowerCase().includes(this.deviceSearch!.toLowerCase())
-    );
+    const searchLower = this.deviceSearch?.toLowerCase() || '';
+
+    if (!this.activeState) {
+      this.filteredDevices = this.devices?.filter(device => {
+        const matchesId = device.id === deviceSearchId;
+        const matchesName = device.name?.toLowerCase().includes(searchLower);
+        const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
+        const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());
+
+        return matchesId || matchesName || matchesLocation || matchesVehicle;
+      });
+    } else {
+      this.filteredDevices = this.devices?.filter(device => {
+        return device.state?.deviceState === this.activeState;
+      });
+    }
   }
 
   openCreateForm() {
@@ -75,22 +137,28 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       if (value) {
         this.getAllDevices();
       }
-    })
+    });
   }
 
   openEditModal(device: Device) {
-    this.dialog.open(EditDialogComponent, {
+    this.formShowing = true;
+    const dialogRef = this.dialog.open(EditDialogComponent, {
       width: '400px',
       height: 'auto',
+      autoFocus: false,
       hasBackdrop: false,
       data: {
         device: device
       }
     });
+    dialogRef.afterClosed().subscribe(() => {
+      this.formShowing = false;
+    });
   }
 
   openDeleteModal(device: Device) {
-    const deleteDeviceDialog = this.dialog.open(DeleteDialogComponent, {
+    this.formShowing = true;
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -99,24 +167,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         device: device
       }
     });
-
-    deleteDeviceDialog.componentInstance.delete!.subscribe(res => {
+    dialogRef.componentInstance.delete!.subscribe(res => {
       if (res) {
         this.deviceService.delete(device).subscribe(res => {
           if (res === 'OK') {
             this.toastr.success(`Gerät ${device.name} erfolgreich gelöscht`);
             this.getAllDevices();
-            deleteDeviceDialog.close();
+            dialogRef.close();
           }
         });
       } else {
         this.toastr.error(`Gerät ${device.name} könnte nicht gelöscht werden`);
       }
     });
+    dialogRef.afterClosed().subscribe(() => {
+      this.formShowing = false;
+    });
   }
 
   getDeviceState(device: Device): string {
-    let state = 'UNKNOWN';
+    let state = 'UNBEKANNT';
     switch (device.state?.deviceState) {
       case DeviceState.ACTIVE: {
         state = 'AKTIV';
@@ -136,6 +206,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   refreshDevices() {
     this.getAllDevices();
+    this.stateFilterEqualsActive = false;
   }
 
   getLocationText(device: Device) {
@@ -175,12 +246,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   addAllDevices() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
-      const newDevices = this.devices!.filter(device =>
+      const newDevices = this.filteredDevices!.filter(device =>
         !this.devicesToDelete.some(selectedDevice => selectedDevice.id === device.id)
       );
       this.devicesToDelete.push(...newDevices);
     } else {
-      this.devicesToDelete.splice(0);
+      const filteredDeviceIds = this.filteredDevices!.map(device => device.id);
+      this.devicesToDelete = this.devicesToDelete.filter(device => !filteredDeviceIds.includes(device.id));
     }
   }
 
@@ -189,6 +261,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   openDeleteMultipleDialog() {
+    this.formShowing = true;
     const dialogRef = this.dialog.open(DeleteMultipleDevicesDialog, {
       width: '400px',
       height: 'auto',
@@ -214,5 +287,51 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
       }
     });
+    dialogRef.afterClosed().subscribe(() => {
+      this.formShowing = false;
+      dialogRef.componentInstance.deleted!.unsubscribe();
+    });
+  }
+
+  filterByVehicle(vehicleName: string) {
+    this.currLocationOrVehicle = vehicleName;
+    if (this.activeState) {
+      this.filteredDevices = this.devices!.filter(device => {
+        const vehicleOfDevice = device.vehicle?.name === vehicleName;
+        const stateOfDevice = device.state?.deviceState === this.activeState;
+
+        return vehicleOfDevice && stateOfDevice;
+      });
+    } else {
+      this.filteredDevices = this.devices!.filter(device => {
+        return device.vehicle?.name === vehicleName;
+      });
+    }
+  }
+
+  filterByLocation(locationName: string) {
+    this.currLocationOrVehicle = locationName;
+    if (this.activeState) {
+      this.filteredDevices = this.devices!.filter(device => {
+        const locationOfDevice = device.location?.name === locationName;
+        const stateOfDevice = device.state?.deviceState === this.activeState;
+
+        return locationOfDevice && stateOfDevice;
+      });
+    } else {
+      this.filteredDevices = this.devices!.filter(device => {
+        return device.location?.name === locationName;
+      });
+    }
+  }
+
+  showAllDevices(showAllDevices: boolean) {
+    if (showAllDevices && !this.activeState) {
+      this.filteredDevices = this.devices;
+    } else {
+      this.filteredDevices = this.devices!.filter(device => {
+        return device.state?.deviceState === this.activeState;
+      })
+    }
   }
 }

@@ -1,14 +1,53 @@
-<div>
-  <input type="file">
-  <div mat-dialog-actions class="d-flex justify-content-end">
-    <div matDialogActions class="d-flex justify-content-end align-items-center">
-      <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
-      <button type="button"
-              class="text-white"
-              mat-raised-button
-              style="background-color: #2f80ed">
-        Speichern
-      </button>
-    </div>
+<div class="w-100">
+  <div class="d-flex align-items-center justify-content-between">
+    <input #fileInput type="file" (change)="readExcel($event)" accept=".xlsx, .xls">
+    <button class="btn" (click)="refreshFile(fileInput)"
+            mat-icon-button
+            matTooltip="Datei aktualisieren"
+            matTooltipPosition="above"
+            [disabled]="!fileInput.value">
+      <mat-icon>refresh</mat-icon>
+    </button>
+    <button class="btn" (click)="resetFile()"
+            mat-icon-button
+            matTooltip="Datei zurücksetzen"
+            matTooltipPosition="above"
+            [disabled]="!fileInput.value">
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
+  <div class="mt-3">
+    <p>Anzahl Geräte: {{devices?.length}}</p>
+  </div>
+  <div>
+    <table class="table table-hover">
+      <thead>
+      <tr class="row">
+        <th class="col-3">Name</th>
+        <th class="col-3">Ort</th>
+        <th class="col-3">Fahrzeug</th>
+        <th class="col-3">Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let device of devices" class="row">
+        <td class="col-3">{{ device.name }}</td>
+        <td class="col-3">{{ device.location?.name }}</td>
+        <td class="col-3">{{ device.vehicle?.name }}</td>
+        <td class="col-3">{{ device.state?.deviceState }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div matDialogActions class="d-flex justify-content-end align-items-center">
+  <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+  <button type="button"
+          class="btn text-white"
+          mat-raised-button
+          [disabled]="devices?.length! < 1"
+          style="background-color: #2f80ed"
+          (click)="addDevices()">
+    Speichern
+  </button>
 </div>

@@ -1,25 +1,28 @@
-<mat-toolbar style="background-color: black; color: white">
-  <button mat-icon-button (click)="toggleAndRotate()">
-    <mat-icon [style.transform]="isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
-  </button>
-  <h1>FDM</h1>
-  <mat-icon class="fire-icon">local_fire_department</mat-icon>
+<mat-toolbar class="d-flex justify-content-between text-white bg-black">
+  <div class="d-flex align-items-center">
+    <button mat-icon-button (click)="toggleAndRotate()">
+      <mat-icon [style.transform]="isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
+    </button>
+    <h1>FDM</h1>
+    <mat-icon class="fire-icon">local_fire_department</mat-icon>
+  </div>
+  <mat-icon>help</mat-icon>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
     <mat-list>
-      <mat-list-item style="background-color: transparent">
+      <mat-list-item class="bg-transparent ">
         <a mat-list-item href="/fdm/dashboard">
-          <span class="entry">
+          <span class="entry cursor-pointer">
             <mat-icon>home</mat-icon>
             <span>Dashboard</span>
           </span>
         </a>
       </mat-list-item>
       <hr>
-      <mat-list-item>
+      <mat-list-item class="cursor-pointer">
         <a mat-list-item>
-          <span class="entry">
+          <span class="entry cursor-pointer">
             <mat-icon>fire_truck</mat-icon>
             <span>Fahrzeuge</span>
           </span>

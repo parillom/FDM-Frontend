@@ -10,7 +10,6 @@ import {VehicleService} from '../../services/vehicle.service';
 import {DeviceState} from '../../models/DeviceState';
 import {DeviceService} from '../../services/device.service';
 import {ToastrService} from 'ngx-toastr';
-import {ModelAndError} from '../../models/ModelAndError';
 import {ErrorHandlerService} from '../../services/error-handler.service';
 
 @Component({
@@ -138,7 +137,7 @@ export class AddDeviceComponent implements OnInit {
       }
 
       this.deviceService.addDevice(deviceToSave).subscribe(res => {
-        if (this.hasError(res)) {
+        if (this.errorHandler.hasError(res)) {
           this.errorHandler.setErrorMessage(res.errorMessage!)
           this.createdSuccessful.emit(false);
           this.isSubmitting = false;
@@ -152,10 +151,6 @@ export class AddDeviceComponent implements OnInit {
         }
       });
     }
-  }
-
-  hasError(model: ModelAndError): boolean {
-    return !!(!model.object && model.errorMessage);
   }
 
   handleVehicleClick() {
@@ -219,4 +214,7 @@ export class AddDeviceComponent implements OnInit {
     this.deviceForm.reset();
   }
 
+  checkIfMultipleDevicesCreated(value: boolean) {
+    this.createdSuccessful.emit(value);
+  }
 }

@@ -3,8 +3,6 @@
  */
 
 
-import {Device} from './Device';
-
 export class Location {
   id?: number;
   name?: string;

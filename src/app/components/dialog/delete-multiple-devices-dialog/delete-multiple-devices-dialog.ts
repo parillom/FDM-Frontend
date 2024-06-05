@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Inject, Output} from '@angular/core';
-import {Device} from '../../models/Device';
+import {Device} from '../../../models/Device';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {DeviceService} from '../../services/device.service';
+import {DeviceService} from '../../../services/device.service';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 
 @Component({

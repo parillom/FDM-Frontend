@@ -5,3 +5,9 @@
 th {
   font-size: 15px;
 }
+
+@media (min-width: 700px) {
+  .custom-form-field {
+    width: 25% !important;
+  }
+}

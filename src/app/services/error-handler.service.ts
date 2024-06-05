@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
+import {ModelAndError} from '../models/ModelAndError';
 
 const SERVER_CONNECTION_FAILED = 'Verbindung zum Server fehlgeschlagen';
 
@@ -16,5 +17,9 @@ export class ErrorHandlerService {
 
   noServerConnection() {
     this.setErrorMessage(SERVER_CONNECTION_FAILED);
+  }
+
+  hasError(model: ModelAndError): boolean {
+    return !!(!model.object && model.errorMessage);
   }
 }
