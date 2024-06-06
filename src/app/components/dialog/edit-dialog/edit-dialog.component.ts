@@ -7,13 +7,15 @@ import {Location} from '../../../models/Location';
 import {Vehicle} from '../../../models/Vehicle';
 import {State} from '../../../models/State';
 import {DeviceService} from '../../../services/device.service';
+import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit-dialog',
   templateUrl: './edit-dialog.component.html',
   styleUrl: './edit-dialog.component.scss'
 })
-export class EditDialogComponent implements OnInit{
+export class EditDialogComponent implements OnInit {
 
   @Output() updatedSuccessful = new EventEmitter<boolean>();
 
@@ -29,7 +31,9 @@ export class EditDialogComponent implements OnInit{
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private matDialog: MatDialogRef<EditDialogComponent>,
-              private deviceService: DeviceService) {
+              private deviceService: DeviceService,
+              private errorHandler: ErrorHandlerService,
+              private toastr: ToastrService) {
     this.device = this.data.device;
     this.editDeviceFormVehicle = new FormGroup({
       name: new FormControl(data.device.name, Validators.required),
@@ -110,7 +114,16 @@ export class EditDialogComponent implements OnInit{
         deviceToSave.location = null;
         deviceToSave.state!.deviceState! = deviceData.state;
 
-        this.deviceService.updateDevice(deviceToSave, true).subscribe();
+        this.deviceService.updateDevice(deviceToSave, true).subscribe(res => {
+            if (this.errorHandler.hasError(res)) {
+              this.errorHandler.setErrorMessage(res.errorMessage!);
+              this.updatedSuccessful.emit(false);
+            } else {
+              this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);
+              this.updatedSuccessful.emit(true);
+            }
+          }
+        );
       }
     } else {
       if (this.editDeviceFormLocation.valid) {
@@ -127,7 +140,13 @@ export class EditDialogComponent implements OnInit{
         deviceToSave.state!.deviceState! = deviceData.state;
 
         this.deviceService.updateDevice(deviceToSave, false).subscribe(res => {
-          this.updatedSuccessful.emit(true);
+            if (this.errorHandler.hasError(res)) {
+              this.errorHandler.setErrorMessage(res.errorMessage!);
+              this.updatedSuccessful.emit(false);
+            } else {
+              this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);
+              this.updatedSuccessful.emit(true);
+            }
           }
         );
       }

@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   currentState?: DeviceState;
   stateFilterEqualsActive: boolean = false;
 
-
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
               private toastr: ToastrService,
@@ -93,7 +92,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.deviceCriteria = {
         state: this.currentState,
       }
-      console.log('onlyState')
       this.filterWithSpecifiedProperties(this.deviceCriteria);
     } else {
       if (this.vehicleName) {
@@ -101,7 +99,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           state: this.currentState,
           vehicleName: this.vehicleName
         }
-        console.log('stateAndVehicle')
         this.filterWithSpecifiedProperties(this.deviceCriteria);
       }
       if (this.locationName) {
@@ -109,11 +106,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           state: this.currentState,
           locationName: this.locationName
         }
-        console.log('stateAndLocation')
         this.filterWithSpecifiedProperties(this.deviceCriteria);
       }
     }
-
   }
 
   filterWithAllProperties() {
