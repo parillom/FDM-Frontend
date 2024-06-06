@@ -1,14 +1,15 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Vehicle} from '../../models/Vehicle';
 import {Location} from '../../models/Location';
 import {DeviceState} from '../../models/DeviceState';
+import {DeviceSearch} from '../../models/DeviceSearch';
 
 @Component({
   selector: 'app-vehicle-location-autocompletion',
   templateUrl: './vehicle-location-autocompletion.component.html',
   styleUrl: './vehicle-location-autocompletion.component.scss'
 })
-export class VehicleLocationAutocompletionComponent implements AfterViewInit{
+export class VehicleLocationAutocompletionComponent {
   @ViewChild('vehicleSearch') vehicleSearch!: ElementRef<HTMLInputElement>;
   @ViewChild('locationSearch') locationSearch!: ElementRef<HTMLInputElement>;
 
@@ -19,7 +20,7 @@ export class VehicleLocationAutocompletionComponent implements AfterViewInit{
   filterByLocationName: EventEmitter<string> = new EventEmitter<string>();
 
   @Output()
-  showAllDevices: EventEmitter<boolean> = new EventEmitter<boolean>();
+  doFilter: EventEmitter<DeviceSearch | null> = new EventEmitter<DeviceSearch | null>();
 
   @Input()
   vehicles?: Vehicle[];
@@ -32,10 +33,10 @@ export class VehicleLocationAutocompletionComponent implements AfterViewInit{
   filteredVehicles?: Vehicle[];
   filteredLocations?: Location[];
   showInputs: boolean = true;
+  deviceCriteria?: DeviceSearch;
 
   @Input()
   set currentStateValue(state: DeviceState | undefined) {
-    this.showAllDevices.emit(true);
     this.currentState = state;
     if (this.currentState) {
       this.showInputs = false;
@@ -43,13 +44,14 @@ export class VehicleLocationAutocompletionComponent implements AfterViewInit{
     this.stateIsActive = this.currentState === DeviceState.ACTIVE;
   }
 
-  ngAfterViewInit() {
-
-  }
-
-  filter(isVehicleSearch: boolean): void {
-    if (this.locationSearch && this.vehicleSearch && this.locationSearch.nativeElement.value.trim() === '' && this.vehicleSearch.nativeElement.value.trim() === '') {
-      this.showAllDevices.emit(true);
+  filter(event: any, isVehicleSearch: boolean): void {
+    if (!event.target.value && !this.currentState) {
+      this.doFilter.emit(null)
+    } else if (!event.target.value && this.currentState) {
+      this.deviceCriteria = {
+        state: this.currentState
+      }
+      this.doFilter.emit(this.deviceCriteria)
     }
     if (isVehicleSearch) {
       this.locationSearch.nativeElement.value = '';
@@ -63,11 +65,32 @@ export class VehicleLocationAutocompletionComponent implements AfterViewInit{
   }
 
   filterName(name: string | undefined, nameIsVehicle: boolean) {
-    if (nameIsVehicle) {
-      this.filterByVehicleName.emit(name);
-    } else {
-      this.filterByLocationName.emit(name);
+    if (nameIsVehicle && this.currentState) {
+      this.deviceCriteria = {
+        state: this.currentState,
+        vehicleName: name
+      }
+      this.doFilter.emit(this.deviceCriteria);
+    }
+    else if (nameIsVehicle && !this.currentState) {
+      this.deviceCriteria = {
+        state: null,
+        vehicleName: name
+      }
+      this.doFilter.emit(this.deviceCriteria);
+    }
+    else if (!nameIsVehicle && this.currentState) {
+      this.deviceCriteria = {
+        state: this.currentState,
+        locationName: name
+      }
+      this.doFilter.emit(this.deviceCriteria);
+    }
+    else if (!nameIsVehicle && !this.currentState) {
+      this.deviceCriteria = {
+        state: null,
+        locationName: name
+      }
     }
   }
-
 }

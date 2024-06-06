@@ -12,6 +12,7 @@ import {LocationService} from '../../services/location.service';
 import {Location} from '../../models/Location';
 import {VehicleService} from '../../services/vehicle.service';
 import {Vehicle} from '../../models/Vehicle';
+import {DeviceSearch} from '../../models/DeviceSearch';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +20,6 @@ import {Vehicle} from '../../models/Vehicle';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-
   @ViewChild('searchInput') searchInputField!: ElementRef;
 
   devices?: Device[] = [];
@@ -30,12 +30,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   filteredVehicles: Vehicle[] = [];
   formShowing?: boolean = false;
   deviceSearch?: '';
-  devicesToDelete: Device[] = [];
+  selectedDevices: Device[] = [];
   isChecked = false;
-  currLocationOrVehicle = '';
+  locationName = '';
+  vehicleName = '';
+  deviceCriteria?: DeviceSearch;
 
   protected readonly DeviceState = DeviceState;
-  activeState?: DeviceState;
+  currentState?: DeviceState;
   stateFilterEqualsActive: boolean = false;
 
 
@@ -86,38 +88,83 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   stateFilterChanged(value: DeviceState) {
-    this.activeState = value;
-    if (this.currLocationOrVehicle) {
-      this.stateFilterEqualsActive = this.activeState === DeviceState.ACTIVE;
-      this.filteredDevices = this.devices!.filter(device => {
-        const stateMatches = device.state?.deviceState === this.activeState;
-        const locationMatches = device.location?.name === this.currLocationOrVehicle;
-        const vehicleMatches = device.vehicle?.name === this.currLocationOrVehicle;
-
-        return stateMatches && (locationMatches || vehicleMatches);
-      });
+    this.currentState = value;
+    if (!this.vehicleName && !this.locationName) {
+      this.deviceCriteria = {
+        state: this.currentState,
+      }
+      console.log('onlyState')
+      this.filterWithSpecifiedProperties(this.deviceCriteria);
     } else {
-      this.filterDevices();
+      if (this.vehicleName) {
+        this.deviceCriteria = {
+          state: this.currentState,
+          vehicleName: this.vehicleName
+        }
+        console.log('stateAndVehicle')
+        this.filterWithSpecifiedProperties(this.deviceCriteria);
+      }
+      if (this.locationName) {
+        this.deviceCriteria = {
+          state: this.currentState,
+          locationName: this.locationName
+        }
+        console.log('stateAndLocation')
+        this.filterWithSpecifiedProperties(this.deviceCriteria);
+      }
     }
+
   }
 
-  filterDevices() {
+  filterWithAllProperties() {
     const deviceSearchId = Number(this.deviceSearch!);
     const searchLower = this.deviceSearch?.toLowerCase() || '';
 
-    if (!this.activeState) {
-      this.filteredDevices = this.devices?.filter(device => {
-        const matchesId = device.id === deviceSearchId;
-        const matchesName = device.name?.toLowerCase().includes(searchLower);
-        const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
-        const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());
+    this.filteredDevices = this.devices?.filter(device => {
+      const matchesId = device.id === deviceSearchId;
+      const matchesName = device.name?.toLowerCase().includes(searchLower);
+      const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
+      const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());
 
-        return matchesId || matchesName || matchesLocation || matchesVehicle;
-      });
+      return matchesId || matchesName || matchesLocation || matchesVehicle;
+    });
+  }
+
+  filterWithSpecifiedProperties(deviceCriteria: DeviceSearch | null) {
+    if (deviceCriteria === null) {
+      this.filteredDevices = this.devices;
     } else {
-      this.filteredDevices = this.devices?.filter(device => {
-        return device.state?.deviceState === this.activeState;
-      });
+      if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
+        this.filteredDevices = this.devices!.filter(device => {
+          return device.state?.deviceState === deviceCriteria!.state;
+        });
+      }
+      if (deviceCriteria!.state && deviceCriteria!.vehicleName) {
+        this.filteredDevices = this.devices!.filter(device => {
+          const matchesState = device.state?.deviceState === deviceCriteria!.state;
+          const matchesVehicleName = device.vehicle?.name === deviceCriteria!.vehicleName;
+
+          return matchesState && matchesVehicleName;
+        });
+      }
+      if (deviceCriteria!.state && deviceCriteria!.locationName) {
+        this.filteredDevices = this.devices!.filter(device => {
+          const matchesState = device.state?.deviceState === deviceCriteria!.state;
+          const matchesLocationName = device.location?.name === deviceCriteria!.locationName;
+
+          return matchesState && matchesLocationName;
+        });
+      }
+      if (deviceCriteria!.vehicleName && !deviceCriteria?.state) {
+        this.filteredDevices = this.devices!.filter(device => {
+          return device.vehicle?.name === deviceCriteria?.vehicleName;
+        });
+      }
+      if (deviceCriteria!.locationName && !deviceCriteria!.state) {
+        this.filteredDevices = this.devices!.filter(device => {
+          return device.location?.name === deviceCriteria?.locationName;
+        });
+      }
     }
   }
 
@@ -154,6 +201,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(() => {
       this.formShowing = false;
     });
+    dialogRef.componentInstance.updatedSuccessful.subscribe(res => {
+      if (res) {
+        this.getAllDevices();
+      }
+    })
   }
 
   openDeleteModal(device: Device) {
@@ -230,34 +282,34 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleCheckboxClick(device: Device) {
-      const index = this.devicesToDelete.indexOf(device);
-      if (index !== -1) {
-        this.devicesToDelete.splice(index, 1);
-      } else {
-        this.devicesToDelete.push(device);
-      }
-      this.updateIsCheckedState();
+    const index = this.selectedDevices.indexOf(device);
+    if (index !== -1) {
+      this.selectedDevices.splice(index, 1);
+    } else {
+      this.selectedDevices.push(device);
+    }
+    this.updateIsCheckedState();
   }
 
   updateIsCheckedState() {
-    this.isChecked = this.devices?.length === this.devicesToDelete.length;
+    this.isChecked = this.devices?.length === this.selectedDevices.length;
   }
 
   addAllDevices() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       const newDevices = this.filteredDevices!.filter(device =>
-        !this.devicesToDelete.some(selectedDevice => selectedDevice.id === device.id)
+        !this.selectedDevices.some(selectedDevice => selectedDevice.id === device.id)
       );
-      this.devicesToDelete.push(...newDevices);
+      this.selectedDevices.push(...newDevices);
     } else {
       const filteredDeviceIds = this.filteredDevices!.map(device => device.id);
-      this.devicesToDelete = this.devicesToDelete.filter(device => !filteredDeviceIds.includes(device.id));
+      this.selectedDevices = this.selectedDevices.filter(device => !filteredDeviceIds.includes(device.id));
     }
   }
 
   isDeviceSelected(device: Device) {
-    return this.devicesToDelete.some(selectedDevice => selectedDevice.id === device.id);
+    return this.selectedDevices.some(selectedDevice => selectedDevice.id === device.id);
   }
 
   openDeleteMultipleDialog() {
@@ -268,7 +320,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       hasBackdrop: false,
       autoFocus: false,
       data: {
-        devicesToDelete: this.devicesToDelete
+        devicesToDelete: this.selectedDevices
       }
     });
     dialogRef.componentInstance.change!.subscribe((updatedDeviceList) => {
@@ -279,7 +331,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     dialogRef.componentInstance.deleted!.subscribe(deleted => {
       if (deleted) {
         this.getAllDevices();
-        this.devicesToDelete = [];
+        this.selectedDevices = [];
         this.toastr.success('Geräte wurden erfolgreich gelöscht');
         dialogRef.close();
         if (this.isChecked) {
@@ -293,45 +345,4 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  filterByVehicle(vehicleName: string) {
-    this.currLocationOrVehicle = vehicleName;
-    if (this.activeState) {
-      this.filteredDevices = this.devices!.filter(device => {
-        const vehicleOfDevice = device.vehicle?.name === vehicleName;
-        const stateOfDevice = device.state?.deviceState === this.activeState;
-
-        return vehicleOfDevice && stateOfDevice;
-      });
-    } else {
-      this.filteredDevices = this.devices!.filter(device => {
-        return device.vehicle?.name === vehicleName;
-      });
-    }
-  }
-
-  filterByLocation(locationName: string) {
-    this.currLocationOrVehicle = locationName;
-    if (this.activeState) {
-      this.filteredDevices = this.devices!.filter(device => {
-        const locationOfDevice = device.location?.name === locationName;
-        const stateOfDevice = device.state?.deviceState === this.activeState;
-
-        return locationOfDevice && stateOfDevice;
-      });
-    } else {
-      this.filteredDevices = this.devices!.filter(device => {
-        return device.location?.name === locationName;
-      });
-    }
-  }
-
-  showAllDevices(showAllDevices: boolean) {
-    if (showAllDevices && !this.activeState) {
-      this.filteredDevices = this.devices;
-    } else {
-      this.filteredDevices = this.devices!.filter(device => {
-        return device.state?.deviceState === this.activeState;
-      })
-    }
-  }
 }

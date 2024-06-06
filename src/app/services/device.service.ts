@@ -37,5 +37,8 @@ export class DeviceService {
     return this.http.post<string>(`${COMMON_DEVICE_URL}/delete-many`, devicesToDelete);
   }
 
+  updateDevice(deviceToSave: Device, deviceHasVehicle: boolean) {
+    return this.http.post<string>(`${COMMON_DEVICE_URL}/update/${deviceHasVehicle}`, deviceToSave);
+  }
 }
 

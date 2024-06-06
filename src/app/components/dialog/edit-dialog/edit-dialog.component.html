@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  <div mat-dialog-content [formGroup]="editDeviceForm">
+  <div mat-dialog-content [formGroup]="editDeviceFormVehicle">
     <div class="d-flex row btn-group" role="group">
       <button [ngClass]="{ 'selectedButton': locationIsVehicle, 'notSelectedButton': !locationIsVehicle}"
               type="button"
@@ -28,28 +28,49 @@
       <hr>
     </div>
 
-    <form [formGroup]="editDeviceForm">
+    <form [formGroup]="editDeviceFormVehicle" *ngIf="locationIsVehicle">
       <mat-form-field class="w-100">
         <mat-label>Gerätename</mat-label>
-        <input (input)="checkDeviceName()" formControlName="name" id="deviceName" matInput autofocus>
-        <mat-error *ngIf="editDeviceForm.get('name')?.invalid && editDeviceForm.get('name')?.touched">
+        <input (input)="checkDeviceName($event)" formControlName="name" id="deviceName" matInput autofocus>
+        <mat-error *ngIf="editDeviceFormVehicle.get('name')?.invalid && editDeviceFormVehicle.get('name')?.touched">
           Name ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field *ngIf="locationIsVehicle">
+      <mat-form-field>
         <mat-label>Fahrzeug</mat-label>
         <input (input)="checkDeviceVehicleChanged()" formControlName="vehicle" id="vehicle" matInput>
-        <mat-error *ngIf="editDeviceForm.get('vehicle')?.invalid && editDeviceForm.get('vehicle')?.touched">
+        <mat-error *ngIf="editDeviceFormVehicle.get('vehicle')?.invalid && editDeviceFormVehicle.get('vehicle')?.touched">
           Fahrzeug ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field *ngIf="!locationIsVehicle">
+      <mat-form-field>
+        <mat-label>Geräte-Status</mat-label>
+        <mat-select formControlName="state">
+          <mat-option value="ACTIVE" (click)="onStateChanged(DeviceState.ACTIVE)">AKTIV</mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="editDeviceFormVehicle.get('state')?.invalid && editDeviceFormVehicle.get('state')?.touched">
+          Status ist ein Pflichtfeld!
+        </mat-error>
+      </mat-form-field>
+    </form>
+
+    <form [formGroup]="editDeviceFormLocation" *ngIf="!locationIsVehicle">
+      <mat-form-field class="w-100">
+        <mat-label>Gerätename</mat-label>
+        <input (input)="checkDeviceName($event)" formControlName="name" id="deviceNameLocation" matInput autofocus>
+        <mat-error *ngIf="editDeviceFormLocation.get('name')?.invalid && editDeviceFormLocation.get('name')?.touched">
+          Name ist ein Pflichtfeld!
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
         <mat-label>Ort</mat-label>
         <input (input)="checkDeviceLocationChanged()" formControlName="location" id="location" matInput>
         <mat-error
-          *ngIf="editDeviceForm.get('location')?.invalid && editDeviceForm.get('location')?.touched">
+          *ngIf="editDeviceFormLocation.get('location')?.invalid && editDeviceFormLocation.get('location')?.touched">
           Ort ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
@@ -57,12 +78,11 @@
       <mat-form-field>
         <mat-label>Geräte-Status</mat-label>
         <mat-select formControlName="state">
-          <mat-option *ngIf="locationIsVehicle" value="ACTIVE" (click)="onStateChanged(DeviceState.ACTIVE)">AKTIV</mat-option>
-          <mat-option *ngIf="!locationIsVehicle" value="STORAGE" (click)="onStateChanged(DeviceState.STORAGE)">LAGER</mat-option>
-          <mat-option *ngIf="!locationIsVehicle" value="REESTABLISH" (click)="onStateChanged(DeviceState.REESTABLISH)">RETABLIEREN</mat-option>
+          <mat-option value="STORAGE" (click)="onStateChanged(DeviceState.ACTIVE)">LAGER</mat-option>
+          <mat-option  value="REESTABLISH" (click)="onStateChanged(DeviceState.ACTIVE)">RETABLIEREN</mat-option>
         </mat-select>
         <mat-error
-          *ngIf="editDeviceForm.get('state')?.invalid && editDeviceForm.get('state')?.touched">
+          *ngIf="editDeviceFormLocation.get('state')?.invalid && editDeviceFormLocation.get('state')?.touched">
           Status ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
@@ -72,7 +92,10 @@
 <hr>
 <div mat-dialog-actions class="d-flex justify-content-end">
   <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
-  <button class="btn" mat-raised-button [disabled]="!formDirty" style="background-color: #2f80ed; color: white">
+  <button *ngIf="locationIsVehicle" (click)="updateDevice()" class="btn" mat-raised-button [disabled]="!vehicleFormDirty" style="background-color: #2f80ed; color: white">
+    Übernehmen
+  </button>
+  <button *ngIf="!locationIsVehicle" class="btn" (click)="updateDevice()" mat-raised-button [disabled]="!locationFormDirty" style="background-color: #2f80ed; color: white">
     Übernehmen
   </button>
 </div>
