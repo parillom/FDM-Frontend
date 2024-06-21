@@ -47,6 +47,7 @@ export class VehicleLocationAutocompletionComponent {
   resetFields() {
     this.vehicleSearch.nativeElement.value = '';
     this.locationSearch.nativeElement.value = '';
+    this.showInputs = true;
   }
 
   filter(event: any, isVehicleSearch: boolean): void {

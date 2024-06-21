@@ -36,8 +36,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   deviceSearch?: '';
   selectedDevices: Device[] = [];
   isChecked = false;
-  locationName = '';
-  vehicleName = '';
+  locationName: string | null | undefined = '';
+  vehicleName: string | null | undefined = '';
   deviceCriteria?: DeviceSearch;
   selectedState?: string;
 
@@ -131,6 +131,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   filterWithSpecifiedProperties(deviceCriteria: DeviceSearch | null) {
+    this.vehicleName = deviceCriteria?.vehicleName
+    this.locationName = deviceCriteria?.locationName
     if (deviceCriteria === null) {
       this.filteredDevices = this.devices;
     } else {
@@ -259,6 +261,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   refreshDevices() {
     this.getAllDevices();
     this.stateFilterEqualsActive = false;
+    this.handleFocusOrReset();
   }
 
   getLocationText(device: Device) {
@@ -345,7 +348,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  handleFocus() {
+  handleFocusOrReset() {
     this.selectedState = '';
     this.vehicleLocationAutoCompletion.resetFields();
   }

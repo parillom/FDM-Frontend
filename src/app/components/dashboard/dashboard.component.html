@@ -1,14 +1,15 @@
 <mat-form-field class="w-100 mb-1" style="margin-top: 5vh">
   <mat-label>Gerät suchen</mat-label>
   <input #searchInput matInput placeholder="Z.B. FF2" [(ngModel)]="deviceSearch"
-         (ngModelChange)="filterWithAllProperties()" (focus)="handleFocus()">
+         (ngModelChange)="filterWithAllProperties()" (focus)="handleFocusOrReset()">
 </mat-form-field>
 
 <div class="mt-3 ms-5 me-5">
   <div class="row d-flex align-items-center mb-4">
     <div class="col-3 d-flex align-items-center col-lg-10 col-sm-9">
       <h1 class="text-nowrap m-0">Aktuelle Geräte ({{devices?.length}})</h1>
-      <button (click)="refreshDevices()" mat-icon-button>
+      <button matTooltip="Geräteliste aktualisieren"
+              matTooltipPosition="above" (click)="refreshDevices()" mat-icon-button>
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
