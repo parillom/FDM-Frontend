@@ -13,6 +13,9 @@ import {Location} from '../../models/Location';
 import {VehicleService} from '../../services/vehicle.service';
 import {Vehicle} from '../../models/Vehicle';
 import {DeviceSearch} from '../../models/DeviceSearch';
+import {
+  VehicleLocationAutocompletionComponent
+} from '../vehicle-location-autocompletion/vehicle-location-autocompletion.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +24,7 @@ import {DeviceSearch} from '../../models/DeviceSearch';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInputField!: ElementRef;
+  @ViewChild(VehicleLocationAutocompletionComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionComponent;
 
   devices?: Device[] = [];
   filteredDevices?: Device[] = [];
@@ -35,6 +39,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   locationName = '';
   vehicleName = '';
   deviceCriteria?: DeviceSearch;
+  selectedState?: string;
 
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
@@ -340,4 +345,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  handleFocus() {
+    this.selectedState = '';
+    this.vehicleLocationAutoCompletion.resetFields();
+  }
 }

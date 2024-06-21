@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {Vehicle} from '../../models/Vehicle';
 import {Location} from '../../models/Location';
 import {DeviceState} from '../../models/DeviceState';
@@ -42,6 +42,11 @@ export class VehicleLocationAutocompletionComponent {
       this.showInputs = false;
     }
     this.stateIsActive = this.currentState === DeviceState.ACTIVE;
+  }
+
+  resetFields() {
+    this.vehicleSearch.nativeElement.value = '';
+    this.locationSearch.nativeElement.value = '';
   }
 
   filter(event: any, isVehicleSearch: boolean): void {
@@ -91,6 +96,7 @@ export class VehicleLocationAutocompletionComponent {
         state: null,
         locationName: name
       }
+      this.doFilter.emit(this.deviceCriteria);
     }
   }
 }
