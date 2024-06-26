@@ -3,7 +3,7 @@ import {DeviceService} from '../../services/device.service';
 import {Device} from '../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
 import {EditDialogComponent} from '../dialog/edit-dialog/edit-dialog.component';
-import {AddDeviceComponent} from '../add-device/add-device.component';
+import {AddDeviceComponent} from '../dialog/add-device/add-device.component';
 import {ToastrService} from 'ngx-toastr';
 import {DeleteDialogComponent} from '../dialog/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../models/DeviceState';
@@ -40,10 +40,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   vehicleName: string | null | undefined = '';
   deviceCriteria?: DeviceSearch;
   selectedState?: string;
-
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
   stateFilterEqualsActive: boolean = false;
+  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Verwalten'];
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
@@ -352,4 +352,5 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.selectedState = '';
     this.vehicleLocationAutoCompletion.resetFields();
   }
+
 }

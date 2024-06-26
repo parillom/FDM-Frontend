@@ -1,16 +1,17 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Device} from '../../models/Device';
-import {State} from '../../models/State';
-import {Location} from '../../models/Location';
+import {Device} from '../../../models/Device';
+import {State} from '../../../models/State';
+import {Location} from '../../../models/Location';
 import {MatDialogRef} from '@angular/material/dialog';
-import {LocationService} from '../../services/location.service';
-import {Vehicle} from '../../models/Vehicle';
-import {VehicleService} from '../../services/vehicle.service';
-import {DeviceState} from '../../models/DeviceState';
-import {DeviceService} from '../../services/device.service';
+import {LocationService} from '../../../services/location.service';
+import {Vehicle} from '../../../models/Vehicle';
+import {VehicleService} from '../../../services/vehicle.service';
+import {DeviceState} from '../../../models/DeviceState';
+import {DeviceService} from '../../../services/device.service';
 import {ToastrService} from 'ngx-toastr';
-import {ErrorHandlerService} from '../../services/error-handler.service';
+import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {MatTabChangeEvent} from '@angular/material/tabs';
 
 @Component({
   selector: 'app-add-device',
@@ -110,6 +111,22 @@ export class AddDeviceComponent implements OnInit {
       vehicle: vehicle.name
     });
     this.showVehicles = false;
+  }
+
+  changeCreateFormat(event: MatTabChangeEvent) {
+    if (event.index === 0) {
+      this.addOneDevice = true;
+    } else if (event.index === 1) {
+      this.addOneDevice = false;
+    }
+  }
+
+  changeToDeviceOrLocation(event: MatTabChangeEvent) {
+    if (event.index === 0) {
+      this.handleVehicleClick();
+    } else {
+      this.handleLocationClick();
+    }
   }
 
   saveDevice() {
@@ -217,4 +234,6 @@ export class AddDeviceComponent implements OnInit {
   checkIfMultipleDevicesCreated(value: boolean) {
     this.createdSuccessful.emit(value);
   }
+
+
 }

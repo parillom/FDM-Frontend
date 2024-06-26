@@ -7,7 +7,7 @@ import {provideAnimationsAsync} from '@angular/platform-browser/animations/async
 import {NavbarComponent} from './components/navbar/navbar.component';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {EditDialogComponent} from './components/dialog/edit-dialog/edit-dialog.component';
-import {AddDeviceComponent} from './components/add-device/add-device.component';
+import {AddDeviceComponent} from './components/dialog/add-device/add-device.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
@@ -20,7 +20,7 @@ import {MatCard} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -29,12 +29,31 @@ import {ToastrModule} from 'ngx-toastr';
 import {DeleteDialogComponent} from './components/dialog/delete-dialog/delete-dialog.component';
 import {AddMultipleDevicesComponent} from './components/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
-import {DeleteMultipleDevicesDialog} from './components/dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
-import { ConfirmDialogComponent } from './components/dialog/confirm-dialog/confirm-dialog.component';
+import {
+    DeleteMultipleDevicesDialog
+} from './components/dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {ConfirmDialogComponent} from './components/dialog/confirm-dialog/confirm-dialog.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import { VehicleLocationAutocompletionComponent } from './components/vehicle-location-autocompletion/vehicle-location-autocompletion.component';
+import {
+    VehicleLocationAutocompletionComponent
+} from './components/vehicle-location-autocompletion/vehicle-location-autocompletion.component';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable
+} from '@angular/material/table';
+import {RouterModule} from '@angular/router';
+import {MatSort} from '@angular/material/sort';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -47,7 +66,7 @@ import {MatSlideToggle} from '@angular/material/slide-toggle';
     AddMultipleDevicesComponent,
     DeleteMultipleDevicesDialog,
     ConfirmDialogComponent,
-    VehicleLocationAutocompletionComponent
+    VehicleLocationAutocompletionComponent,
   ],
     imports: [
         BrowserModule,
@@ -85,6 +104,20 @@ import {MatSlideToggle} from '@angular/material/slide-toggle';
         MatAutocomplete,
         MatAutocompleteTrigger,
         MatSlideToggle,
+        MatHeaderCell,
+        MatColumnDef,
+        MatCell,
+        MatHeaderCellDef,
+        MatCellDef,
+        MatTable,
+        MatHeaderRow,
+        MatRow,
+        MatHeaderRowDef,
+        MatRowDef,
+        RouterModule,
+        MatSort,
+        MatTabGroup,
+        MatTab
     ],
   providers: [
     BsModalService,

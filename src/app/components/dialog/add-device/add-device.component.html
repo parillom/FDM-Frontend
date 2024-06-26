@@ -11,21 +11,10 @@
   </div>
 
   <div mat-dialog-content>
-    <div class="d-flex row btn-group" role="group">
-      <button [ngClass]="{ 'selectedButton': addOneDevice, 'notSelectedButton': !addOneDevice }"
-              type="button"
-              class="btn col-6"
-              (click)="addOneDevice = true">
-        Ein Gerät
-      </button>
-      <button [ngClass]="{ 'selectedButton': !addOneDevice, 'notSelectedButton': addOneDevice }"
-              type="button"
-              class="btn col-6"
-              (click)="addOneDevice = false">
-        Mehrere Geräte
-      </button>
-    </div>
-
+    <mat-tab-group (selectedTabChange)="changeCreateFormat($event)">
+      <mat-tab label="Ein Gerät"></mat-tab>
+      <mat-tab label="Mehrere Geräte"></mat-tab>
+    </mat-tab-group>
     <div>
       <hr>
     </div>
@@ -39,19 +28,11 @@
           <mat-icon>refresh</mat-icon>
         </button>
       </div>
-      <div class="d-flex btn-group" role="group">
-        <button [ngClass]="{ 'selectedButton': !locationSelected, 'notSelectedButton': locationSelected }"
-                type="button"
-                class="btn col-3"
-                (click)="handleVehicleClick()">
-          Fahrzeug
-        </button>
-        <button [ngClass]="{ 'selectedButton': locationSelected, 'notSelectedButton': !locationSelected }"
-                type="button"
-                class="btn col-3"
-                (click)="handleLocationClick()">
-          Ort
-        </button>
+      <div>
+        <mat-tab-group (selectedTabChange)="changeToDeviceOrLocation($event)">
+          <mat-tab label="Fahrzeug"></mat-tab>
+          <mat-tab label="Ort"></mat-tab>
+        </mat-tab-group>
       </div>
     </div>
 
@@ -147,13 +128,12 @@
       </div>
 
       <div mat-dialog-actions class="d-flex justify-content-end">
-        <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
         <button type="submit"
-                class="btn text-white"
+                class="btn text-white w-100"
                 mat-raised-button
                 [disabled]="isSubmitting"
                 (click)="saveDevice()"
-                style="background-color: #2f80ed">
+                color="primary">
           Speichern
         </button>
       </div>

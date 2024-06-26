@@ -4,46 +4,47 @@ import {FormControl} from '@angular/forms';
 import {OverlayContainer} from '@angular/cdk/overlay';
 
 @Component({
-    selector: 'app-navbar',
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss'
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit {
-    isMenuOpen?: boolean = true;
-    @ViewChild('sidenav') sidenav?: MatSidenav;
+  isMenuOpen?: boolean = true;
+  @ViewChild('sidenav') sidenav?: MatSidenav;
 
-    switchTheme = new FormControl(false);
-    @HostBinding('class') className = '';
-    darkClass = 'theme-dark';
-    lightClass = 'theme-light';
+  switchTheme = new FormControl(false);
+  @HostBinding('class') className = '';
+  darkClass = 'theme-dark';
+  lightClass = 'theme-light';
 
-    constructor(private overlay: OverlayContainer) {
+  constructor(private overlay: OverlayContainer) {
+  }
+
+  ngOnInit() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      this.className = savedTheme;
+      this.switchTheme.setValue(savedTheme === this.darkClass);
+      this.overlay.getContainerElement().classList.add(this.className);
+    } else {
+      this.overlay.getContainerElement().classList.add(this.lightClass);
     }
 
-    ngOnInit() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            this.className = savedTheme;
-            if (savedTheme === this.darkClass) {
-                this.switchTheme.setValue(true);
-            }
-        } else {
-            this.className = this.lightClass;
-        }
+    this.switchTheme.valueChanges.subscribe((currentMode) => {
+      this.className = currentMode ? this.darkClass : this.lightClass;
+      localStorage.setItem('theme', this.className);
+      this.overlay.getContainerElement().classList.remove(this.darkClass, this.lightClass);
+      this.overlay.getContainerElement().classList.add(this.className);
+    });
+  }
 
-        this.switchTheme.valueChanges.subscribe((currentMode) => {
-            this.className = currentMode ? this.darkClass : this.lightClass;
-            localStorage.setItem('theme', this.className);
-            if (currentMode) {
-                this.overlay.getContainerElement().classList.add(this.darkClass);
-            } else {
-                this.overlay.getContainerElement().classList.add(this.lightClass);
-            }
-        });
-    }
+  toggleTheme() {
+    const isDarkMode = this.className === this.darkClass;
+    this.switchTheme.setValue(!isDarkMode);
+  }
 
-    toggleAndRotate() {
-      this.sidenav?.toggle();
-      this.isMenuOpen = !this.isMenuOpen;
-    }
+  toggleAndRotate() {
+    this.sidenav?.toggle();
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 }

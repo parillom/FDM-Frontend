@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>
-          <mat-icon>close</mat-icon>
+          <mat-icon id="close-delete-multiple">close</mat-icon>
         </button>
       </div>
     </div>
@@ -25,10 +25,9 @@
     </div>
 
   </div>
-  <div matDialogActions class="d-flex justify-content-end align-items-center">
-    <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
+  <div matDialogActions class="d-flex justify-content-between align-items-center mb-2">
     <button [disabled]="devicesToDelete.length < 1"
-            class="btn text-white"
+            class="btn text-white w-100"
             color="warn"
             mat-raised-button
             (click)="openConfirmDialog()">Löschen</button>

@@ -7,8 +7,8 @@
 
 $my-primary: mat.define-palette(mat.$indigo-palette, 500);
 $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-
 $my-warn: mat.define-palette(mat.$red-palette);
+$my-button-theme: mat.define-palette(mat.$blue-palette);
 
 $my-theme: mat.define-light-theme((
   color: (
@@ -32,12 +32,19 @@ $my-theme-dark: mat.define-dark-theme((
 
 .theme-dark {
   @include mat.all-component-colors($my-theme-dark);
+  .mat-icon#close-delete-multiple {
+    color: white;
+  }
 }
 
 .theme-light {
   @include mat.all-component-colors($my-theme);
 }
 
+.custom-button {
+  background-color: #2f80ed;
+  color: white;
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -55,4 +62,11 @@ body.dark-mode {
   color: #ffffff;
 }
 
+.crossed-out {
+  text-decoration: line-through;
+}
 
+.not-defined {
+  font-style: italic;
+  color: #999;
+}

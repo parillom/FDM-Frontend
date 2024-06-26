@@ -20,7 +20,7 @@ export class AddMultipleDevicesComponent {
 
   extractedElements?: any[];
   devices?: Device[] = [];
-  deviceNames?: string[] = [];
+  displayedColumns: string[] = ['Name'];
 
   @Output()
   devicesCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -130,5 +130,13 @@ export class AddMultipleDevicesComponent {
 
   refreshFile(fileInput: HTMLInputElement) {
     this.readExcel(fileInput);
+  }
+
+  getVehicleText(device: Device): string {
+    return device.vehicle ? device.vehicle.name! : 'nicht definiert';
+  }
+
+  getLocationText(device: Device): string {
+    return device.location ? device.location.name! : 'nicht definiert';
   }
 }

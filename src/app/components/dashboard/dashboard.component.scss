@@ -11,3 +11,13 @@ th {
     width: 25% !important;
   }
 }
+
+.mat-mdc-row .mat-mdc-cell {
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-top: 2px solid lightgrey;
+  border-bottom: 2px solid lightgrey;
+}
+
