@@ -14,8 +14,8 @@ import {VehicleService} from '../../services/vehicle.service';
 import {Vehicle} from '../../models/Vehicle';
 import {DeviceSearch} from '../../models/DeviceSearch';
 import {
-  VehicleLocationAutocompletionComponent
-} from '../vehicle-location-autocompletion/vehicle-location-autocompletion.component';
+  VehicleLocationAutocompletionDashboardComponent
+} from '../vehicle-location-autocompletion-dashboard/vehicle-location-autocompletion-dashboard.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +24,7 @@ import {
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInputField!: ElementRef;
-  @ViewChild(VehicleLocationAutocompletionComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionComponent;
+  @ViewChild(VehicleLocationAutocompletionDashboardComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionDashboardComponent;
 
   devices?: Device[] = [];
   filteredDevices?: Device[] = [];
@@ -117,11 +117,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   filterWithAllProperties() {
-    const deviceSearchId = Number(this.deviceSearch!);
+    const deviceSearchId = this.deviceSearch ? this.deviceSearch : '';
     const searchLower = this.deviceSearch?.toLowerCase() || '';
 
     this.filteredDevices = this.devices?.filter(device => {
-      const matchesId = device.id === deviceSearchId;
+      const matchesId = device.id!.toString().includes(deviceSearchId);
       const matchesName = device.name?.toLowerCase().includes(searchLower);
       const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
       const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());

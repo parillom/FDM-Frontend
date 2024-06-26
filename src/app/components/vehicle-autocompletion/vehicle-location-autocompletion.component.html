@@ -1,0 +1,35 @@
+<mat-form-field *ngIf="showVehicleInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
+  <mat-label>Fahrzeug</mat-label>
+  <input #vehicleSearch
+         type="text"
+         placeholder="Wählen"
+         matInput
+         [matAutocomplete]="veh"
+         (input)="filter($event, true)"
+         (focus)="filter($event, true)">
+  <mat-autocomplete #veh="matAutocomplete">
+    <mat-option *ngFor="let vehicle of filteredVehicles"
+                [value]="vehicle.name"
+                (click)="setVehicleInput.emit(vehicle)">
+      {{vehicle.name}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
+
+<mat-form-field *ngIf="showLocationInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
+  <mat-label>Ort</mat-label>
+  <input #locationSearch
+         type="text"
+         placeholder="Wählen"
+         matInput
+         [matAutocomplete]="loc"
+         (input)="filter($event, true)"
+         (focus)="filter($event, false)">
+  <mat-autocomplete #loc="matAutocomplete">
+    <mat-option *ngFor="let location of filteredLocations"
+                [value]="location.name"
+                (click)="setLocationInput.emit(location)">
+      {{location.name}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

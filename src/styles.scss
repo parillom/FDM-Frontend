@@ -1,4 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
 @import 'bootstrap/scss/bootstrap';
@@ -31,10 +30,19 @@ $my-theme-dark: mat.define-dark-theme((
 
 .theme-dark {
   @include mat.all-component-colors($my-theme-dark);
-  .mat-icon#close-delete-multiple {
+  .mat-icon#close-icon-delete-multiple {
     color: white;
   }
   .mat-icon#close-icon-single-device {
+    color: white;
+  }
+  .mat-icon#close-icon-delete-device {
+    color: white;
+  }
+  .mat-icon#close-icon-update-device {
+    color: white;
+  }
+  .mat-icon#close-icon-confirm {
     color: white;
   }
 }

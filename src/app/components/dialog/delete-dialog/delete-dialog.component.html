@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>
-          <mat-icon>close</mat-icon>
+          <mat-icon id="close-icon-delete-device">close</mat-icon>
         </button>
       </div>
     </div>
@@ -17,14 +17,14 @@
     <a (click)="handleDetails()" class="cursor-pointer text-decoration-none">{{detailsText}}</a>
 
     <div class="mt-3" *ngIf="showDetails">
-      <p><strong>Geräte-ID:</strong> {{device?.id}}</p>
-      <p><strong>Gerätename:</strong> {{device?.name}}</p>
-      <p><strong>Aktueller Ort:</strong> {{getLocationName()}}</p>
-      <p><strong>Gerätestatus:</strong> {{device?.state?.deviceState}}</p>
+      <p>Geräte-ID: <span style="color: lightslategrey">{{device?.id}}</span></p>
+      <p>Gerätename: <span style="color: lightslategrey">{{device?.name}}</span></p>
+      <p>Aktuelles Fahrzeug: <span style="color: lightslategrey">{{getVehicleName()}}</span></p>
+      <p>Aktueller Ort: <span style="color: lightslategrey">{{getLocationName()}}</span></p>
+      <p>Gerätestatus: <span style="color: lightslategrey">{{device?.state?.deviceState}}</span></p>
     </div>
   </div>
   <div matDialogActions class="d-flex justify-content-center justify-content-sm-end align-items-center">
-    <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
-    <button class="btn text-white" color="warn" mat-raised-button (click)="deleteDevice()">Löschen</button>
+    <button class="btn text-white w-100" color="warn" mat-raised-button (click)="deleteDevice()">Löschen</button>
   </div>
 </div>

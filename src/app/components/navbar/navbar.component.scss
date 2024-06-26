@@ -14,9 +14,7 @@ mat-sidenav-container {
 
 mat-sidenav {
   width: 30vh;
-  @media screen and (min-width: 600px) {
-    padding-top: 4rem;
-  }
+  padding-top: 4rem;
 
   .entry{
     display: flex;

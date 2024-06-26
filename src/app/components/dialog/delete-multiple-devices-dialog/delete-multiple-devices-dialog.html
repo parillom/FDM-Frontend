@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>
-          <mat-icon id="close-delete-multiple">close</mat-icon>
+          <mat-icon id="close-icon-delete-multiple">close</mat-icon>
         </button>
       </div>
     </div>
@@ -20,10 +20,12 @@
         <p class="me-4">Geräte-ID: {{device.id}}</p>
         <p>Gerätename: {{device.name}}</p>
       </div>
-      <mat-icon (click)="removeDevice(device)" matTooltip="Gerät aus Liste entfernen" matTooltipPosition="above" class="text-danger cursor-pointer">remove</mat-icon>
+      <mat-icon (click)="removeDevice(device)"
+                matTooltip="Gerät aus Liste entfernen"
+                matTooltipPosition="above"
+                class="text-danger cursor-pointer">remove</mat-icon>
       <hr>
     </div>
-
   </div>
   <div matDialogActions class="d-flex justify-content-between align-items-center mb-2">
     <button [disabled]="devicesToDelete.length < 1"

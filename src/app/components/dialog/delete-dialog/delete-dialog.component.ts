@@ -38,6 +38,14 @@ export class DeleteDialogComponent {
     }
   }
 
+  getVehicleName(): string {
+    if (this.device?.vehicle == null) {
+      return 'Kein Ort definiert';
+    } else {
+      return this.device.vehicle.name!;
+    }
+  }
+
   getLocationName(): string {
     if (this.device?.location == null) {
       return 'Kein Ort definiert';

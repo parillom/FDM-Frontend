@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>
-          <mat-icon>close</mat-icon>
+          <mat-icon id="close-icon-confirm">close</mat-icon>
         </button>
       </div>
     </div>
@@ -16,8 +16,7 @@
     </div>
   </div>
   <div matDialogActions class="d-flex justify-content-end align-items-center">
-    <a (click)="closeDialog()" class="cursor-pointer text-decoration-none me-3 text-black">abbrechen</a>
-    <button class="btn" style="background-color: #2f80ed;" color="warn" mat-raised-button (click)="confirmHandle()">
+    <button class="btn w-100" color="primary" mat-raised-button (click)="confirmHandle()">
       Bestätigen
     </button>
   </div>

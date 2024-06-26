@@ -69,49 +69,26 @@
                   mat-raised-button
                   (click)="showVehiclesList()"
                   [disabled]="vehicles?.length === 0">
-            Fahrzeuge</button>
+            Fahrzeuge suchen
+          </button>
           <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0"
                   mat-raised-button
                   (click)="showLocationsList()"
                   [disabled]="locations?.length === 0">
-            Orte
+            Orte suchen
           </button>
         </div>
 
-        <div *ngIf="showLocations">
-          <div class="d-flex row">
-            <mat-form-field *ngIf="locations?.length! > 5" class="w-75 col-9">
-              <input
-                matInput
-                class="mb-2"
-                placeholder="Ort suchen"
-                formControlName="searchLocation"
-                (input)="filterLocations()">
-            </mat-form-field>
-          </div>
-          <div *ngFor="let location of filteredLocations">
-            <mat-option (click)="setLocationInput(location)">{{location.name}}</mat-option>
-          </div>
-          <hr>
-        </div>
-
-        <div *ngIf="showVehicles">
-          <div class="d-flex row">
-            <mat-form-field *ngIf="vehicles?.length! > 5" class="w-75 col-9">
-              <input
-                matInput
-                class="mb-2"
-                placeholder="Fahrzeug suchen"
-                formControlName="searchVehicle"
-                (input)="filterVehicles()">
-            </mat-form-field>
-          </div>
-          <div *ngFor="let vehicle of filteredVehicles">
-            <mat-option (click)="setVehicleInput(vehicle)">{{vehicle.name}}</mat-option>
-          </div>
-          <hr>
-        </div>
-
+        <app-vehicle-autocompletion *ngIf="showVehicles"
+                                    [showVehicleInput]="true"
+                                    [showLocationInput]="false"
+                                    [vehicles]="vehicles"
+                                    (setVehicleInput)="setVehicleInput($event)"></app-vehicle-autocompletion>
+        <app-vehicle-autocompletion *ngIf="showLocations"
+                                    [showVehicleInput]="false"
+                                    [showLocationInput]="true"
+                                    [locations]="locations"
+                                    (setLocationInput)="setLocationInput($event)"></app-vehicle-autocompletion>
 
         <mat-form-field>
           <mat-label>Status</mat-label>
@@ -139,7 +116,8 @@
       </div>
     </form>
 
-    <app-add-multiple-devices *ngIf="!addOneDevice" (devicesCreated)="checkIfMultipleDevicesCreated($event)"></app-add-multiple-devices>
+    <app-add-multiple-devices *ngIf="!addOneDevice"
+                              (devicesCreated)="checkIfMultipleDevicesCreated($event)"></app-add-multiple-devices>
 
   </div>
 </div>

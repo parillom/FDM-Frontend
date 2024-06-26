@@ -9,6 +9,7 @@ import {State} from '../../../models/State';
 import {DeviceService} from '../../../services/device.service';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {ToastrService} from 'ngx-toastr';
+import {MatTabChangeEvent} from '@angular/material/tabs';
 
 @Component({
   selector: 'app-edit-dialog',
@@ -28,6 +29,7 @@ export class EditDialogComponent implements OnInit {
   locationIsVehicle?: boolean;
   vehicleFormDirty?: boolean;
   locationFormDirty?: boolean;
+  selectedIndex?: number;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private matDialog: MatDialogRef<EditDialogComponent>,
@@ -50,6 +52,9 @@ export class EditDialogComponent implements OnInit {
   ngOnInit() {
     if (this.device?.vehicle) {
       this.locationIsVehicle = true;
+      this.selectedIndex = 0;
+    } else {
+      this.selectedIndex = 1
     }
     this.setStateInitValue();
   }
@@ -151,6 +156,13 @@ export class EditDialogComponent implements OnInit {
         );
       }
     }
+  }
 
+  changeUpdateFormat($event: MatTabChangeEvent) {
+    if ($event.index === 0) {
+      this.locationIsVehicle = true;
+    } else if ($event.index === 1) {
+      this.locationIsVehicle = false;
+    }
   }
 }

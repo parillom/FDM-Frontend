@@ -181,6 +181,7 @@ export class AddDeviceComponent implements OnInit {
 
   showVehiclesList() {
     this.showVehicles = !this.showVehicles;
+    console.log(this.showVehicles)
     this.filteredVehicles = this.vehicles?.slice(0, 5);
   }
 

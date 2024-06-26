@@ -118,11 +118,6 @@ export class AddMultipleDevicesComponent {
   resetFile() {
     this.fileInput.nativeElement.value = '';
     this.devices = [];
-    this.readExcel(this.fileInput);
-  }
-
-  refreshFile(fileInput: HTMLInputElement) {
-    this.readExcel(fileInput);
   }
 
   getVehicleText(device: Device): string {

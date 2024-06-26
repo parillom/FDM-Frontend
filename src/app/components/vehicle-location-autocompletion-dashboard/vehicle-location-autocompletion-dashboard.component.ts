@@ -6,10 +6,10 @@ import {DeviceSearch} from '../../models/DeviceSearch';
 
 @Component({
   selector: 'app-vehicle-location-autocompletion',
-  templateUrl: './vehicle-location-autocompletion.component.html',
-  styleUrl: './vehicle-location-autocompletion.component.scss'
+  templateUrl: './vehicle-location-autocompletion-dashboard.component.html',
+  styleUrl: './vehicle-location-autocompletion-dashboard.component.scss'
 })
-export class VehicleLocationAutocompletionComponent {
+export class VehicleLocationAutocompletionDashboardComponent {
   @ViewChild('vehicleSearch') vehicleSearch!: ElementRef<HTMLInputElement>;
   @ViewChild('locationSearch') locationSearch!: ElementRef<HTMLInputElement>;
 
@@ -62,11 +62,11 @@ export class VehicleLocationAutocompletionComponent {
     if (isVehicleSearch) {
       this.locationSearch.nativeElement.value = '';
       const filterValue = this.vehicleSearch.nativeElement.value.toLowerCase();
-      this.filteredVehicles = this.vehicles!.filter(o => o.name?.toLowerCase().includes(filterValue));
+      this.filteredVehicles = this.vehicles!.filter(v => v.name?.toLowerCase().includes(filterValue));
     } else {
       this.vehicleSearch.nativeElement.value = '';
       const filterValue = this.locationSearch.nativeElement.value.toLowerCase();
-      this.filteredLocations = this.locations!.filter(o => o.name?.toLowerCase().includes(filterValue));
+      this.filteredLocations = this.locations!.filter(l => l.name?.toLowerCase().includes(filterValue));
     }
   }
 

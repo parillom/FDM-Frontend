@@ -36,8 +36,8 @@ import {ConfirmDialogComponent} from './components/dialog/confirm-dialog/confirm
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {
-    VehicleLocationAutocompletionComponent
-} from './components/vehicle-location-autocompletion/vehicle-location-autocompletion.component';
+    VehicleLocationAutocompletionDashboardComponent
+} from './components/vehicle-location-autocompletion-dashboard/vehicle-location-autocompletion-dashboard.component';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {
     MatCell,
@@ -54,6 +54,7 @@ import {
 import {RouterModule} from '@angular/router';
 import {MatSort} from '@angular/material/sort';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import { VehicleLocationAutocompletionComponent } from './components/vehicle-autocompletion/vehicle-location-autocompletion.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import {MatTab, MatTabGroup} from '@angular/material/tabs';
     AddMultipleDevicesComponent,
     DeleteMultipleDevicesDialog,
     ConfirmDialogComponent,
+    VehicleLocationAutocompletionDashboardComponent,
     VehicleLocationAutocompletionComponent,
   ],
     imports: [

@@ -2,13 +2,6 @@
   <div class="d-flex align-items-center justify-content-between">
     <button type="button" mat-raised-button (click)="fileInput.click()">Datei Auswählen</button>
     <input hidden (change)="readExcel($event)" #fileInput type="file" id="file" accept=".xlsx, .xls">
-    <button class="btn" (click)="refreshFile(fileInput)"
-            mat-icon-button
-            matTooltip="Datei aktualisieren"
-            matTooltipPosition="above"
-            [disabled]="!fileInput.value">
-      <mat-icon>refresh</mat-icon>
-    </button>
     <button class="btn" (click)="resetFile()"
             mat-icon-button
             matTooltip="Datei zurücksetzen"
@@ -45,7 +38,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </div>
-<div matDialogActions class="d-flex justify-content-end align-items-center mt-3">
+<div matDialogActions class="d-flex justify-content-end align-items-center mt-2">
   <button type="button"
           class="btn text-white w-100"
           mat-raised-button
