@@ -1,10 +1,7 @@
-import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {Device} from '../../models/Device';
 import * as XLSX from 'xlsx';
-import {Vehicle} from '../../models/Vehicle';
-import {Location} from '../../models/Location';
-import {State} from '../../models/State';
 import {ToastrService} from 'ngx-toastr';
 import {DeviceService} from '../../services/device.service';
 import {ErrorHandlerService} from '../../services/error-handler.service';
@@ -20,7 +17,7 @@ export class AddMultipleDevicesComponent {
 
   extractedElements?: any[];
   devices?: Device[] = [];
-  displayedColumns: string[] = ['Name'];
+  displayedColumns: string[] = ['Name', 'Fahrzeug', 'Ort', 'Status'];
 
   @Output()
   devicesCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -28,7 +25,8 @@ export class AddMultipleDevicesComponent {
   constructor(public dialogRef: MatDialogRef<AddMultipleDevicesComponent>,
               private toastr: ToastrService,
               private deviceService: DeviceService,
-              private errorHandler: ErrorHandlerService) {
+              private errorHandler: ErrorHandlerService,
+              private cdr: ChangeDetectorRef) {
   }
 
   closeDialog(): void {
@@ -36,41 +34,36 @@ export class AddMultipleDevicesComponent {
   }
 
   readExcel(event: any) {
-    let file = event.target.files[0];
-    let fileReader = new FileReader();
+    const file = event.target.files[0];
+    const fileReader = new FileReader();
     fileReader.readAsBinaryString(file);
 
     fileReader.onload = (e) => {
-      let workBook = XLSX.read(fileReader.result, {type: 'binary'});
-      let sheetNames = workBook.SheetNames;
+      const workBook = XLSX.read(fileReader.result, {type: 'binary'});
+      const sheetNames = workBook.SheetNames;
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
 
       if (this.extractedElements && this.extractedElements.length > 0) {
-        for (let device of this.extractedElements) {
-          if (this.excelIsValid(device, this.extractedElements!)) {
-            const deviceToSave = {} as Device;
-            deviceToSave.location = {} as Location;
-            deviceToSave.vehicle = {} as Vehicle;
-            deviceToSave.state = {} as State;
+        const newDevices: Device[] = [];
 
-            deviceToSave.name = device.name;
-            deviceToSave.state.deviceState = device.state;
-
-            if (!(device.location)) {
-              deviceToSave.location = null;
-              deviceToSave.vehicle!.name = device.vehicle;
-            }
-            if (!(device.vehicle)) {
-              deviceToSave.vehicle = null;
-              deviceToSave.location!.name = device.location;
-            }
-            this.devices?.push(deviceToSave);
+        for (const device of this.extractedElements) {
+          if (this.excelIsValid(device, this.extractedElements)) {
+            const deviceToSave: Device = {
+              name: device.name,
+              location: device.location ? {name: device.location} : null,
+              vehicle: device.vehicle ? {name: device.vehicle} : null,
+              state: {deviceState: device.state}
+            };
+            newDevices.push(deviceToSave);
           } else {
             this.resetFile();
+            return;
           }
         }
+        this.devices = newDevices;
+        this.cdr.detectChanges();
       }
-    }
+    };
   }
 
   private excelIsValid(device: any, deviceList: string[]) {
