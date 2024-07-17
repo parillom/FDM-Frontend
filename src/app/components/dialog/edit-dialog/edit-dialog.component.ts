@@ -64,7 +64,7 @@ export class EditDialogComponent implements OnInit {
       if (this.device?.vehicle) {
         const stateControl = this.editDeviceFormVehicle.get('state');
         if (stateControl) {
-          stateControl.setValue(this.device.state?.deviceState || '');
+          stateControl.setValue(DeviceState.ACTIVE);
         }
       } else {
         const stateControl = this.editDeviceFormLocation.get('state');

@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Vehicle} from '../../models/Vehicle';
-import {Location} from '../../models/Location';
+import {Vehicle} from '../../../models/Vehicle';
+import {Location} from '../../../models/Location';
 
 @Component({
   selector: 'app-vehicle-autocompletion',

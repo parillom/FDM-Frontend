@@ -1,8 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {Vehicle} from '../../models/Vehicle';
-import {Location} from '../../models/Location';
-import {DeviceState} from '../../models/DeviceState';
-import {DeviceSearch} from '../../models/DeviceSearch';
+import {Vehicle} from '../../../models/Vehicle';
+import {Location} from '../../../models/Location';
+import {DeviceState} from '../../../models/DeviceState';
+import {DeviceSearch} from '../../../models/DeviceSearch';
 
 @Component({
   selector: 'app-vehicle-location-autocompletion',

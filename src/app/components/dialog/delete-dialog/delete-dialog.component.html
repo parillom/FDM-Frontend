@@ -21,7 +21,7 @@
       <p>Gerätename: <span style="color: lightslategrey">{{device?.name}}</span></p>
       <p>Aktuelles Fahrzeug: <span style="color: lightslategrey">{{getVehicleName()}}</span></p>
       <p>Aktueller Ort: <span style="color: lightslategrey">{{getLocationName()}}</span></p>
-      <p>Gerätestatus: <span style="color: lightslategrey">{{device?.state?.deviceState}}</span></p>
+      <p>Gerätestatus: <span style="color: lightslategrey">{{getDeviceState(device?.state?.deviceState)}}</span></p>
     </div>
   </div>
   <div matDialogActions class="d-flex justify-content-center justify-content-sm-end align-items-center">

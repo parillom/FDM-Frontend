@@ -1,21 +1,24 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {DeviceService} from '../../services/device.service';
-import {Device} from '../../models/Device';
+import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {DeviceService} from '../../../services/device.service';
+import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
-import {EditDialogComponent} from '../dialog/edit-dialog/edit-dialog.component';
-import {AddDeviceComponent} from '../dialog/add-device/add-device.component';
+import {EditDialogComponent} from '../../dialog/edit-dialog/edit-dialog.component';
+import {AddDeviceComponent} from '../../dialog/add-device/add-device.component';
 import {ToastrService} from 'ngx-toastr';
-import {DeleteDialogComponent} from '../dialog/delete-dialog/delete-dialog.component';
-import {DeviceState} from '../../models/DeviceState';
-import {DeleteMultipleDevicesDialog} from '../dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
-import {LocationService} from '../../services/location.service';
-import {Location} from '../../models/Location';
-import {VehicleService} from '../../services/vehicle.service';
-import {Vehicle} from '../../models/Vehicle';
-import {DeviceSearch} from '../../models/DeviceSearch';
+import {DeleteDialogComponent} from '../../dialog/delete-dialog/delete-dialog.component';
+import {DeviceState} from '../../../models/DeviceState';
+import {DeleteMultipleDevicesDialog} from '../../dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {LocationService} from '../../../services/location.service';
+import {Location} from '../../../models/Location';
+import {VehicleService} from '../../../services/vehicle.service';
+import {Vehicle} from '../../../models/Vehicle';
+import {DeviceSearch} from '../../../models/DeviceSearch';
 import {
   VehicleLocationAutocompletionDashboardComponent
 } from '../vehicle-location-autocompletion-dashboard/vehicle-location-autocompletion-dashboard.component';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,6 +28,7 @@ import {
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInputField!: ElementRef;
   @ViewChild(VehicleLocationAutocompletionDashboardComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionDashboardComponent;
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   devices?: Device[] = [];
   filteredDevices?: Device[] = [];
@@ -44,15 +48,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   currentState?: DeviceState;
   stateFilterEqualsActive: boolean = false;
   displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Verwalten'];
+  dataSource!: MatTableDataSource<Device>;
+  showSpinner: boolean = false;
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
               private toastr: ToastrService,
               private locationService: LocationService,
-              private vehicleService: VehicleService) {
+              private vehicleService: VehicleService,
+  ) {
+    this.dataSource = new MatTableDataSource<Device>();
   }
 
   ngOnInit() {
+    this.dataSource = new MatTableDataSource<Device>();
     this.getAllDevices();
     this.getAllLocations();
     this.getAllVehicles();
@@ -62,13 +71,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.searchInputField.nativeElement.click();
     });
+    this.dataSource!.paginator = this.paginator!;
   }
 
   getAllDevices() {
+    this.showSpinner = true;
     return this.deviceService.getAllDevices().subscribe(res => {
       if (res.object) {
+        this.dataSource = new MatTableDataSource<Device>();
         this.devices = res.object;
+        this.showSpinner = false;
         this.filteredDevices = res.object;
+        this.selectedDevices.splice(0)
+        this.dataSource.data = this.filteredDevices!;
       }
     });
   }
@@ -120,7 +135,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const deviceSearchId = this.deviceSearch ? this.deviceSearch : '';
     const searchLower = this.deviceSearch?.toLowerCase() || '';
 
-    this.filteredDevices = this.devices?.filter(device => {
+    this.dataSource.data! = this.devices!.filter(device => {
       const matchesId = device.id!.toString().includes(deviceSearchId);
       const matchesName = device.name?.toLowerCase().includes(searchLower);
       const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
@@ -131,18 +146,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   filterWithSpecifiedProperties(deviceCriteria: DeviceSearch | null) {
-    this.vehicleName = deviceCriteria?.vehicleName
-    this.locationName = deviceCriteria?.locationName
+    this.vehicleName = deviceCriteria?.vehicleName;
+    this.locationName = deviceCriteria?.locationName;
     if (deviceCriteria === null) {
-      this.filteredDevices = this.devices;
+      this.dataSource.data = this.devices!;
     } else {
       if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
-        this.filteredDevices = this.devices!.filter(device => {
+        this.dataSource.data = this.devices!.filter(device => {
           return device.state?.deviceState === deviceCriteria!.state;
         });
       }
       if (deviceCriteria!.state && deviceCriteria!.vehicleName) {
-        this.filteredDevices = this.devices!.filter(device => {
+        this.dataSource.data = this.devices!.filter(device => {
           const matchesState = device.state?.deviceState === deviceCriteria!.state;
           const matchesVehicleName = device.vehicle?.name === deviceCriteria!.vehicleName;
 
@@ -150,7 +165,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
       }
       if (deviceCriteria!.state && deviceCriteria!.locationName) {
-        this.filteredDevices = this.devices!.filter(device => {
+        this.dataSource.data = this.devices!.filter(device => {
           const matchesState = device.state?.deviceState === deviceCriteria!.state;
           const matchesLocationName = device.location?.name === deviceCriteria!.locationName;
 
@@ -158,12 +173,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
       }
       if (deviceCriteria!.vehicleName && !deviceCriteria?.state) {
-        this.filteredDevices = this.devices!.filter(device => {
+        this.dataSource.data = this.devices!.filter(device => {
           return device.vehicle?.name === deviceCriteria?.vehicleName;
         });
       }
       if (deviceCriteria!.locationName && !deviceCriteria!.state) {
-        this.filteredDevices = this.devices!.filter(device => {
+        this.dataSource.data = this.devices!.filter(device => {
           return device.location?.name === deviceCriteria?.locationName;
         });
       }
@@ -207,7 +222,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       if (res) {
         this.getAllDevices();
       }
-    })
+    });
   }
 
   openDeleteModal(device: Device) {
@@ -284,7 +299,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     return vehicleText;
   }
 
-  handleCheckboxClick(device: Device) {
+  handleCheckboxClick(device: Device, event: MouseEvent) {
+    event.stopPropagation();
+    const index = this.selectedDevices.indexOf(device);
+    if (index !== -1) {
+      this.selectedDevices.splice(index, 1);
+    } else {
+      this.selectedDevices.push(device);
+    }
+    this.updateIsCheckedState();
+  }
+
+  handleRowClick(device: Device) {
     const index = this.selectedDevices.indexOf(device);
     if (index !== -1) {
       this.selectedDevices.splice(index, 1);

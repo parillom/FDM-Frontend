@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Inject, Output} from '@angular/core';
 import {Device} from '../../../models/Device';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {DeviceState} from '../../../models/DeviceState';
 
 @Component({
   selector: 'app-delete-dialog',
@@ -52,5 +53,25 @@ export class DeleteDialogComponent {
     } else {
       return this.device.location.name!;
     }
+  }
+
+  getDeviceState(deviceState: DeviceState | undefined): string | undefined {
+    let state: string | undefined;
+
+    switch (deviceState) {
+      case DeviceState.ACTIVE:
+        state = 'AKTIV';
+        break;
+      case DeviceState.STORAGE:
+        state = 'LAGER';
+        break;
+      case DeviceState.REESTABLISH:
+        state = 'RETABLIEREN';
+        break;
+      default:
+        state = undefined;
+    }
+
+    return state;
   }
 }

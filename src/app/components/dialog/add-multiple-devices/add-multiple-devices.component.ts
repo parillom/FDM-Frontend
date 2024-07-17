@@ -1,11 +1,11 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {Device} from '../../models/Device';
+import {Device} from '../../../models/Device';
 import * as XLSX from 'xlsx';
 import {ToastrService} from 'ngx-toastr';
-import {DeviceService} from '../../services/device.service';
-import {ErrorHandlerService} from '../../services/error-handler.service';
-import {DeviceState} from '../../models/DeviceState';
+import {DeviceService} from '../../../services/device.service';
+import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {DeviceState} from '../../../models/DeviceState';
 
 @Component({
   selector: 'app-add-multiple-devices',

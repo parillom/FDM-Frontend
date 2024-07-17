@@ -1,6 +1,6 @@
-<mat-form-field class="w-100 mb-1" style="margin-top: 5vh">
+<mat-form-field class="w-100 mb-1" style="margin-top: 7vh">
   <mat-label>Gerät suchen</mat-label>
-  <input #searchInput matInput placeholder="ID, Name, Ort, Fahrzeug, Status" [(ngModel)]="deviceSearch"
+  <input #searchInput matInput placeholder="ID, Name" [(ngModel)]="deviceSearch"
          (ngModelChange)="filterWithAllProperties()" (focus)="handleFocusOrReset()">
 </mat-form-field>
 
@@ -42,7 +42,6 @@
       <button mat-raised-button
               (click)="openDeleteMultipleDialog()"
               class="btn cursor-pointer"
-              style="background-color: #D8DCE4"
               [disabled]="selectedDevices.length < 1">
         Gerät/e verwalten ({{selectedDevices.length}})
       </button>
@@ -95,9 +94,12 @@
     </div>
   </div>
 
-  <table mat-table [dataSource]="filteredDevices!" class="mat-elevation-z8">
+  <mat-progress-spinner *ngIf="showSpinner" style="margin:0 auto;"
+                        mode="indeterminate"></mat-progress-spinner>
+
+  <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
     <ng-container matColumnDef="Geräte-ID">
-      <th mat-header-cell *matHeaderCellDef> Geräte-ID</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Geräte-ID</th>
       <td mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
 
@@ -145,13 +147,17 @@
           <mat-checkbox color="primary"
                         *ngIf="devices?.length! > 1"
                         [checked]="isDeviceSelected(element)"
-                        (click)="handleCheckboxClick(element)">
+                        (click)="handleCheckboxClick(element, $event)">
           </mat-checkbox>
         </div>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr (click)="handleRowClick(row)" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                 [showFirstLastButtons]="true">
+  </mat-paginator>
 </div>
+<router-outlet></router-outlet>
