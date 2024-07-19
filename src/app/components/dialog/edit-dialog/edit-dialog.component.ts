@@ -29,7 +29,11 @@ export class EditDialogComponent implements OnInit {
   locationIsVehicle?: boolean;
   vehicleFormDirty?: boolean;
   locationFormDirty?: boolean;
+  showVehicleSearch: boolean = false;
+  showLocationSearch: boolean = false;
   selectedIndex?: number;
+  locations?: Location[];
+  vehicles?: Vehicle[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private matDialog: MatDialogRef<EditDialogComponent>,
@@ -37,6 +41,8 @@ export class EditDialogComponent implements OnInit {
               private errorHandler: ErrorHandlerService,
               private toastr: ToastrService) {
     this.device = this.data.device;
+    this.vehicles = this.data.vehicles;
+    this.locations = this.data.locations;
     this.editDeviceFormVehicle = new FormGroup({
       name: new FormControl(data.device.name, Validators.required),
       vehicle: new FormControl(this.device?.vehicle?.name, Validators.required),
@@ -61,16 +67,13 @@ export class EditDialogComponent implements OnInit {
 
   private setStateInitValue() {
     if (this.device) {
-      if (this.device?.vehicle) {
-        const stateControl = this.editDeviceFormVehicle.get('state');
-        if (stateControl) {
-          stateControl.setValue(DeviceState.ACTIVE);
-        }
-      } else {
-        const stateControl = this.editDeviceFormLocation.get('state');
-        if (stateControl) {
-          stateControl.setValue(this.device!.state?.deviceState || '');
-        }
+      const stateControl = this.editDeviceFormLocation.get('state');
+      if (stateControl) {
+        stateControl.setValue(this.device!.state?.deviceState || '');
+      }
+      const stateControlVehicle = this.editDeviceFormVehicle.get('state');
+      if (stateControlVehicle) {
+        stateControlVehicle.setValue(DeviceState.ACTIVE);
       }
     }
   }
@@ -164,5 +167,31 @@ export class EditDialogComponent implements OnInit {
     } else if ($event.index === 1) {
       this.locationIsVehicle = false;
     }
+  }
+
+  setVehicleInput(vehicle: Vehicle) {
+    this.editDeviceFormVehicle.patchValue({
+      vehicle: vehicle.name
+    });
+    this.showVehicleSearch = false;
+    this.checkDeviceVehicleChanged();
+  }
+
+  setLocationInput(location: Location) {
+    this.editDeviceFormLocation.patchValue({
+      location: location.name
+    });
+    this.showLocationSearch = false;
+    this.checkDeviceLocationChanged();
+  }
+
+  showVehiclesList() {
+    this.showVehicleSearch = !this.showVehicleSearch;
+    this.showLocationSearch = false;
+  }
+
+  showLocationsList() {
+    this.showLocationSearch = !this.showLocationSearch;
+    this.showVehicleSearch = false;
   }
 }

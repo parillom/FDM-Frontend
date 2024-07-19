@@ -1,6 +1,6 @@
 <div class="me-2" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <div class="d-flex justify-content-between align-items-center">
-    <p class="fs-5" mat-dialog-title>Geräte Löschen ({{devicesToDelete.length}})</p>
+    <p class="fs-5" mat-dialog-title>Objekte löschen ({{objectsToDelete.length}})</p>
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>
@@ -10,28 +10,63 @@
     </div>
   </div>
   <div mat-dialog-content>
-    <p>Möchten sie die folgenden Geräte wirklich löschen?</p>
+    <p>Möchten sie die folgenden {{getUsecase()}} wirklich löschen?</p>
     <div>
       <hr>
     </div>
 
-    <div *ngFor="let device of devicesToDelete">
-      <div class="d-flex">
-        <p class="me-4">Geräte-ID: {{device.id}}</p>
-        <p>Gerätename: {{device.name}}</p>
+    <div *ngIf="useCase === Usecase.DEVICE">
+      <div *ngFor="let device of objectsToDelete">
+        <div class="d-flex">
+          <p class="me-4">Geräte-ID: {{device.id}}</p>
+          <p>Gerätename: {{device.name}}</p>
+        </div>
+        <mat-icon (click)="removeObjectFromList(device)"
+                  matTooltip="Gerät aus Liste entfernen"
+                  matTooltipPosition="above"
+                  class="text-danger cursor-pointer">remove
+        </mat-icon>
+        <hr>
       </div>
-      <mat-icon (click)="removeDevice(device)"
-                matTooltip="Gerät aus Liste entfernen"
-                matTooltipPosition="above"
-                class="text-danger cursor-pointer">remove</mat-icon>
-      <hr>
+    </div>
+
+    <div *ngIf="useCase === Usecase.VEHICLE">
+      <div *ngFor="let vehicle of objectsToDelete">
+        <div class="d-flex">
+          <p class="me-4">Geräte-ID: {{vehicle.id}}</p>
+          <p>Gerätename: {{vehicle.name}}</p>
+        </div>
+        <mat-icon (click)="removeObjectFromList(vehicle)"
+                  matTooltip="Gerät aus Liste entfernen"
+                  matTooltipPosition="above"
+                  class="text-danger cursor-pointer">remove
+        </mat-icon>
+        <hr>
+      </div>
+    </div>
+
+    <div *ngIf="useCase === Usecase.LOCATION">
+      <div *ngFor="let location of objectsToDelete">
+        <div class="d-flex">
+          <p class="me-4">Ort-ID: {{location.id}}</p>
+          <p>Ortsname: {{location.name}}</p>
+        </div>
+        <mat-icon (click)="removeObjectFromList(location)"
+                  matTooltip="Gerät aus Liste entfernen"
+                  matTooltipPosition="above"
+                  class="text-danger cursor-pointer">remove
+        </mat-icon>
+        <hr>
+      </div>
     </div>
   </div>
+
   <div matDialogActions class="d-flex justify-content-between align-items-center mb-2">
-    <button [disabled]="devicesToDelete.length < 1"
+    <button [disabled]="objectsToDelete.length < 1"
             class="btn text-white w-100"
             color="warn"
             mat-raised-button
-            (click)="openConfirmDialog()">Löschen</button>
+            (click)="openConfirmDialog()">Löschen
+    </button>
   </div>
 </div>

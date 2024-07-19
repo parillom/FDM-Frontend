@@ -1,16 +1,16 @@
 <mat-form-field class="w-100 mb-1" style="margin-top: 7vh">
   <mat-label>Gerät suchen</mat-label>
   <input #searchInput matInput placeholder="ID, Name" [(ngModel)]="deviceSearch"
-         (ngModelChange)="filterWithAllProperties()" (focus)="handleFocusOrReset()">
+         (ngModelChange)="filterWithAllProperties()" (focus)="handleFocusAndResetState()">
 </mat-form-field>
 
-<div class="mt-3 ms-5 me-5">
+<div class="mt-3 ms-5 me-5 mb-5">
   <div class="row d-flex align-items-center mb-4">
     <div class="col-3 d-flex align-items-center col-lg-10 col-sm-9">
       <h1 class="text-nowrap m-0">Aktuelle Geräte ({{devices?.length}})</h1>
-      <button matTooltip="Geräteliste aktualisieren"
+      <button matTooltip="Geräteliste aktualisieren" class="ms-1"
               matTooltipPosition="above" (click)="refreshDevices()" mat-icon-button>
-        <mat-icon>refresh</mat-icon>
+        <mat-icon>autorenew</mat-icon>
       </button>
     </div>
     <div class="d-none d-sm-block col-lg-2 col-sm-3">
@@ -57,18 +57,22 @@
     </div>
   </div>
 
-  <div class="d-flex flex-column mb-2">
+  <div class="d-flex align-items-center mb-3">
     <mat-radio-group color="primary" (change)="stateFilterChanged($event.value)" [(ngModel)]="selectedState">
-      <mat-radio-button [value]="DeviceState.ACTIVE" [checked]="stateFilterEqualsActive">AKTIV</mat-radio-button>
+      <mat-radio-button [value]="DeviceState.ACTIVE">AKTIV</mat-radio-button>
       <mat-radio-button [value]="DeviceState.STORAGE">LAGER</mat-radio-button>
       <mat-radio-button [value]="DeviceState.REESTABLISH">RETABLIEREN</mat-radio-button>
     </mat-radio-group>
+    <button matTooltip="Filter zurücksetzen" class="ms-1"
+            matTooltipPosition="above" (click)="resetStatus()" mat-icon-button>
+      <mat-icon>history</mat-icon>
+    </button>
   </div>
 
-  <app-vehicle-location-autocompletion [vehicles]="vehicles" [locations]="locations"
+  <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
                                        [currentStateValue]="currentState"
                                        (doFilter)="filterWithSpecifiedProperties($event)">
-  </app-vehicle-location-autocompletion>
+  </app-vehicle-location-autocompletion-dashboard>
 
   <div>
     <hr>
@@ -97,38 +101,38 @@
   <mat-progress-spinner *ngIf="showSpinner" style="margin:0 auto;"
                         mode="indeterminate"></mat-progress-spinner>
 
-  <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+  <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="Geräte-ID">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Geräte-ID</th>
+      <th mat-header-cell *matHeaderCellDef>Geräte-ID</th>
       <td mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
 
     <ng-container matColumnDef="Name">
-      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <th mat-header-cell *matHeaderCellDef>Name</th>
       <td mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
 
     <ng-container matColumnDef="Fahrzeug">
-      <th mat-header-cell *matHeaderCellDef> Fahrzeug</th>
+      <th mat-header-cell *matHeaderCellDef>Fahrzeug</th>
       <td mat-cell *matCellDef="let element" [class.not-defined]="!element.vehicle">
         {{getVehicleText(element)}}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="Ort">
-      <th mat-header-cell *matHeaderCellDef> Ort</th>
+      <th mat-header-cell *matHeaderCellDef>Ort</th>
       <td mat-cell *matCellDef="let element" [class.not-defined]="!element.location">
         {{getLocationText(element)}}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="Status">
-      <th mat-header-cell *matHeaderCellDef> Status</th>
+      <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let element"> {{getDeviceState(element)}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="Verwalten">
-      <th mat-header-cell *matHeaderCellDef> Verwalten</th>
+    <ng-container matColumnDef="Aktionen">
+      <th mat-header-cell *matHeaderCellDef>Aktionen</th>
       <td mat-cell *matCellDef="let element">
         <div class="d-flex align-items-center">
           <mat-icon (click)="openEditModal(element)"
@@ -156,8 +160,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr (click)="handleRowClick(row)" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-  <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+  <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
                  [showFirstLastButtons]="true">
   </mat-paginator>
 </div>
-<router-outlet></router-outlet>

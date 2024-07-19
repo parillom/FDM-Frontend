@@ -15,4 +15,8 @@ export class LocationService {
   getAllLocations(): Observable<Device[]> {
     return this.http.get<Device[]>(`${COMMON_LOCATION_URL}/get-all`);
   }
+
+  deleteLocations(devicesToDelete: (number | undefined)[]): Observable<string> {
+    return this.http.post<string>(`${COMMON_LOCATION_URL}/delete-many`, devicesToDelete);
+  }
 }

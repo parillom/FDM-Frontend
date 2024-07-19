@@ -5,7 +5,7 @@ import {DeviceState} from '../../../models/DeviceState';
 import {DeviceSearch} from '../../../models/DeviceSearch';
 
 @Component({
-  selector: 'app-vehicle-location-autocompletion',
+  selector: 'app-vehicle-location-autocompletion-dashboard',
   templateUrl: './vehicle-location-autocompletion-dashboard.component.html',
   styleUrl: './vehicle-location-autocompletion-dashboard.component.scss'
 })
@@ -43,6 +43,7 @@ export class VehicleLocationAutocompletionDashboardComponent {
     }
     this.stateIsActive = this.currentState === DeviceState.ACTIVE;
   }
+
 
   resetFields() {
     this.vehicleSearch.nativeElement.value = '';

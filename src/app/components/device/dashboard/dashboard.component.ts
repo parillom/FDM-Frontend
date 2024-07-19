@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DeviceService} from '../../../services/device.service';
 import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
@@ -18,7 +18,9 @@ import {
 } from '../vehicle-location-autocompletion-dashboard/vehicle-location-autocompletion-dashboard.component';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
+import {Usecase} from '../../../models/Usecase';
+import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {MatSort, Sort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,8 +48,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   selectedState?: string;
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
-  stateFilterEqualsActive: boolean = false;
-  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Verwalten'];
+  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Aktionen'];
   dataSource!: MatTableDataSource<Device>;
   showSpinner: boolean = false;
 
@@ -56,6 +57,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               private toastr: ToastrService,
               private locationService: LocationService,
               private vehicleService: VehicleService,
+              private errorHandler: ErrorHandlerService
   ) {
     this.dataSource = new MatTableDataSource<Device>();
   }
@@ -78,12 +80,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.showSpinner = true;
     return this.deviceService.getAllDevices().subscribe(res => {
       if (res.object) {
-        this.dataSource = new MatTableDataSource<Device>();
         this.devices = res.object;
-        this.showSpinner = false;
         this.filteredDevices = res.object;
-        this.selectedDevices.splice(0)
-        this.dataSource.data = this.filteredDevices!;
+        this.selectedDevices.splice(0);
+        this.dataSource.data! = this.filteredDevices!;
+        this.showSpinner = false;
       }
     });
   }
@@ -146,12 +147,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   filterWithSpecifiedProperties(deviceCriteria: DeviceSearch | null) {
+    this.isChecked = false;
     this.vehicleName = deviceCriteria?.vehicleName;
     this.locationName = deviceCriteria?.locationName;
     if (deviceCriteria === null) {
       this.dataSource.data = this.devices!;
     } else {
       if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
+        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.state?.deviceState === deviceCriteria!.state;
         });
@@ -173,11 +176,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
       }
       if (deviceCriteria!.vehicleName && !deviceCriteria?.state) {
+        this.isChecked = false;
+        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.vehicle?.name === deviceCriteria?.vehicleName;
         });
       }
       if (deviceCriteria!.locationName && !deviceCriteria!.state) {
+        this.isChecked = false;
+        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.location?.name === deviceCriteria?.locationName;
         });
@@ -202,6 +209,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.getAllDevices();
       }
     });
+    addDeviceDialog.componentInstance.manyCreatedSuccessful.subscribe(value => {
+      if (value) {
+        this.getAllDevices();
+        addDeviceDialog.close();
+      }
+    });
   }
 
   openEditModal(device: Device) {
@@ -212,7 +225,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       autoFocus: false,
       hasBackdrop: false,
       data: {
-        device: device
+        device: device,
+        vehicles: this.vehicles,
+        locations: this.locations
       }
     });
     dialogRef.afterClosed().subscribe(() => {
@@ -275,8 +290,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   refreshDevices() {
     this.getAllDevices();
-    this.stateFilterEqualsActive = false;
-    this.handleFocusOrReset();
+    this.handleFocusAndResetState();
+    this.isChecked = false;
   }
 
   getLocationText(device: Device) {
@@ -311,13 +326,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleRowClick(device: Device) {
-    const index = this.selectedDevices.indexOf(device);
-    if (index !== -1) {
-      this.selectedDevices.splice(index, 1);
-    } else {
-      this.selectedDevices.push(device);
+    if (this.devices!.length > 1) {
+      const index = this.selectedDevices.indexOf(device);
+      if (index !== -1) {
+        this.selectedDevices.splice(index, 1);
+      } else {
+        this.selectedDevices.push(device);
+      }
+      this.updateIsCheckedState();
     }
-    this.updateIsCheckedState();
   }
 
   updateIsCheckedState() {
@@ -327,10 +344,62 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   addAllDevices() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
-      const newDevices = this.filteredDevices!.filter(device =>
-        !this.selectedDevices.some(selectedDevice => selectedDevice.id === device.id)
-      );
-      this.selectedDevices.push(...newDevices);
+      //Nach allem filtern
+      if (!this.currentState && !this.vehicleName && !this.locationName) {
+        this.devices!.forEach(device => {
+          if (!this.selectedDevices.includes(device)) {
+            this.selectedDevices.push(device);
+          }
+        });
+      } else if (this.currentState !== null && this.currentState !== undefined) {
+        //nur nach Status filtern
+        if (!this.vehicleName && !this.locationName) {
+          const filteredDevices = this.filteredDevices!.filter(device =>
+            device.state?.deviceState === this.currentState
+          );
+          this.selectedDevices.push(...filteredDevices);
+        } else {
+          //nach Status und Fahrzeug filtern
+          if (this.vehicleName) {
+            const filteredDevices = this.filteredDevices!.filter(device => device.vehicle?.name === this.vehicleName
+              && device.state?.deviceState === this.currentState);
+            filteredDevices.forEach(device => {
+              if (!this.selectedDevices.includes(device)) {
+                this.selectedDevices.push(device);
+              }
+            });
+          } else {
+            //nach Status und Ort filtern
+            const filteredDevices = this.filteredDevices!.filter(device => device.location?.name === this.locationName
+              && device.state?.deviceState === this.currentState);
+            filteredDevices.forEach(device => {
+              if (!this.selectedDevices.includes(device)) {
+                this.selectedDevices.push(device);
+              }
+            });
+          }
+        }
+      } else {
+        if (this.vehicleName || this.locationName) {
+          //Nur nach Fahrzeug filtern
+          if (this.vehicleName) {
+            const filteredDevices = this.filteredDevices!.filter(device => device.vehicle?.name === this.vehicleName);
+            filteredDevices.forEach(device => {
+              if (!this.selectedDevices.includes(device)) {
+                this.selectedDevices.push(device);
+              }
+            });
+          } else {
+            //Nur nach Ort filtern
+            const filteredDevices = this.filteredDevices!.filter(device => device.location?.name === this.locationName);
+            filteredDevices.forEach(device => {
+              if (!this.selectedDevices.includes(device)) {
+                this.selectedDevices.push(device);
+              }
+            });
+          }
+        }
+      }
     } else {
       const filteredDeviceIds = this.filteredDevices!.map(device => device.id);
       this.selectedDevices = this.selectedDevices.filter(device => !filteredDeviceIds.includes(device.id));
@@ -349,7 +418,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       hasBackdrop: false,
       autoFocus: false,
       data: {
-        devicesToDelete: this.selectedDevices
+        objectsToDelete: this.selectedDevices,
+        useCase: Usecase.DEVICE
       }
     });
     dialogRef.componentInstance.change!.subscribe((updatedDeviceList) => {
@@ -361,7 +431,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       if (deleted) {
         this.getAllDevices();
         this.selectedDevices = [];
-        this.toastr.success('Geräte wurden erfolgreich gelöscht');
+        this.errorHandler.setSuccessMessage('Geräte konnten erfolgreich gelöscht werden');
         dialogRef.close();
         if (this.isChecked) {
           this.isChecked = false;
@@ -374,9 +444,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  handleFocusOrReset() {
+  handleFocusAndResetState() {
     this.selectedState = '';
     this.vehicleLocationAutoCompletion.resetFields();
   }
 
+  resetStatus() {
+    this.selectedState = '';
+    this.isChecked = false;
+    this.currentState = undefined;
+    if (!this.vehicleName && !this.locationName) {
+      this.getAllDevices();
+    } else if (this.vehicleName) {
+      this.deviceCriteria = {
+        vehicleName: this.vehicleName
+      }
+      this.filterWithSpecifiedProperties(this.deviceCriteria);
+    } else if (this.locationName) {
+      this.deviceCriteria = {
+        locationName: this.locationName
+      }
+      this.filterWithSpecifiedProperties(this.deviceCriteria);
+    }
+  }
 }

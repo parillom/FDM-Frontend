@@ -1,1 +1,112 @@
-<p>vehicle-dashboard works!</p>
+<mat-form-field class="w-100 mb-1" style="margin-top: 7vh">
+  <mat-label>Fahrzeug suchen</mat-label>
+  <input #searchInput matInput placeholder="ID, Name" [(ngModel)]="vehicleSearch"
+         (ngModelChange)="filterWithAllProperties()">
+</mat-form-field>
+
+<div class="mt-3 ms-5 me-5 mb-5">
+  <div class="row d-flex align-items-center mb-4">
+    <div class="col-3 d-flex align-items-center col-lg-10 col-sm-9">
+      <h1 class="text-nowrap m-0">Aktuelle Fahrzeuge ({{dataSource.data.length}})</h1>
+      <button class="ms-1" (click)="refreshVehicles()" matTooltip="Fahrzeugliste aktualisieren"
+              matTooltipPosition="above" mat-icon-button>
+        <mat-icon>autorenew</mat-icon>
+      </button>
+    </div>
+    <div class="d-none d-sm-block col-lg-2 col-sm-3">
+      <button color="primary"
+              class="btn text-nowrap text-white"
+              mat-raised-button>
+        Fahrzeug hinzufügen
+      </button>
+    </div>
+  </div>
+  <div class="d-none d-sm-flex row align-items-center mb-4 text-nowrap">
+    <div class="col-9">
+      <button mat-raised-button
+              (click)="openDeleteMultipleDialog()"
+              class="btn cursor-pointer"
+              [disabled]="selectedVehicles.length < 1">
+        Gerät/e verwalten ({{selectedVehicles.length}})
+      </button>
+    </div>
+    <div class="col-3">
+      <mat-checkbox (click)="addAllDevices()"
+                    labelPosition="before"
+                    color="primary"
+                    *ngIf="vehicles?.length! > 1"
+                    [checked]="isChecked">
+        Alle auswählen
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <mat-progress-spinner *ngIf="showSpinner" style="margin:0 auto;"
+                        mode="indeterminate"></mat-progress-spinner>
+
+  <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="Fahrzeug-ID">
+      <th mat-header-cell *matHeaderCellDef>Fahrzeug-ID</th>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Name">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Geräte">
+      <th mat-header-cell *matHeaderCellDef>Geräte</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="d-flex align-items-center" *ngIf="devicesMap.has(element.id)">
+          <span>{{ getLimitedDevices(element.id) }}</span>
+          <mat-icon matTooltip="Weniger anzeigen" matTooltipPosition="above" class="ms-3"
+                    *ngIf="expandedMap.get(element.id)" (click)="toggleExpand(element.id)">visibility
+          </mat-icon>
+          <mat-icon class="ms-3" matTooltip="Alle anzeigen" matTooltipPosition="above"
+                    *ngIf="devicesMap.get(element.id)?.length! > limit && !expandedMap.get(element.id)"
+                    (click)="toggleExpand(element.id)">visibility_off
+          </mat-icon>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Aktionen">
+      <th mat-header-cell *matHeaderCellDef >
+        <div class="d-flex align-items-center">
+          Aktionen <mat-icon class="material-icons-outlined ms-2" matTooltip="{{getTooltipActionsTest()}}" matTooltipPosition="above">info</mat-icon>
+        </div>
+        </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="d-flex align-items-center">
+          <mat-icon (click)="openEditModal(element)"
+                    class="material-icons-outlined cursor-pointer"
+                    matTooltip="Gerät bearbeiten"
+                    matTooltipPosition="above">edit
+          </mat-icon>
+          <span class="ms-3"></span>
+          <mat-icon matButtonIcon (click)="openDeleteModal(element)"
+                    class="material-icons-outlined cursor-pointer"
+                    matTooltip="Gerät löschen"
+                    color="warn"
+                    *ngIf="devicesMap.get(element.id)?.length === 0"
+                    matTooltipPosition="above">delete
+          </mat-icon>
+          <span class="ms-3"></span>
+          <mat-checkbox color="primary"
+                        *ngIf="vehicles?.length! > 1 && devicesMap.get(element.id)?.length === 0"
+                        [checked]="isVehicleSelected(element)"
+                        (click)="handleCheckboxClick(element, $event)">
+          </mat-checkbox>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
+                 [showFirstLastButtons]="true">
+  </mat-paginator>
+
+</div>

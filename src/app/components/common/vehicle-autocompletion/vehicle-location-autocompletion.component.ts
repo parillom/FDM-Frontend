@@ -3,7 +3,7 @@ import {Vehicle} from '../../../models/Vehicle';
 import {Location} from '../../../models/Location';
 
 @Component({
-  selector: 'app-vehicle-autocompletion',
+  selector: 'app-vehicle-location-autocompletion',
   templateUrl: './vehicle-location-autocompletion.component.html',
   styleUrl: './vehicle-location-autocompletion.component.scss'
 })
@@ -21,8 +21,8 @@ export class VehicleLocationAutocompletionComponent implements OnInit{
 
   @Input() showLocationInput?: boolean;
 
-  filteredVehicles?: Vehicle[];
-  filteredLocations?: Location[];
+  filteredVehicles?: Vehicle[] = [];
+  filteredLocations?: Location[] = [];
 
   ngOnInit() {
     if (this.vehicles) {

@@ -35,6 +35,7 @@ export class AddDeviceComponent implements OnInit {
 
   @Output() closeModalEvent = new EventEmitter<void>();
   @Output() createdSuccessful = new EventEmitter<boolean>();
+  @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
 
   deviceForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -181,7 +182,6 @@ export class AddDeviceComponent implements OnInit {
 
   showVehiclesList() {
     this.showVehicles = !this.showVehicles;
-    console.log(this.showVehicles)
     this.filteredVehicles = this.vehicles?.slice(0, 5);
   }
 
@@ -233,7 +233,7 @@ export class AddDeviceComponent implements OnInit {
   }
 
   checkIfMultipleDevicesCreated(value: boolean) {
-    this.createdSuccessful.emit(value);
+    this.manyCreatedSuccessful.emit(value);
   }
 
 

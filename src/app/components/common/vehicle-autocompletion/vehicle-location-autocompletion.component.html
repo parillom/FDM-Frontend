@@ -1,5 +1,5 @@
 <mat-form-field *ngIf="showVehicleInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
-  <mat-label>Fahrzeug</mat-label>
+  <mat-label>Fahrzeug suchen</mat-label>
   <input #vehicleSearch
          type="text"
          placeholder="Wählen"
@@ -17,13 +17,13 @@
 </mat-form-field>
 
 <mat-form-field *ngIf="showLocationInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
-  <mat-label>Ort</mat-label>
+  <mat-label>Ort suchen</mat-label>
   <input #locationSearch
          type="text"
          placeholder="Wählen"
          matInput
          [matAutocomplete]="loc"
-         (input)="filter($event, true)"
+         (input)="filter($event, false)"
          (focus)="filter($event, false)">
   <mat-autocomplete #loc="matAutocomplete">
     <mat-option *ngFor="let location of filteredLocations"

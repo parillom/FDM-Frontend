@@ -6,11 +6,18 @@
     <h1>FDM</h1>
     <mat-icon class="fire-icon">local_fire_department</mat-icon>
   </div>
+  <div>
+    <span *ngIf="pageName === 'Dashboard'" class="m-0 me-3">{{pageName}}</span>
+    <div *ngIf="!(pageName === 'Dashboard')" class="m-0 me-3 d-flex align-items-center">
+      <span class="cursor-pointer"
+            style="font-size: 15px"
+            [routerLink]="'/fdm/dashboard'">Dashboard</span> <mat-icon>arrow_right</mat-icon> {{pageName}}</div>
+  </div>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
     <mat-list>
-      <mat-list-item class="bg-transparent ">
+      <mat-list-item class="bg-transparent">
         <a mat-list-item href="/fdm/dashboard">
           <span class="entry cursor-pointer">
             <mat-icon>home</mat-icon>

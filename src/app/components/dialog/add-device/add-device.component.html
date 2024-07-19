@@ -79,16 +79,16 @@
           </button>
         </div>
 
-        <app-vehicle-autocompletion *ngIf="showVehicles"
+        <app-vehicle-location-autocompletion *ngIf="showVehicles"
                                     [showVehicleInput]="true"
                                     [showLocationInput]="false"
                                     [vehicles]="vehicles"
-                                    (setVehicleInput)="setVehicleInput($event)"></app-vehicle-autocompletion>
-        <app-vehicle-autocompletion *ngIf="showLocations"
+                                    (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
+        <app-vehicle-location-autocompletion *ngIf="showLocations"
                                     [showVehicleInput]="false"
                                     [showLocationInput]="true"
                                     [locations]="locations"
-                                    (setLocationInput)="setLocationInput($event)"></app-vehicle-autocompletion>
+                                    (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
 
         <mat-form-field>
           <mat-label>Status</mat-label>

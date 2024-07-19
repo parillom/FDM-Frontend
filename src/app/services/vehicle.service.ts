@@ -3,6 +3,7 @@ import {Device} from '../models/Device';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Vehicle} from '../models/Vehicle';
+import {ModelAndError} from '../models/ModelAndError';
 
 const COMMON_VEHICLE_URL = 'fdm/api/vehicle';
 
@@ -17,4 +18,11 @@ export class VehicleService {
     return this.http.get<Vehicle[]>(`${COMMON_VEHICLE_URL}/get-all`);
   }
 
+  getDevicesFromVehicle(vehicle: Vehicle): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/get-devices-from-vehicle`, vehicle);
+  }
+
+  deleteVehicles(vehiclesToDelete: (number | undefined)[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/delete-many`, vehiclesToDelete);
+  }
 }

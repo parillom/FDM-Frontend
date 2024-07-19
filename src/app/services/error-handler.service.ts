@@ -15,6 +15,10 @@ export class ErrorHandlerService {
     this.toastr.error(errorMessage);
   }
 
+  setSuccessMessage(successMessage: string) {
+    this.toastr.success(successMessage);
+  }
+
   noServerConnection() {
     this.setErrorMessage(SERVER_CONNECTION_FAILED);
   }

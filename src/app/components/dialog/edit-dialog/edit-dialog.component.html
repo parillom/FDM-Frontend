@@ -38,6 +38,22 @@
         </mat-error>
       </mat-form-field>
 
+      <div class="mb-4">
+        <button *ngIf="locationIsVehicle"
+                mat-raised-button
+                (click)="showVehiclesList()"
+                [disabled]="vehicles?.length === 0">
+          Fahrzeug suchen
+        </button>
+      </div>
+
+      <app-vehicle-location-autocompletion *ngIf="locationIsVehicle && showVehicleSearch"
+                                           [showVehicleInput]="true"
+                                           [showLocationInput]="false"
+                                           [vehicles]="vehicles"
+                                           (setVehicleInput)="setVehicleInput($event)">
+      </app-vehicle-location-autocompletion>
+
       <mat-form-field>
         <mat-label>Geräte-Status</mat-label>
         <mat-select formControlName="state">
@@ -67,6 +83,21 @@
           Ort ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
+
+      <div class="mb-4">
+        <button *ngIf="!locationIsVehicle"
+                mat-raised-button
+                (click)="showLocationsList()"
+                [disabled]="locations?.length === 0">
+          Ort suchen
+        </button>
+      </div>
+
+      <app-vehicle-location-autocompletion *ngIf="!locationIsVehicle && showLocationSearch"
+                                           [showVehicleInput]="false"
+                                           [showLocationInput]="true"
+                                           [locations]="locations"
+                                           (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
 
       <mat-form-field>
         <mat-label>Geräte-Status</mat-label>

@@ -2,6 +2,7 @@ import {Component, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {MatSidenav} from '@angular/material/sidenav';
 import {FormControl} from '@angular/forms';
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {NavigationEnd, Router} from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,6 +11,7 @@ import {OverlayContainer} from '@angular/cdk/overlay';
 })
 export class NavbarComponent implements OnInit {
   isMenuOpen?: boolean = true;
+  pageName: string = '';
   @ViewChild('sidenav') sidenav?: MatSidenav;
 
   switchTheme = new FormControl(false);
@@ -17,7 +19,8 @@ export class NavbarComponent implements OnInit {
   darkClass = 'theme-dark';
   lightClass = 'theme-light';
 
-  constructor(private overlay: OverlayContainer) {
+  constructor(private overlay: OverlayContainer,
+              private route: Router) {
   }
 
   ngOnInit() {
@@ -36,15 +39,27 @@ export class NavbarComponent implements OnInit {
       this.overlay.getContainerElement().classList.remove(this.darkClass, this.lightClass);
       this.overlay.getContainerElement().classList.add(this.className);
     });
+
+    this.route.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        const url = event.urlAfterRedirects;
+        this.pageName = this.getPageNameFromUrl(url);
+      }
+    });
   }
 
-  toggleTheme() {
-    const isDarkMode = this.className === this.darkClass;
-    this.switchTheme.setValue(!isDarkMode);
+  private getPageNameFromUrl(url: string): string {
+    if (url === '/fdm/dashboard') {
+      return 'Dashboard';
+    } else if (url === '/fdm/dashboard/vehicle') {
+      return 'Fahrzeuge'
+    }
+    return '';
   }
 
   toggleAndRotate() {
     this.sidenav?.toggle();
     this.isMenuOpen = !this.isMenuOpen;
   }
+
 }
