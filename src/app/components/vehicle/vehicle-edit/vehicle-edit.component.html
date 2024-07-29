@@ -18,7 +18,7 @@
 
   <div class="row mt-2" cdkDropListGroup *ngIf="allocateDevices">
     <div class="col-6">
-      <div class="d-flex align-items-center justify-content-between mb-1">
+      <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="d-flex align-items-center">
           <h2 class="m-0">Aktuelle Geräte ({{filteredDevices.length!}})</h2>
           <mat-checkbox [checked]="isChecked" (click)="selectAll()" color="primary" matTooltip="Alle anwählen"
@@ -49,7 +49,7 @@
     </div>
 
     <div class="col-6">
-      <div class="d-flex align-items-center justify-content-between mb-1">
+      <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="d-flex align-items-center">
           <h2 class="m-0">Geräte zum verschieben ({{droppedDevices.length!}})</h2>
           <mat-checkbox [checked]="dropListIsChecked" (click)="selectAllDropList()" color="primary"
