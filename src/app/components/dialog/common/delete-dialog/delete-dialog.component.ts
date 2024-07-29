@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Inject, Output} from '@angular/core';
-import {Device} from '../../../models/Device';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {DeviceState} from '../../../models/DeviceState';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {DeviceState} from '../../../../models/DeviceState';
+import {Usecase} from '../../../../models/Usecase';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-delete-dialog',
@@ -10,20 +11,31 @@ import {DeviceState} from '../../../models/DeviceState';
 })
 export class DeleteDialogComponent {
 
-  device?: Device;
+  object?: any;
+  useCase: Usecase;
 
   @Output()
   delete?: EventEmitter<boolean> = new EventEmitter<boolean>();
   showDetails: boolean = false;
   detailsText?: string = 'Details einblenden';
+  protected readonly Usecase = Usecase;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
+              private dialog: MatDialog,
               public dialogRef: MatDialogRef<DeleteDialogComponent>) {
-    this.device = this.data.device;
+    this.object = this.data.object;
+    this.useCase = this.data.useCase;
   }
 
-  deleteDevice() {
-    this.delete?.emit(true);
+  openConfirmDialog() {
+    const modal = this.dialog.open(ConfirmDialogComponent, {
+      autoFocus: false
+    });
+    modal.componentInstance.confirm.subscribe(res => {
+      if (res) {
+        this.delete?.emit(true);
+      }
+    });
   }
 
   closeDialog() {
@@ -32,32 +44,26 @@ export class DeleteDialogComponent {
 
   handleDetails() {
     this.showDetails =! this.showDetails;
-    if (this.showDetails) {
-      this.detailsText = 'Details ausblenden';
-    } else {
-      this.detailsText = 'Details einblenden';
-    }
   }
 
   getVehicleName(): string {
-    if (this.device?.vehicle == null) {
-      return 'Kein Ort definiert';
+    if (this.object?.vehicle == null) {
+      return 'Kein Fahrzeug definiert';
     } else {
-      return this.device.vehicle.name!;
+      return this.object.vehicle.name!;
     }
   }
 
   getLocationName(): string {
-    if (this.device?.location == null) {
+    if (this.object?.location == null) {
       return 'Kein Ort definiert';
     } else {
-      return this.device.location.name!;
+      return this.object.location.name!;
     }
   }
 
   getDeviceState(deviceState: DeviceState | undefined): string | undefined {
     let state: string | undefined;
-
     switch (deviceState) {
       case DeviceState.ACTIVE:
         state = 'AKTIV';
@@ -73,5 +79,15 @@ export class DeleteDialogComponent {
     }
 
     return state;
+  }
+
+  getObjectName() {
+    if (this.useCase === Usecase.DEVICE) {
+      return 'Gerät';
+    } else if (this.useCase === Usecase.VEHICLE) {
+      return 'Fahrzeug';
+    } else {
+      return 'Ort';
+    }
   }
 }

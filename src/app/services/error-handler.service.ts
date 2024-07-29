@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {ModelAndError} from '../models/ModelAndError';
+import {config, timeout} from 'rxjs';
 
 const SERVER_CONNECTION_FAILED = 'Verbindung zum Server fehlgeschlagen';
 
@@ -12,7 +13,7 @@ export class ErrorHandlerService {
   constructor(private toastr: ToastrService) { }
 
   setErrorMessage(errorMessage: string) {
-    this.toastr.error(errorMessage);
+    this.toastr.error(errorMessage, '', {timeOut: 0});
   }
 
   setSuccessMessage(successMessage: string) {

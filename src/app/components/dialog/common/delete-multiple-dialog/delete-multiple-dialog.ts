@@ -1,20 +1,20 @@
 import {Component, ErrorHandler, EventEmitter, Inject, Output} from '@angular/core';
-import {Device} from '../../../models/Device';
+import {Device} from '../../../../models/Device';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {DeviceService} from '../../../services/device.service';
+import {DeviceService} from '../../../../services/device.service';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
-import {Usecase} from '../../../models/Usecase';
-import {VehicleService} from '../../../services/vehicle.service';
-import {LocationService} from '../../../services/location.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
-import {ModelAndError} from '../../../models/ModelAndError';
+import {Usecase} from '../../../../models/Usecase';
+import {VehicleService} from '../../../../services/vehicle.service';
+import {LocationService} from '../../../../services/location.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ModelAndError} from '../../../../models/ModelAndError';
 
 @Component({
   selector: 'app-delete-dialog',
-  templateUrl: './delete-multiple-devices-dialog.html',
-  styleUrl: './delete-multiple-devices-dialog.scss'
+  templateUrl: './delete-multiple-dialog.html',
+  styleUrl: './delete-multiple-dialog.scss'
 })
-export class DeleteMultipleDevicesDialog {
+export class DeleteMultipleDialog {
 
   objectsToDelete: any[] = [];
   objectToDeleteIds: (number | undefined)[] = [];
@@ -28,7 +28,7 @@ export class DeleteMultipleDevicesDialog {
   change?: EventEmitter<any[]> = new EventEmitter<any[]>();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-              public dialogRef: MatDialogRef<DeleteMultipleDevicesDialog>,
+              public dialogRef: MatDialogRef<DeleteMultipleDialog>,
               private deviceService: DeviceService,
               private matDialog: MatDialog,
               private vehicleService: VehicleService,
@@ -36,7 +36,6 @@ export class DeleteMultipleDevicesDialog {
               private errorHandler: ErrorHandlerService) {
     this.objectsToDelete = this.data.objectsToDelete;
     this.useCase = this.data.useCase;
-    console.log(this.useCase)
   }
 
   closeDialog() {
@@ -81,15 +80,11 @@ export class DeleteMultipleDevicesDialog {
   }
 
   private handleResponse(res: ModelAndError) {
-    if (res && res.errorMessage || res.object) {
-      if (this.errorHandler.hasError(res)) {
-        this.deleted!.emit(false);
-        this.errorHandler.setErrorMessage(res.errorMessage!);
-      } else {
-        this.deleted!.emit(true);
-      }
+    if (this.errorHandler.hasError(res)) {
+      this.deleted!.emit(false);
+      this.errorHandler.setErrorMessage(res.errorMessage!);
     } else {
-      this.errorHandler.setErrorMessage('Vorgang konnte nicht durchgeführt werden');
+      this.deleted!.emit(true);
     }
   }
 

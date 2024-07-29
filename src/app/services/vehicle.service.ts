@@ -14,8 +14,8 @@ export class VehicleService {
 
   constructor(private http: HttpClient) { }
 
-  getAllVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${COMMON_VEHICLE_URL}/get-all`);
+  getAllVehicles(): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/get-all`);
   }
 
   getDevicesFromVehicle(vehicle: Vehicle): Observable<ModelAndError> {
@@ -24,5 +24,17 @@ export class VehicleService {
 
   deleteVehicles(vehiclesToDelete: (number | undefined)[]): Observable<ModelAndError> {
     return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/delete-many`, vehiclesToDelete);
+  }
+
+  delete(vehicle: Vehicle): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/delete`, vehicle);
+  }
+
+  createVehicle(vehicle: Vehicle): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/create`, vehicle);
+  }
+
+  getVehicle(uuId: number): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/get-vehicle/${uuId}`)
   }
 }

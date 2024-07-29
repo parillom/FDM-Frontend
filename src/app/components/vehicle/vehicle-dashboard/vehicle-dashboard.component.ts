@@ -4,10 +4,13 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Vehicle} from '../../../models/Vehicle';
 import {MatPaginator} from '@angular/material/paginator';
 import {Device} from '../../../models/Device';
-import {DeleteMultipleDevicesDialog} from '../../dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {DeleteMultipleDialog} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog';
 import {Usecase} from '../../../models/Usecase';
 import {MatDialog} from '@angular/material/dialog';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
+import {AddVehicleComponent} from '../../dialog/add-vehicle/add-vehicle.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-vehicle-dashboard',
@@ -28,11 +31,11 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   showSpinner: boolean = false;
   selectedVehicles: Vehicle[] = [];
   isChecked: boolean = false;
-  mydev!: Device[];
 
   constructor(private vehicleService: VehicleService,
               private dialog: MatDialog,
-              private errorHandler: ErrorHandlerService) {
+              private errorHandler: ErrorHandlerService,
+              private router: Router) {
     this.dataSource = new MatTableDataSource<Vehicle>();
   }
 
@@ -49,16 +52,17 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
 
   getAllVehicles() {
     this.showSpinner = true;
-    this.vehicleService.getAllVehicles().subscribe(vehicles => {
-      if (vehicles) {
-        this.dataSource.data! = vehicles;
-        this.vehicles = vehicles;
+    this.vehicleService.getAllVehicles().subscribe(res => {
+      if (res && !this.errorHandler.hasError(res)) {
+        this.dataSource.data! = res.object;
+        this.vehicles = res.object;
         this.vehicles.forEach(vehicle => {
           this.getDevicesFromVehicle(vehicle);
         });
         this.showSpinner = false;
+      } else {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
       }
-
     });
   }
 
@@ -67,7 +71,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     const searchLower = this.vehicleSearch?.toLowerCase() || '';
 
     this.dataSource.data! = this.vehicles.filter(vehicle => {
-      const matchesId = vehicle.id!.toString().includes(vehicleSearchId);
+      const matchesId = vehicle.uuId!.toString().includes(vehicleSearchId);
       const matchesName = vehicle.name?.toLowerCase().includes(searchLower);
 
       return matchesId || matchesName;
@@ -108,9 +112,8 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     this.getAllVehicles();
   }
 
-
-  openEditModal(element: Vehicle) {
-
+  navigateToEdit(uuId: number) {
+    void this.router.navigate(['fdm/dashboard/vehicle/edit/'], {queryParams: {id: uuId}});
   }
 
   isVehicleSelected(vehicle: Vehicle) {
@@ -118,7 +121,45 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   openDeleteModal(vehicle: Vehicle) {
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '400px',
+      height: 'auto',
+      hasBackdrop: false,
+      autoFocus: false,
+      data: {
+        object: vehicle,
+        useCase: Usecase.VEHICLE
+      }
+    });
+    dialogRef.componentInstance.delete!.subscribe(res => {
+      if (res) {
+        this.vehicleService.delete(vehicle).subscribe(res => {
+          if (this.errorHandler.hasError(res)) {
+            this.errorHandler.setErrorMessage(res.errorMessage!);
+            dialogRef.close();
+          } else {
+            this.errorHandler.setSuccessMessage(`Fahrzeug ${vehicle.name} erfolgreich gelöscht`);
+            this.getAllVehicles();
+            dialogRef.close();
+          }
+        });
+      }
+    });
+  }
 
+  openCreateVehicleDialog() {
+    const dialog = this.dialog.open(AddVehicleComponent, {
+      hasBackdrop: false,
+      autoFocus: false
+    });
+    dialog.componentInstance.created.subscribe(created => {
+      if (created) {
+        this.getAllVehicles();
+        dialog.close();
+      } else {
+        dialog.close();
+      }
+    })
   }
 
   handleCheckboxClick(vehicle: Vehicle, event: MouseEvent) {
@@ -139,7 +180,11 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   addAllDevices() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
-      this.selectedVehicles.push(...this.vehicles);
+      this.vehicles!.forEach(vehicle => {
+        if (!this.selectedVehicles.includes(vehicle) && this.devicesMap.get(vehicle.id!)?.length! < 1) {
+          this.selectedVehicles.push(vehicle);
+        }
+      });
     }
     //Nach allem filtern
     else {
@@ -149,7 +194,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   openDeleteMultipleDialog() {
-    const dialogRef = this.dialog.open(DeleteMultipleDevicesDialog, {
+    const dialogRef = this.dialog.open(DeleteMultipleDialog, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -180,7 +225,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getTooltipActionsTest(): string {
-    return 'Es können nur Fahrzeuge gelöscht werden die mit keinen Geräten verknüpft sind.'
+  getTooltipActionsText(): string {
+    return 'Es können nur Fahrzeuge gelöscht werden die mit keinen Geräten verknüpft sind.';
   }
 }

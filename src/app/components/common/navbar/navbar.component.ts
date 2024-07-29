@@ -2,7 +2,7 @@ import {Component, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {MatSidenav} from '@angular/material/sidenav';
 import {FormControl} from '@angular/forms';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {NavigationEnd, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,8 +10,10 @@ import {NavigationEnd, Router} from '@angular/router';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit {
-  isMenuOpen?: boolean = true;
+  sidenavOpen?: boolean = true;
   pageName: string = '';
+  uuId?: number;
+  url: string = '';
   @ViewChild('sidenav') sidenav?: MatSidenav;
 
   switchTheme = new FormControl(false);
@@ -20,7 +22,8 @@ export class NavbarComponent implements OnInit {
   lightClass = 'theme-light';
 
   constructor(private overlay: OverlayContainer,
-              private route: Router) {
+              private router: Router,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -40,26 +43,41 @@ export class NavbarComponent implements OnInit {
       this.overlay.getContainerElement().classList.add(this.className);
     });
 
-    this.route.events.subscribe(event => {
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects;
+        this.url = url;
         this.pageName = this.getPageNameFromUrl(url);
       }
+    });
+
+    this.route.queryParams.subscribe(params => {
+      this.uuId = params['id'];
     });
   }
 
   private getPageNameFromUrl(url: string): string {
     if (url === '/fdm/dashboard') {
       return 'Dashboard';
-    } else if (url === '/fdm/dashboard/vehicle') {
-      return 'Fahrzeuge'
+    } else if (url === '/fdm/dashboard/vehicle' || url.includes('/fdm/dashboard/vehicle/edit')) {
+        return 'Fahrzeuge'
+    } else if (this.uuId !== null && this.uuId !== undefined) {
+      return this.uuId.toString();
+    } else {
+      return '';
     }
-    return '';
   }
 
   toggleAndRotate() {
     this.sidenav?.toggle();
-    this.isMenuOpen = !this.isMenuOpen;
+    this.sidenavOpen = !this.sidenavOpen;
   }
 
+  navigateToDashboard() {
+    window.location.href = 'fdm/dashboard';
+  }
+
+  navigateToVehicle() {
+    window.location.href = 'fdm/dashboard/vehicle';
+  }
 }

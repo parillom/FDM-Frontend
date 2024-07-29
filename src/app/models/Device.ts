@@ -8,6 +8,7 @@ import {Vehicle} from './Vehicle';
 
 export class Device {
   id?: number;
+  uuId?: number;
   name?: string;
   location?: Location | null;
   state?: State;

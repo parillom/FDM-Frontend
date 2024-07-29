@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {NavbarComponent} from './components/common/navbar/navbar.component';
 import {DashboardComponent} from './components/device/dashboard/dashboard.component';
-import {EditDialogComponent} from './components/dialog/edit-dialog/edit-dialog.component';
+import {EditDeviceDialogComponent} from './components/dialog/edit-device-dialog/edit-device-dialog.component';
 import {AddDeviceComponent} from './components/dialog/add-device/add-device.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -16,7 +16,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule, provideHttpClient, withInterceptors} from '@angular/common/http';
-import {MatCard} from '@angular/material/card';
+import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -26,13 +26,13 @@ import {BsModalService} from 'ngx-bootstrap/modal';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ToastrModule} from 'ngx-toastr';
-import {DeleteDialogComponent} from './components/dialog/delete-dialog/delete-dialog.component';
+import {DeleteDialogComponent} from './components/dialog/common/delete-dialog/delete-dialog.component';
 import {AddMultipleDevicesComponent} from './components/dialog/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
 import {
-    DeleteMultipleDevicesDialog
-} from './components/dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
-import {ConfirmDialogComponent} from './components/dialog/confirm-dialog/confirm-dialog.component';
+    DeleteMultipleDialog
+} from './components/dialog/common/delete-multiple-dialog/delete-multiple-dialog';
+import {ConfirmDialogComponent} from './components/dialog/common/confirm-dialog/confirm-dialog.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {
@@ -58,77 +58,86 @@ import { VehicleLocationAutocompletionComponent } from './components/common/vehi
 import {MatPaginator} from '@angular/material/paginator';
 import { VehicleDashboardComponent } from './components/vehicle/vehicle-dashboard/vehicle-dashboard.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {TooltipModule} from 'ngx-bootstrap/tooltip';
+import { AddVehicleComponent } from './components/dialog/add-vehicle/add-vehicle.component';
+import { DeviceDetailsComponent } from './components/device/device-details/device-details.component';
+import { VehicleEditComponent } from './components/vehicle/vehicle-edit/vehicle-edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     DashboardComponent,
-    EditDialogComponent,
+    EditDeviceDialogComponent,
     AddDeviceComponent,
     DeleteDialogComponent,
     AddMultipleDevicesComponent,
-    DeleteMultipleDevicesDialog,
+    DeleteMultipleDialog,
     ConfirmDialogComponent,
     VehicleLocationAutocompletionDashboardComponent,
     VehicleLocationAutocompletionComponent,
     VehicleDashboardComponent,
+    AddVehicleComponent,
+    DeviceDetailsComponent,
+    VehicleEditComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule,
-    MatButtonModule,
-    MatInputModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    MatSortModule,
-    MatTableModule,
-    MatCard,
-    MatCheckbox,
-    FormsModule,
-    MatTooltip,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    ReactiveFormsModule,
-    MatSelect,
-    MatOption,
-    NgbModule,
-    DragDropModule,
-    ToastrModule.forRoot({
-      timeOut: 7000,
-      positionClass: 'toast-top-right',
-      titleClass: '',
-      preventDuplicates: true,
-      progressBar: true,
-      enableHtml: true,
-    }),
-    MatRadioGroup,
-    MatRadioButton,
-    MatAutocomplete,
-    MatAutocompleteTrigger,
-    MatSlideToggle,
-    MatHeaderCell,
-    MatColumnDef,
-    MatCell,
-    MatHeaderCellDef,
-    MatCellDef,
-    MatTable,
-    MatHeaderRow,
-    MatRow,
-    MatHeaderRowDef,
-    MatRowDef,
-    RouterModule,
-    MatSort,
-    MatTabGroup,
-    MatTab,
-    MatPaginator,
-    MatProgressSpinner
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatListModule,
+        MatButtonModule,
+        MatInputModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        MatSortModule,
+        MatTableModule,
+        MatCard,
+        MatCheckbox,
+        FormsModule,
+        MatTooltip,
+        MatDialogTitle,
+        MatDialogContent,
+        MatDialogActions,
+        ReactiveFormsModule,
+        MatSelect,
+        MatOption,
+        NgbModule,
+        DragDropModule,
+        ToastrModule.forRoot({
+            timeOut: 7000,
+            positionClass: 'toast-top-right',
+            titleClass: '',
+            preventDuplicates: true,
+            progressBar: true,
+            enableHtml: true,
+        }),
+        MatRadioGroup,
+        MatRadioButton,
+        MatAutocomplete,
+        MatAutocompleteTrigger,
+        MatSlideToggle,
+        MatHeaderCell,
+        MatColumnDef,
+        MatCell,
+        MatHeaderCellDef,
+        MatCellDef,
+        MatTable,
+        MatHeaderRow,
+        MatRow,
+        MatHeaderRowDef,
+        MatRowDef,
+        RouterModule,
+        MatSort,
+        MatTabGroup,
+        MatTab,
+        MatPaginator,
+        MatProgressSpinner,
+        TooltipModule,
+        MatCardContent
+    ],
   providers: [
     BsModalService,
     provideAnimationsAsync(),

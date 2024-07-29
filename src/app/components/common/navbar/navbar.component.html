@@ -1,31 +1,42 @@
 <mat-toolbar class="d-flex justify-content-between text-white bg-black">
   <div class="d-flex align-items-center">
     <button mat-icon-button (click)="toggleAndRotate()">
-      <mat-icon [style.transform]="isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
+      <mat-icon [style.transform]="sidenavOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
     </button>
     <h1>FDM</h1>
     <mat-icon class="fire-icon">local_fire_department</mat-icon>
   </div>
   <div>
     <span *ngIf="pageName === 'Dashboard'" class="m-0 me-3">{{pageName}}</span>
-    <div *ngIf="!(pageName === 'Dashboard')" class="m-0 me-3 d-flex align-items-center">
+    <div *ngIf="!(pageName === 'Dashboard') && !url.includes('vehicle/edit')" class="m-0 me-3 d-flex align-items-center">
       <span class="cursor-pointer"
             style="font-size: 15px"
-            [routerLink]="'/fdm/dashboard'">Dashboard</span> <mat-icon>arrow_right</mat-icon> {{pageName}}</div>
+            (click)="navigateToDashboard()">Dashboard</span>
+      <mat-icon>arrow_right</mat-icon>
+      {{pageName}}</div>
+    <div *ngIf="pageName === 'Fahrzeuge' && url.includes('vehicle/edit')" class="m-0 me-3 d-flex align-items-center">
+      <span class="cursor-pointer"
+            style="font-size: 15px"
+            (click)="navigateToVehicle()">Fahrzeuge</span>
+      <mat-icon>arrow_right</mat-icon>
+      {{uuId}}
+    </div>
   </div>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
     <mat-list>
       <mat-list-item class="bg-transparent">
-        <a mat-list-item href="/fdm/dashboard">
+        <a (click)="navigateToDashboard()" mat-list-item>
           <span class="entry cursor-pointer">
             <mat-icon>home</mat-icon>
             <span>Dashboard</span>
           </span>
         </a>
       </mat-list-item>
-      <hr>
+      <div>
+        <hr>
+      </div>
       <mat-list-item class="cursor-pointer">
         <a mat-list-item href="/fdm/dashboard/vehicle">
           <span class="entry cursor-pointer">

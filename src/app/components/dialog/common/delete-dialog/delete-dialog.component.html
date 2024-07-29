@@ -1,0 +1,38 @@
+<div class="me-2" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="d-flex justify-content-between align-items-center">
+    <p class="fs-5 text-wrap" mat-dialog-title>{{getObjectName()}} Löschen</p>
+    <div class="d-flex align-items-center">
+      <div (click)="closeDialog()" class="cursor-pointer">
+        <button mat-icon-button>
+          <mat-icon id="close-icon-delete-device">close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-content>
+    <p class="text-wrap">Möchten sie das {{getObjectName()}} {{object?.name}} wirklich löschen?</p>
+    <div>
+      <hr>
+    </div>
+    <div (click)="handleDetails()">
+      <mat-icon *ngIf="showDetails" matTooltip="Details ausblenden" matTooltipPosition="above">visibility</mat-icon>
+      <mat-icon *ngIf="!showDetails" matTooltip="Details anzeigen" matTooltipPosition="above">visibility_off</mat-icon>
+    </div>
+
+    <div class="mt-3" *ngIf="showDetails && useCase === Usecase.DEVICE">
+      <p>Geräte-ID: <span style="color: lightslategrey">{{object?.id}}</span></p>
+      <p>Gerätename: <span style="color: lightslategrey">{{object?.name}}</span></p>
+      <p>Aktuelles Fahrzeug: <span style="color: lightslategrey">{{getVehicleName()}}</span></p>
+      <p>Aktueller Ort: <span style="color: lightslategrey">{{getLocationName()}}</span></p>
+      <p>Gerätestatus: <span style="color: lightslategrey">{{getDeviceState(object?.state?.deviceState)}}</span></p>
+    </div>
+
+    <div class="mt-3" *ngIf="showDetails && useCase === Usecase.VEHICLE">
+      <p>Fahrzeug-ID: <span style="color: lightslategrey">{{object?.id}}</span></p>
+      <p>Fahrzeugname: <span style="color: lightslategrey">{{object?.name}}</span></p>
+    </div>
+  </div>
+  <div matDialogActions class="d-flex justify-content-center justify-content-sm-end align-items-center">
+    <button class="btn text-white w-100" color="warn" mat-raised-button (click)="openConfirmDialog()">Löschen</button>
+  </div>
+</div>

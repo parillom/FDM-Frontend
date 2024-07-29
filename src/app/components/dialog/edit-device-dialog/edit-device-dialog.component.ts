@@ -12,11 +12,11 @@ import {ToastrService} from 'ngx-toastr';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 
 @Component({
-  selector: 'app-edit-dialog',
-  templateUrl: './edit-dialog.component.html',
-  styleUrl: './edit-dialog.component.scss'
+  selector: 'app-edit-device-dialog',
+  templateUrl: './edit-device-dialog.component.html',
+  styleUrl: './edit-device-dialog.component.scss'
 })
-export class EditDialogComponent implements OnInit {
+export class EditDeviceDialogComponent implements OnInit {
 
   @Output() updatedSuccessful = new EventEmitter<boolean>();
 
@@ -36,7 +36,7 @@ export class EditDialogComponent implements OnInit {
   vehicles?: Vehicle[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-              private matDialog: MatDialogRef<EditDialogComponent>,
+              private matDialog: MatDialogRef<EditDeviceDialogComponent>,
               private deviceService: DeviceService,
               private errorHandler: ErrorHandlerService,
               private toastr: ToastrService) {

@@ -1,13 +1,13 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, booleanAttribute, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DeviceService} from '../../../services/device.service';
 import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
-import {EditDialogComponent} from '../../dialog/edit-dialog/edit-dialog.component';
+import {EditDeviceDialogComponent} from '../../dialog/edit-device-dialog/edit-device-dialog.component';
 import {AddDeviceComponent} from '../../dialog/add-device/add-device.component';
 import {ToastrService} from 'ngx-toastr';
-import {DeleteDialogComponent} from '../../dialog/delete-dialog/delete-dialog.component';
+import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
-import {DeleteMultipleDevicesDialog} from '../../dialog/delete-multiple-devices-dialog/delete-multiple-devices-dialog';
+import {DeleteMultipleDialog} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog';
 import {LocationService} from '../../../services/location.service';
 import {Location} from '../../../models/Location';
 import {VehicleService} from '../../../services/vehicle.service';
@@ -20,7 +20,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {Usecase} from '../../../models/Usecase';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
-import {MatSort, Sort} from '@angular/material/sort';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,13 +51,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Aktionen'];
   dataSource!: MatTableDataSource<Device>;
   showSpinner: boolean = false;
+  disableRowClick: boolean = false;
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
               private toastr: ToastrService,
               private locationService: LocationService,
               private vehicleService: VehicleService,
-              private errorHandler: ErrorHandlerService
+              private errorHandler: ErrorHandlerService,
+              private router: Router
   ) {
     this.dataSource = new MatTableDataSource<Device>();
   }
@@ -100,8 +102,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   getAllVehicles() {
     this.vehicleService.getAllVehicles().subscribe(res => {
-      if (res) {
-        this.vehicles = res;
+      if (this.errorHandler.hasError(res)) {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
+      } else {
+        this.vehicles = res.object;
         this.filteredVehicles = this.vehicles;
       }
     });
@@ -137,7 +141,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const searchLower = this.deviceSearch?.toLowerCase() || '';
 
     this.dataSource.data! = this.devices!.filter(device => {
-      const matchesId = device.id!.toString().includes(deviceSearchId);
+      const matchesId = device.uuId!.toString().includes(deviceSearchId);
       const matchesName = device.name?.toLowerCase().includes(searchLower);
       const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
       const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());
@@ -192,21 +196,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openCreateForm() {
+  openCreateDeviceDialog() {
     const addDeviceDialog = this.dialog.open(AddDeviceComponent, {
       width: '400px',
       height: 'auto',
       autoFocus: false,
       hasBackdrop: false,
     });
-    addDeviceDialog.afterClosed().subscribe(() => {
-      this.formShowing = false;
-    });
     this.formShowing = true;
 
     addDeviceDialog.componentInstance.createdSuccessful.subscribe(value => {
       if (value) {
         this.getAllDevices();
+        this.getAllVehicles();
+        this.getAllLocations();
       }
     });
     addDeviceDialog.componentInstance.manyCreatedSuccessful.subscribe(value => {
@@ -215,58 +218,70 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         addDeviceDialog.close();
       }
     });
+    addDeviceDialog.afterClosed().subscribe(() => {
+      this.formShowing = false;
+    });
   }
 
   openEditModal(device: Device) {
-    this.formShowing = true;
-    const dialogRef = this.dialog.open(EditDialogComponent, {
-      width: '400px',
-      height: 'auto',
-      autoFocus: false,
-      hasBackdrop: false,
-      data: {
-        device: device,
-        vehicles: this.vehicles,
-        locations: this.locations
-      }
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      this.formShowing = false;
-    });
-    dialogRef.componentInstance.updatedSuccessful.subscribe(res => {
-      if (res) {
-        this.getAllDevices();
-      }
-    });
+    this.disableRowClick = true;
+    if (!this.formShowing) {
+      const dialogRef = this.dialog.open(EditDeviceDialogComponent, {
+        width: '400px',
+        height: 'auto',
+        autoFocus: false,
+        hasBackdrop: false,
+        data: {
+          device: device,
+          vehicles: this.vehicles,
+          locations: this.locations
+        }
+      });
+      this.formShowing = true;
+      dialogRef.afterClosed().subscribe(() => {
+        this.formShowing = false;
+        this.disableRowClick = false;
+      });
+      dialogRef.componentInstance.updatedSuccessful.subscribe(res => {
+        if (res) {
+          this.getAllDevices();
+        }
+      });
+    }
   }
 
   openDeleteModal(device: Device) {
-    this.formShowing = true;
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '400px',
-      height: 'auto',
-      hasBackdrop: false,
-      autoFocus: false,
-      data: {
-        device: device
-      }
-    });
-    dialogRef.componentInstance.delete!.subscribe(res => {
-      if (res) {
-        this.deviceService.delete(device).subscribe(res => {
-          if (res === 'OK') {
-            this.toastr.success(`Gerät ${device.name} erfolgreich gelöscht`);
-            this.getAllDevices();
-            dialogRef.close();
-          }
-        });
-      } else {
-        this.toastr.error(`Gerät ${device.name} könnte nicht gelöscht werden`);
-      }
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      this.formShowing = false;
-    });
+    this.disableRowClick = true;
+    if (!this.formShowing) {
+      const dialogRef = this.dialog.open(DeleteDialogComponent, {
+        width: '400px',
+        height: 'auto',
+        hasBackdrop: false,
+        autoFocus: false,
+        data: {
+          object: device,
+          useCase: Usecase.DEVICE
+        }
+      });
+      this.formShowing = true;
+      dialogRef.componentInstance.delete!.subscribe(res => {
+        if (res) {
+          this.deviceService.delete(device).subscribe(res => {
+            if (this.errorHandler.hasError(res)) {
+              this.errorHandler.setErrorMessage(res.errorMessage!);
+              dialogRef.close();
+            } else {
+              this.errorHandler.setSuccessMessage(`Gerät ${device.name} konnte gelöscht werden`);
+              dialogRef.close();
+            }
+          });
+        }
+      });
+      dialogRef.afterClosed().subscribe(() => {
+        this.formShowing = false;
+        this.disableRowClick = false;
+      });
+    }
   }
 
   getDeviceState(device: Device): string {
@@ -326,19 +341,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleRowClick(device: Device) {
-    if (this.devices!.length > 1) {
-      const index = this.selectedDevices.indexOf(device);
-      if (index !== -1) {
-        this.selectedDevices.splice(index, 1);
-      } else {
-        this.selectedDevices.push(device);
+    if (!this.disableRowClick) {
+      if (this.devices!.length > 1) {
+        const index = this.selectedDevices.indexOf(device);
+        if (index !== -1) {
+          this.selectedDevices.splice(index, 1);
+        } else {
+          this.selectedDevices.push(device);
+        }
+        this.updateIsCheckedState();
       }
-      this.updateIsCheckedState();
     }
   }
 
   updateIsCheckedState() {
-    this.isChecked = this.devices?.length === this.selectedDevices.length;
+    this.isChecked = this.devices?.length === this.selectedDevices.length || this.selectedDevices.length === this.filteredDevices!.length;
   }
 
   addAllDevices() {
@@ -412,7 +429,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   openDeleteMultipleDialog() {
     this.formShowing = true;
-    const dialogRef = this.dialog.open(DeleteMultipleDevicesDialog, {
+    const dialogRef = this.dialog.open(DeleteMultipleDialog, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -467,4 +484,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.filterWithSpecifiedProperties(this.deviceCriteria);
     }
   }
+
+  navigateToDetails(uuId: number) {
+    this.disableRowClick = true;
+    void this.router.navigate(['fdm/dashboard/device'], {queryParams: {id: uuId}});
+  }
+
 }

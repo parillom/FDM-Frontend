@@ -1,0 +1,43 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="d-flex justify-content-between align-items-center">
+    <p class="fs-5" mat-dialog-title>Fahrzeug/e hinzufügen</p>
+    <div class="d-flex align-items-center">
+      <div class="cursor-pointer me-2">
+        <button (click)="closeDialog()" mat-icon-button>
+          <mat-icon id="close-icon-single-device">close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-content>
+    <mat-tab-group (selectedTabChange)="changeCreateFormat($event)">
+      <mat-tab label="Ein Fahrzeug"></mat-tab>
+      <mat-tab label="Mehrere Fahrzeuge"></mat-tab>
+    </mat-tab-group>
+    <div>
+      <hr>
+    </div>
+
+    <form *ngIf="addOneVehicle" [formGroup]="vehicleForm">
+      <mat-form-field class="w-100">
+        <mat-label>Name</mat-label>
+        <input formControlName="name" matInput>
+        <mat-error class="mt-0" *ngIf="vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched">
+          Name ist ein Pflichtfeld!
+        </mat-error>
+      </mat-form-field>
+
+      <div mat-dialog-actions class="d-flex justify-content-end">
+        <button type="submit"
+                (click)="createVehicle()"
+                [disabled]="isSubmitting"
+                class="btn text-white w-100"
+                mat-raised-button
+                color="primary">
+          Speichern
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

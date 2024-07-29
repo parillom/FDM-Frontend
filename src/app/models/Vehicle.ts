@@ -6,6 +6,7 @@ import {Device} from './Device';
 
 export class Vehicle {
   id?: number;
+  uuId?: number;
   name?: string;
   device?: Device[];
 }

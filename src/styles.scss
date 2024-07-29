@@ -81,4 +81,14 @@ body.dark-mode {
   color: #999;
 }
 
+.common-margin-top {
+  margin-top: 6rem;
+}
 
+.drag:hover {
+  cursor: grab;
+}
+
+.drag:focus {
+  cursor: grab;
+}

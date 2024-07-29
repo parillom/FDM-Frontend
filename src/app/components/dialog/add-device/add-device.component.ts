@@ -71,33 +71,13 @@ export class AddDeviceComponent implements OnInit {
 
   private getVehicles() {
     this.vehicleService.getAllVehicles().subscribe(res => {
-      if (res) {
-        this.vehicles = res;
+      if (this.errorHandler.hasError(res)) {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
+      } else {
+        this.vehicles = res.object;
         this.filteredVehicles = this.vehicles;
       }
     });
-  }
-
-  filterLocations() {
-    const searchLocation = this.deviceForm.get('searchLocation')?.value;
-    if (searchLocation.trim() === '') {
-      this.filteredLocations = this.locations?.slice(0, 5);
-    } else {
-      this.filteredLocations = this.locations?.filter(location =>
-        location.name!.toLowerCase().includes(searchLocation.toLowerCase())
-      );
-    }
-  }
-
-  filterVehicles() {
-    const searchVehicle = this.deviceForm.get('searchVehicle')?.value;
-    if (searchVehicle.trim() === '') {
-      this.filteredVehicles = this.vehicles?.slice(0, 5);
-    } else {
-      this.filteredVehicles = this.vehicles?.filter(location =>
-        location.name!.toLowerCase().includes(searchVehicle.toLowerCase())
-      );
-    }
   }
 
   setLocationInput(device: Device) {
@@ -160,9 +140,10 @@ export class AddDeviceComponent implements OnInit {
           this.createdSuccessful.emit(false);
           this.isSubmitting = false;
         } else {
-          this.toastr.success(`Gerät ${res.object.name} erfolgreich erstellt!`);
+          this.errorHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
           this.createdSuccessful.emit(true);
           this.deviceForm.get('name')?.reset();
+          this.deviceForm.controls['name'].reset();
           this.getLocations();
           this.getVehicles();
           this.isSubmitting = false;
