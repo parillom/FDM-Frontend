@@ -3,9 +3,14 @@ import {VehicleService} from '../../../services/vehicle.service';
 import {ActivatedRoute} from '@angular/router';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {Vehicle} from '../../../models/Vehicle';
+import {Location} from '../../../models/Location';
 import {Device} from '../../../models/Device';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {MatTabChangeEvent} from '@angular/material/tabs';
+import {ModelAndError} from '../../../models/ModelAndError';
+import {LocationService} from '../../../services/location.service';
+import {DeviceState} from '../../../models/DeviceState';
+import {NavbarComponent} from '../../common/navbar/navbar.component';
 
 @Component({
   selector: 'app-vehicle-edit',
@@ -18,18 +23,28 @@ export class VehicleEditComponent implements OnInit {
   vehicle?: Vehicle;
   devices: Device[] = [];
   droppedDevices: Device[] = [];
-  allocateDevices = true;
+  manageDevices = true;
+  moveDevicesOption = true;
   selectedDevices: Device[] = [];
   isChecked: boolean = false;
   dropListIsChecked: boolean = false;
   filteredDevices: Device[] = [];
-  filteredDevicesDropped: Device[] = [];
+  vehicles: Vehicle[] = [];
+  locations: Location[] = [];
   deviceSearch: string = '';
-  deviceSearchDropped: string = '';
+  selectedVehicleName: string = '';
+  selectedLocationName: string = '';
+  selected: boolean = false;
+  selectedState: string = '';
+  protected readonly DeviceState = DeviceState;
+  showStateOption: boolean = false;
+  showSpinner: boolean = false;
 
   constructor(private vehicleService: VehicleService,
               private router: ActivatedRoute,
-              private errorhandler: ErrorHandlerService) {
+              private errorHandler: ErrorHandlerService,
+              private locationService: LocationService,
+              private navbarService: NavbarComponent) {
   }
 
   ngOnInit() {
@@ -37,25 +52,36 @@ export class VehicleEditComponent implements OnInit {
       this.uuid = param['id'];
     });
     this.getVehicle(this.uuid!);
+    this.getVehicles();
+    this.getLocations();
   }
+
+
 
   getVehicle(uuId: number) {
     this.vehicleService.getVehicle(uuId).subscribe(res => {
       if (res) {
-        if (this.errorhandler.hasError(res)) {
-          this.errorhandler.setErrorMessage(res.errorMessage!);
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage!);
         } else {
           this.vehicle = res.object;
-          this.vehicleService.getDevicesFromVehicle(this.vehicle!).subscribe(res => {
-            if (res) {
-              if (this.errorhandler.hasError(res)) {
-                this.errorhandler.setErrorMessage(res.errorMessage!);
-              } else {
-                this.devices = res.object;
-                this.filteredDevices = this.devices;
-              }
-            }
-          });
+          this.getDevicesFromVehicle(this.vehicle!);
+          this.navbarService.setCurrentObjectName(this.vehicle?.name!);
+        }
+      }
+    });
+  }
+
+  getDevicesFromVehicle(vehicle: Vehicle) {
+    this.showSpinner = true;
+    this.vehicleService.getDevicesFromVehicle(vehicle).subscribe(res => {
+      if (res) {
+        this.showSpinner = false;
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage!);
+        } else {
+          this.devices = res.object;
+          this.filteredDevices = this.devices;
         }
       }
     });
@@ -76,14 +102,55 @@ export class VehicleEditComponent implements OnInit {
 
   changeVehicleMode(event: MatTabChangeEvent) {
     if (event.index === 0) {
-      this.allocateDevices = true;
+      this.manageDevices = true;
+      this.moveDevicesOption = true;
     } else if (event.index === 1) {
-      this.allocateDevices = false;
+      this.manageDevices = false;
+      this.moveDevicesOption = false;
+    }
+  }
+
+  changeVehicleOption(event: MatTabChangeEvent) {
+    if (event.index === 0) {
+      this.moveDevicesOption = true;
+      this.getDevicesFromVehicle(this.vehicle!);
+    } else if (event.index === 1) {
+      this.moveDevicesOption = false;
     }
   }
 
   isDeviceSelected(device: Device) {
     return this.selectedDevices.some(deviceInList => deviceInList.id === device.id);
+  }
+
+  save() {
+    if ((this.selectedVehicleName || this.selectedLocationName) && this.droppedDevices.length > 0 && this.selectedState) {
+      if (this.selectedVehicleName) {
+        this.selectedState = DeviceState.ACTIVE;
+        this.vehicleService.saveUpdatedDevicesOfVehicle(this.selectedVehicleName, this.droppedDevices, true, this.selectedState).subscribe(res => {
+          this.handleResponse(res);
+        });
+      } else {
+        this.vehicleService.saveUpdatedDevicesOfVehicle(this.selectedLocationName, this.droppedDevices, false, this.selectedState).subscribe(res => {
+          this.handleResponse(res);
+        });
+      }
+    }
+  }
+
+  handleResponse(res: ModelAndError) {
+    if (res) {
+      if (this.errorHandler.hasError(res)) {
+        this.errorHandler.setErrorMessage(res.errorMessage!)
+      } else {
+        this.errorHandler.setSuccessMessage('Die Geräte konnten erfolgreich verschoben werden');
+        this.droppedDevices.splice(0);
+        this.selectedDevices.splice(0);
+        this.getVehicle(this.uuid!);
+        this.selected = false;
+        this.showStateOption = false;
+      }
+    }
   }
 
   selectAll() {
@@ -162,4 +229,56 @@ export class VehicleEditComponent implements OnInit {
       device.name?.toLowerCase().includes(searchLower)
     );
   }
+
+  private getVehicles() {
+    this.vehicleService.getAllVehicles().subscribe(res => {
+      if (res) {
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage!);
+        } else {
+          this.vehicles = res.object;
+        }
+      }
+    });
+  }
+
+  private getLocations() {
+    this.locationService.getAllLocations().subscribe(res => {
+      if (res && !this.errorHandler.hasError(res)) {
+        this.locations = res.object;
+      } else {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
+      }
+    });
+  }
+
+  setVehicleInput(vehicle: Vehicle) {
+    if (vehicle.name) {
+      this.selectedVehicleName = vehicle.name;
+      this.selected = true;
+      this.selectedLocationName = '';
+      this.showStateOption = false;
+      this.selectedState = DeviceState.ACTIVE;
+    }
+  }
+
+  setLocationInput(location: Location) {
+    if (location.name) {
+      this.selectedLocationName = location.name;
+      this.selected = true;
+      this.selectedVehicleName = '';
+      this.showStateOption = true;
+      this.selectedState = '';
+    }
+  }
+
+  openVehicleAndLocationSearch() {
+    this.selected = false;
+    this.showStateOption = false;
+  }
+
+  stateFilterChanged(value: any) {
+    this.selectedState = value;
+  }
+
 }

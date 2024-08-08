@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
   @HostBinding('class') className = '';
   darkClass = 'theme-dark';
   lightClass = 'theme-light';
+  objectName: string | null = 'hallo';
 
   constructor(private overlay: OverlayContainer,
               private router: Router,
@@ -56,14 +57,18 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  setCurrentObjectName(name: string) {
+    this.objectName = name;
+  }
+
   private getPageNameFromUrl(url: string): string {
     if (url === '/fdm/dashboard') {
       return 'Dashboard';
     } else if (url === '/fdm/dashboard/vehicle' || url.includes('/fdm/dashboard/vehicle/edit')) {
         return 'Fahrzeuge'
-    } else if (this.uuId !== null && this.uuId !== undefined) {
-      return this.uuId.toString();
-    } else {
+    } else if (url === '/fdm/dashboard/location' || url.includes('/fdm/dashboard/location/edit')) {
+      return 'Orte'
+    } else{
       return '';
     }
   }

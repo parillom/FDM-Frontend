@@ -1,4 +1,4 @@
-<mat-form-field *ngIf="showVehicleInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
+<mat-form-field *ngIf="showVehicleInput || (showVehicleInput && showLocationInput)" class="w-100">
   <mat-label>Fahrzeug suchen</mat-label>
   <input #vehicleSearch
          type="text"
@@ -16,7 +16,7 @@
   </mat-autocomplete>
 </mat-form-field>
 
-<mat-form-field *ngIf="showLocationInput || (showVehicleInput && showLocationInput)" class="col-12 col-sm-3 w-100">
+<mat-form-field *ngIf="showLocationInput || (showVehicleInput && showLocationInput)" class="w-100">
   <mat-label>Ort suchen</mat-label>
   <input #locationSearch
          type="text"

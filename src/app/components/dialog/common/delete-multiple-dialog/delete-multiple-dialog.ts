@@ -70,8 +70,10 @@ export class DeleteMultipleDialog {
           });
         } else {
           this.locationService.deleteLocations(this.objectToDeleteIds).subscribe(res => {
-            if (res === 'OK') {
+            if (res && !this.errorHandler.hasError(res)) {
               this.deleted!.emit(true);
+            } else {
+              this.errorHandler.setErrorMessage(res.errorMessage!);
             }
           });
         }

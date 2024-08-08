@@ -32,6 +32,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   selectedVehicles: Vehicle[] = [];
   isChecked: boolean = false;
 
+  columnWidths = {
+    'Fahrzeug-ID': '15%',
+    'Name': '10%',
+    'Geräte': '40%'
+  }
+
   constructor(private vehicleService: VehicleService,
               private dialog: MatDialog,
               private errorHandler: ErrorHandlerService,
@@ -93,12 +99,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
       return '';
     }
     if (isExpanded) {
-      return devices.map(device => `[${device.name}]`).join(' ');
+      return devices.map(device => `<span class="text-info">${device.name}</span>`).join(', ');
     } else {
       if (devices.length > this.limit) {
-        return devices.slice(0, this.limit).map(device => `[${device.name}]`).join(' ');
+        return devices.slice(0, this.limit).map(device => `<span class="text-info">${device.name}</span>`).join(', ');
       } else {
-        return devices.map(device => `[${device.name}]`).join(' ');
+        return devices.map(device => `<span class="text-info">${device.name}</span>`).join(', ');
       }
     }
   }
@@ -159,11 +165,16 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
       } else {
         dialog.close();
       }
-    })
+    });
+    dialog.componentInstance.manyCreatedSuccessful.subscribe(created => {
+      if (created) {
+        this.getAllVehicles();
+        dialog.close();
+      }
+    });
   }
 
-  handleCheckboxClick(vehicle: Vehicle, event: MouseEvent) {
-    event.stopPropagation();
+  handleCheckboxClick(vehicle: Vehicle) {
     const index = this.selectedVehicles.indexOf(vehicle);
     if (index !== -1) {
       this.selectedVehicles.splice(index, 1);
@@ -185,9 +196,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
           this.selectedVehicles.push(vehicle);
         }
       });
-    }
-    //Nach allem filtern
-    else {
+    } else {
       const filteredDeviceIds = this.vehicles!.map(vehicle => vehicle.id);
       this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredDeviceIds.includes(vehicle.id));
     }

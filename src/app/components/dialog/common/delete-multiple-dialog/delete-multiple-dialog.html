@@ -18,7 +18,7 @@
     <div *ngIf="useCase === Usecase.DEVICE">
       <div *ngFor="let device of objectsToDelete">
         <div class="d-flex">
-          <p class="me-4">Geräte-ID: {{device.id}}</p>
+          <p class="me-4">Geräte-ID: {{device.uuId}}</p>
           <p>Gerätename: {{device.name}}</p>
         </div>
         <mat-icon (click)="removeObjectFromList(device)"
@@ -33,8 +33,8 @@
     <div *ngIf="useCase === Usecase.VEHICLE">
       <div *ngFor="let vehicle of objectsToDelete">
         <div class="d-flex">
-          <p class="me-4">Geräte-ID: {{vehicle.id}}</p>
-          <p>Gerätename: {{vehicle.name}}</p>
+          <p class="me-4">Fahrzeug-ID: {{vehicle.uuId}}</p>
+          <p>Fahrzeugname: {{vehicle.name}}</p>
         </div>
         <mat-icon (click)="removeObjectFromList(vehicle)"
                   matTooltip="Gerät aus Liste entfernen"
@@ -48,7 +48,7 @@
     <div *ngIf="useCase === Usecase.LOCATION">
       <div *ngFor="let location of objectsToDelete">
         <div class="d-flex">
-          <p class="me-4">Ort-ID: {{location.id}}</p>
+          <p class="me-4">Ort-ID: {{location.uuId}}</p>
           <p>Ortsname: {{location.name}}</p>
         </div>
         <mat-icon (click)="removeObjectFromList(location)"

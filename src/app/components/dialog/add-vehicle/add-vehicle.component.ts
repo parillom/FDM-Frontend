@@ -1,4 +1,4 @@
-import {Component, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -15,6 +15,7 @@ export class AddVehicleComponent {
   addOneVehicle: boolean = true;
   isSubmitting: boolean = false;
   created: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
 
   vehicleForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -35,10 +36,6 @@ export class AddVehicleComponent {
     } else if (event.index === 1) {
       this.addOneVehicle = false;
     }
-  }
-
-  resetForm() {
-    this.vehicleForm.reset();
   }
 
   createVehicle() {
@@ -63,5 +60,9 @@ export class AddVehicleComponent {
         }
       });
     }
+  }
+
+  emitCreatedSuccessfullyValue(value: boolean) {
+    this.manyCreatedSuccessful.emit(value);
   }
 }

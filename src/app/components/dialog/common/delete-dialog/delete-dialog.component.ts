@@ -17,7 +17,6 @@ export class DeleteDialogComponent {
   @Output()
   delete?: EventEmitter<boolean> = new EventEmitter<boolean>();
   showDetails: boolean = false;
-  detailsText?: string = 'Details einblenden';
   protected readonly Usecase = Usecase;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
@@ -43,7 +42,7 @@ export class DeleteDialogComponent {
   }
 
   handleDetails() {
-    this.showDetails =! this.showDetails;
+    this.showDetails = !this.showDetails;
   }
 
   getVehicleName(): string {

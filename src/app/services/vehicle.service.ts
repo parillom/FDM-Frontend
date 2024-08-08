@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Vehicle} from '../models/Vehicle';
 import {ModelAndError} from '../models/ModelAndError';
+import {MoveDevicesRequest} from '../models/MoveDevicesRequest';
 
 const COMMON_VEHICLE_URL = 'fdm/api/vehicle';
 
@@ -36,5 +37,18 @@ export class VehicleService {
 
   getVehicle(uuId: number): Observable<ModelAndError> {
     return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/get-vehicle/${uuId}`)
+  }
+
+  saveUpdatedDevicesOfVehicle(name: string, droppedDevices: Device[], hasVehicle: boolean, selectedState: string): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/${name}/${hasVehicle}/${selectedState}`, droppedDevices);
+  }
+
+  moveDevicesToVehicle(request: MoveDevicesRequest): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/moveDevicesToVehicle`, request);
+  }
+
+  addManyDevices(vehicles: Vehicle[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/create-many`, vehicles)
+
   }
 }

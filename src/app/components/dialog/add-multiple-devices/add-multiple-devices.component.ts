@@ -16,7 +16,7 @@ export class AddMultipleDevicesComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   extractedElements?: any[];
-  devices?: Device[] = [];
+  devices: Device[] = [];
   displayedColumns: string[] = ['Name', 'Fahrzeug', 'Ort', 'Status'];
 
   @Output()

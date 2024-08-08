@@ -82,8 +82,14 @@ body.dark-mode {
 }
 
 .common-margin-top {
-  margin-top: 6rem;
+  margin-top: 100px;
 }
+
+.common-margin-top-search-input {
+  margin-top: 65px;
+}
+
+
 
 .drag:hover {
   cursor: grab;
@@ -92,3 +98,4 @@ body.dark-mode {
 .drag:focus {
   cursor: grab;
 }
+

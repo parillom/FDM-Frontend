@@ -30,48 +30,97 @@
         </button>
       </div>
       <div>
-        <mat-tab-group (selectedTabChange)="changeToDeviceOrLocation($event)">
+        <mat-tab-group (selectedTabChange)="changeToVehicleOrLocation($event)">
           <mat-tab label="Fahrzeug"></mat-tab>
           <mat-tab label="Ort"></mat-tab>
         </mat-tab-group>
       </div>
     </div>
 
-    <form *ngIf="addOneDevice" [formGroup]="deviceForm">
+    <div *ngIf="addOneDevice">
+<!--      Fahrzeug angewählt-->
+      <form *ngIf="!locationSelected" [formGroup]="deviceFormVehicle">
+        <div class="d-flex flex-column flex-wrap">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input class="mb-0" formControlName="name" matInput>
+            <mat-error class="mt-0"
+                       *ngIf="deviceFormVehicle.get('name')?.invalid && deviceFormVehicle.get('name')?.touched">
+              Name ist ein Pflichtfeld!
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Fahrzeug</mat-label>
+            <input formControlName="vehicle" matInput>
+            <mat-error
+              *ngIf="deviceFormVehicle.get('vehicle')?.invalid && deviceFormVehicle.get('vehicle')?.touched">
+              Fahrzeug ist ein Pflichtfeld!
+            </mat-error>
+          </mat-form-field>
+
+          <div class="d-flex mb-4 flex-wrap mt-2">
+            <button *ngIf="!locationSelected"
+                    mat-raised-button
+                    (click)="handleVehicleList()"
+                    [disabled]="vehicles?.length === 0">
+              Fahrzeuge suchen
+            </button>
+          </div>
+
+          <app-vehicle-location-autocompletion *ngIf="showVehicles"
+                                               [showVehicleInput]="true"
+                                               [showLocationInput]="false"
+                                               [vehicles]="vehicles"
+                                               (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
+
+          <mat-form-field>
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="state">
+              <mat-option value="ACTIVE">AKTIV</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="deviceFormVehicle.get('state')?.invalid && deviceFormVehicle.get('state')?.touched">
+              Status ist ein Pflichtfeld!
+            </mat-error>
+          </mat-form-field>
+
+          <div mat-dialog-actions class="d-flex justify-content-end">
+            <button type="submit"
+                    class="btn text-white w-100"
+                    mat-raised-button
+                    [disabled]="isSubmitting"
+                    (click)="saveDevice()"
+                    color="primary">
+              Speichern
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+<!--    Ort angewählt-->
+    <form *ngIf="locationSelected" [formGroup]="deviceFormLocation">
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input class="mb-0" formControlName="name" matInput>
-          <mat-error class="mt-0" *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
+          <mat-error class="mt-0"
+                     *ngIf="deviceFormLocation.get('name')?.invalid && deviceFormLocation.get('name')?.touched">
             Name ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field *ngIf="!locationSelected">
-          <mat-label>Fahrzeug</mat-label>
-          <input formControlName="vehicle" matInput>
-          <mat-error
-            *ngIf="deviceForm.get('vehicle')?.invalid && deviceForm.get('vehicle')?.touched">
-            Fahrzeug ist ein Pflichtfeld!
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field *ngIf="locationSelected">
+        <mat-form-field>
           <mat-label>Ort</mat-label>
           <input formControlName="location" matInput>
           <mat-error
-            *ngIf="deviceForm.get('location')?.invalid && deviceForm.get('location')?.touched">
+            *ngIf="deviceFormLocation.get('location')?.invalid && deviceFormLocation.get('location')?.touched">
             Ort ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
         <div class="d-flex mb-4 flex-wrap mt-2">
-          <button *ngIf="!locationSelected"
-                  mat-raised-button
-                  (click)="showVehiclesList()"
-                  [disabled]="vehicles?.length === 0">
-            Fahrzeuge suchen
-          </button>
           <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0"
                   mat-raised-button
                   (click)="showLocationsList()"
@@ -80,45 +129,40 @@
           </button>
         </div>
 
-        <app-vehicle-location-autocompletion *ngIf="showVehicles"
-                                    [showVehicleInput]="true"
-                                    [showLocationInput]="false"
-                                    [vehicles]="vehicles"
-                                    (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
         <app-vehicle-location-autocompletion *ngIf="showLocations"
-                                    [showVehicleInput]="false"
-                                    [showLocationInput]="true"
-                                    [locations]="locations"
-                                    (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
+                                             [showVehicleInput]="false"
+                                             [showLocationInput]="true"
+                                             [locations]="locations"
+                                             (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
+
 
         <mat-form-field>
           <mat-label>Status</mat-label>
           <mat-select formControlName="state">
-            <mat-option *ngIf="!locationSelected" value="ACTIVE">AKTIV</mat-option>
-            <mat-option *ngIf="locationSelected" value="STORAGE">LAGER</mat-option>
-            <mat-option *ngIf="locationSelected" value="REESTABLISH">RETABLIEREN</mat-option>
+            <mat-option value="STORAGE">LAGER</mat-option>
+            <mat-option value="REESTABLISH">RETABLIEREN</mat-option>
           </mat-select>
           <mat-error
-            *ngIf="deviceForm.get('state')?.invalid && deviceForm.get('state')?.touched">
+            *ngIf="deviceFormLocation.get('state')?.invalid && deviceFormLocation.get('state')?.touched">
             Status ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
-      </div>
 
-      <div mat-dialog-actions class="d-flex justify-content-end">
-        <button type="submit"
-                class="btn text-white w-100"
-                mat-raised-button
-                [disabled]="isSubmitting"
-                (click)="saveDevice()"
-                color="primary">
-          Speichern
-        </button>
+        <div mat-dialog-actions class="d-flex justify-content-end">
+          <button type="submit"
+                  class="btn text-white w-100"
+                  mat-raised-button
+                  [disabled]="isSubmitting"
+                  (click)="saveDevice()"
+                  color="primary">
+            Speichern
+          </button>
+        </div>
       </div>
     </form>
 
     <app-add-multiple-devices *ngIf="!addOneDevice"
-                              (devicesCreated)="checkIfMultipleDevicesCreated($event)"></app-add-multiple-devices>
+                              (devicesCreated)="emitCreatedSuccessfullyValue($event)"></app-add-multiple-devices>
 
   </div>
 </div>

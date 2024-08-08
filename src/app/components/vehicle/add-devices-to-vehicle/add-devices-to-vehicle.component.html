@@ -1,0 +1,30 @@
+<div class="mt-5">
+  <div class="row mb-3" *ngIf="filteredDevices.length > 0">
+    <mat-form-field class="col-12 col-md-6 mb-2">
+      <mat-label>Gerät suchen</mat-label>
+      <input matInput placeholder="Id, Name" [(ngModel)]="deviceSearch"
+             (ngModelChange)="filterWithAllProperties()">
+    </mat-form-field>
+    <button [disabled]="selectedDevices.length < 1" color="primary" (click)="save()" class="col-12 col-md-3 offset-lg-2"
+            mat-raised-button>Geräte verschieben ({{selectedDevices.length}})
+    </button>
+  </div>
+
+  <div class="d-flex align-items-center mb-3">
+    Zur Verfügung stehende Geräte Geräte: {{filteredDevices.length}}
+    <mat-icon class="material-icons-outlined ms-2" matTooltip="{{getTooltipInfoText()}}"
+              matTooltipPosition="above">info
+    </mat-icon>
+  </div>
+
+  <div class="row" *ngIf="filteredDevices.length > 0">
+    <div class="col-12 col-md-6" *ngFor="let device of filteredDevices">
+      <mat-card class="w-100 mb-2">
+        <mat-card-actions (click)="handleCheckboxClick(device)" class="d-flex row align-items-center">
+          <p class="col-12 col-sm-10 m-0">{{device.name}}</p>
+          <mat-checkbox class="col-12 col-sm-2" color="primary"></mat-checkbox>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

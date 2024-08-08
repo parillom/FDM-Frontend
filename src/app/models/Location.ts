@@ -5,5 +5,6 @@
 
 export class Location {
   id?: number;
+  uuId?: number;
   name?: string;
 }

@@ -9,7 +9,6 @@ import {Vehicle} from '../../../models/Vehicle';
 import {VehicleService} from '../../../services/vehicle.service';
 import {DeviceState} from '../../../models/DeviceState';
 import {DeviceService} from '../../../services/device.service';
-import {ToastrService} from 'ngx-toastr';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 
@@ -37,20 +36,22 @@ export class AddDeviceComponent implements OnInit {
   @Output() createdSuccessful = new EventEmitter<boolean>();
   @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
 
-  deviceForm: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
-    location: new FormControl<string | null>(null),
-    vehicle: new FormControl<string | null>(null, Validators.required),
+  deviceFormVehicle: FormGroup = new FormGroup({
+    name: new FormControl(null),
+    vehicle: new FormControl<string | null>(null),
     state: new FormControl('', Validators.required),
-    searchLocation: new FormControl(''),
-    searchVehicle: new FormControl(''),
+  });
+
+  deviceFormLocation: FormGroup = new FormGroup({
+    name: new FormControl(null),
+    location: new FormControl<string | null>(null),
+    state: new FormControl('', Validators.required),
   });
 
   constructor(public dialogRef: MatDialogRef<AddDeviceComponent>,
               private locationService: LocationService,
               private vehicleService: VehicleService,
               private deviceService: DeviceService,
-              private toastr: ToastrService,
               private errorHandler: ErrorHandlerService) {
   }
 
@@ -62,9 +63,11 @@ export class AddDeviceComponent implements OnInit {
 
   private getLocations() {
     this.locationService.getAllLocations().subscribe(res => {
-      if (res) {
-        this.locations = res;
+      if (res && !this.errorHandler.hasError(res)) {
+        this.locations = res.object;
         this.filteredLocations = this.locations;
+      } else {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
@@ -81,14 +84,14 @@ export class AddDeviceComponent implements OnInit {
   }
 
   setLocationInput(device: Device) {
-    this.deviceForm.patchValue({
+    this.deviceFormLocation.patchValue({
       location: device.name
     });
     this.showLocations = false;
   }
 
   setVehicleInput(vehicle: Vehicle) {
-    this.deviceForm.patchValue({
+    this.deviceFormVehicle.patchValue({
       vehicle: vehicle.name
     });
     this.showVehicles = false;
@@ -102,7 +105,7 @@ export class AddDeviceComponent implements OnInit {
     }
   }
 
-  changeToDeviceOrLocation(event: MatTabChangeEvent) {
+  changeToVehicleOrLocation(event: MatTabChangeEvent) {
     if (event.index === 0) {
       this.handleVehicleClick();
     } else {
@@ -111,95 +114,114 @@ export class AddDeviceComponent implements OnInit {
   }
 
   saveDevice() {
-    if (this.deviceForm.valid) {
-      this.isSubmitting = true;
-      const deviceData = this.deviceForm.value;
+    if (this.locationSelected) {
+      this.createDeviceWithLocation();
+    } else {
+      this.createDeviceWithVehicle();
+    }
+  }
 
-      delete deviceData.searchLocation;
-      delete deviceData.searchVehicle;
+  createDeviceWithLocation() {
+    this.deviceFormLocation.get('name')?.setValidators(Validators.required);
+    this.deviceFormLocation.get('name')?.updateValueAndValidity();
+    this.deviceFormLocation.get('location')?.setValidators(Validators.required);
+    this.deviceFormLocation.get('location')?.updateValueAndValidity();
+
+    if (this.deviceFormLocation.valid) {
+      const locationForm = this.deviceFormLocation.value;
+      this.isSubmitting = true;
 
       const deviceToSave = {} as Device;
       deviceToSave.location = {} as Location;
       deviceToSave.vehicle = {} as Vehicle;
       deviceToSave.state = {} as State;
-      deviceToSave.name = deviceData.name;
-      deviceToSave.location.name = deviceData.location;
-      deviceToSave.vehicle.name = deviceData.vehicle;
-      deviceToSave.state.deviceState = deviceData.state;
+      deviceToSave.name = locationForm.name;
+      deviceToSave.location.name = locationForm.location;
+      deviceToSave.vehicle = null;
+      deviceToSave.state.deviceState = locationForm.state;
 
-      if (!deviceData.vehicle) {
-        deviceToSave.vehicle = null;
-      }
-      if (!deviceData.location) {
-        deviceToSave.location = null;
-      }
-
-      this.deviceService.addDevice(deviceToSave).subscribe(res => {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage!)
-          this.createdSuccessful.emit(false);
-          this.isSubmitting = false;
-        } else {
-          this.errorHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
-          this.createdSuccessful.emit(true);
-          this.deviceForm.get('name')?.reset();
-          this.deviceForm.controls['name'].reset();
-          this.getLocations();
-          this.getVehicles();
-          this.isSubmitting = false;
-        }
-      });
+      this.performSaveCall(deviceToSave);
     }
   }
 
+  createDeviceWithVehicle() {
+    this.deviceFormVehicle.get('name')?.setValidators(Validators.required);
+    this.deviceFormVehicle.get('name')?.updateValueAndValidity();
+    this.deviceFormVehicle.get('vehicle')?.setValidators(Validators.required);
+    this.deviceFormVehicle.get('vehicle')?.updateValueAndValidity();
+    if (this.deviceFormVehicle.valid) {
+      const vehicleForm = this.deviceFormVehicle.value;
+
+      const deviceToSave = {} as Device;
+      deviceToSave.location = {} as Location;
+      deviceToSave.vehicle = {} as Vehicle;
+      deviceToSave.state = {} as State;
+      deviceToSave.name = vehicleForm.name;
+      deviceToSave.location = null;
+      deviceToSave.vehicle.name = vehicleForm.vehicle;
+      deviceToSave.state.deviceState = vehicleForm.state;
+
+      this.performSaveCall(deviceToSave);
+    }
+  }
+
+  performSaveCall(device: Device) {
+    this.deviceService.addDevice(device).subscribe(res => {
+      if (this.errorHandler.hasError(res)) {
+        this.errorHandler.setErrorMessage(res.errorMessage!)
+        this.createdSuccessful.emit(false);
+        this.isSubmitting = false;
+      } else {
+        this.errorHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
+        this.createdSuccessful.emit(true);
+        this.clearValidators();
+        this.getLocations();
+        this.getVehicles();
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  clearValidators() {
+    this.deviceFormVehicle.get('name')?.reset();
+    this.deviceFormVehicle.get('name')?.clearValidators();
+    this.deviceFormVehicle.get('name')?.updateValueAndValidity();
+
+    this.deviceFormLocation.get('name')?.reset();
+    this.deviceFormLocation.get('name')?.clearValidators();
+    this.deviceFormLocation.get('name')?.updateValueAndValidity();
+  }
+
   handleVehicleClick() {
-    this.deviceForm.get('vehicle')?.setValidators(Validators.required);
-    this.handleLocationInput();
     this.locationSelected = false;
     this.showVehicles = false;
-    this.showLocations = false;
     this.setStateValue();
   }
 
-  showVehiclesList() {
+  handleVehicleList() {
     this.showVehicles = !this.showVehicles;
     this.filteredVehicles = this.vehicles?.slice(0, 5);
   }
 
-  private handleLocationInput() {
-    this.deviceForm.get('location')?.clearValidators();
-    this.deviceForm.get('location')?.setValue(null);
-    this.deviceForm.get('location')?.updateValueAndValidity();
-  }
-
   handleLocationClick() {
-    this.deviceForm.get('location')?.setValidators(Validators.required);
     this.locationSelected = true;
     this.showLocations = false;
-    this.showVehicles = false;
     this.setStateValue();
-    this.handleVehicleInput();
   }
 
   showLocationsList() {
     this.showLocations = !this.showLocations;
-    this.filteredLocations = this.locations?.slice(0, 5);
   }
 
-  private handleVehicleInput() {
-    this.deviceForm.get('vehicle')?.clearValidators();
-    this.deviceForm.get('vehicle')?.setValue(null);
-    this.deviceForm.get('vehicle')?.updateValueAndValidity();
-  }
 
   public setStateValue() {
     if (this.locationSelected) {
-      this.deviceForm.patchValue({
+      this.deviceFormLocation.patchValue({
         state: DeviceState.STORAGE
       });
     }
     if (!this.locationSelected) {
-      this.deviceForm.patchValue({
+      this.deviceFormVehicle.patchValue({
         state: DeviceState.ACTIVE
       });
     }
@@ -210,12 +232,14 @@ export class AddDeviceComponent implements OnInit {
   }
 
   resetForm() {
-    this.deviceForm.reset();
+    if (this.locationSelected) {
+      this.deviceFormLocation.reset();
+    } else {
+      this.deviceFormVehicle.reset();
+    }
   }
 
-  checkIfMultipleDevicesCreated(value: boolean) {
+  emitCreatedSuccessfullyValue(value: boolean) {
     this.manyCreatedSuccessful.emit(value);
   }
-
-
 }

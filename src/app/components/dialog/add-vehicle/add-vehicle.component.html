@@ -39,5 +39,7 @@
         </button>
       </div>
     </form>
+    <app-add-multiple-vehicles *ngIf="!addOneVehicle"
+                              (vehiclesCreated)="emitCreatedSuccessfullyValue($event)"></app-add-multiple-vehicles>
   </div>
 </div>

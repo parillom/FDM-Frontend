@@ -53,6 +53,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showSpinner: boolean = false;
   disableRowClick: boolean = false;
 
+  columnWidths = {
+    'Geräte-ID': '15%'
+  }
+
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
               private toastr: ToastrService,
@@ -93,9 +97,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   getAllLocations() {
     this.locationService.getAllLocations().subscribe(res => {
-      if (res) {
-        this.locations = res;
+      if (res && !this.errorHandler.hasError(res)) {
+        this.locations = res.object;
         this.filteredLocations = this.locations;
+      } else {
+        this.errorHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
@@ -245,6 +251,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       dialogRef.componentInstance.updatedSuccessful.subscribe(res => {
         if (res) {
           this.getAllDevices();
+          dialogRef.close();
         }
       });
     }
@@ -272,6 +279,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               dialogRef.close();
             } else {
               this.errorHandler.setSuccessMessage(`Gerät ${device.name} konnte gelöscht werden`);
+              this.getAllDevices();
               dialogRef.close();
             }
           });
