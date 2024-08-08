@@ -22,6 +22,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   filteredDevices: Device[] = [];
   selectedDevices: Device[] = [];
   deviceSearch = '';
+  rendered = false;
 
   constructor(private deviceService: DeviceService,
               private vehicleService: VehicleService,
@@ -34,10 +35,12 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   private getAllDevices() {
+    this.rendered = false;
     this.deviceService.getAllDevices().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.devices = res.object;
         this.devicesNotOnVehicle();
+        this.rendered = true;
       } else {
         this.errorHandler.setErrorMessage(res.errorMessage!);
       }

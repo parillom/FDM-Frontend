@@ -18,13 +18,11 @@ import {MatTabChangeEvent} from '@angular/material/tabs';
   styleUrl: './add-device.component.scss',
 })
 export class AddDeviceComponent implements OnInit {
-
   device: Device = new Device();
   showLocations: boolean = false;
   showVehicles: boolean = false;
   filteredLocations?: Location[] = [];
   filteredVehicles?: Device[] = [];
-  searchLocation: string = '';
   addOneDevice: boolean = true;
   locationSelected: boolean = false;
   isSubmitting: boolean = false;

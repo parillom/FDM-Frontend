@@ -51,4 +51,8 @@ export class VehicleService {
     return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/create-many`, vehicles)
 
   }
+
+  updateVehicleName(uuId: number | undefined, newVehicleName: string): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/updateVehicleName/${uuId}/${newVehicleName}`)
+  }
 }

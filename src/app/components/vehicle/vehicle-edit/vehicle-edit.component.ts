@@ -1,6 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {VehicleService} from '../../../services/vehicle.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {Vehicle} from '../../../models/Vehicle';
 import {Location} from '../../../models/Location';
@@ -11,6 +11,9 @@ import {ModelAndError} from '../../../models/ModelAndError';
 import {LocationService} from '../../../services/location.service';
 import {DeviceState} from '../../../models/DeviceState';
 import {NavbarComponent} from '../../common/navbar/navbar.component';
+import {MatDialog} from '@angular/material/dialog';
+import {ConfirmDialogComponent} from '../../dialog/common/confirm-dialog/confirm-dialog.component';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-vehicle-edit',
@@ -18,12 +21,10 @@ import {NavbarComponent} from '../../common/navbar/navbar.component';
   styleUrl: './vehicle-edit.component.scss'
 })
 export class VehicleEditComponent implements OnInit {
-
   uuid?: number;
   vehicle?: Vehicle;
   devices: Device[] = [];
   droppedDevices: Device[] = [];
-  manageDevices = true;
   moveDevicesOption = true;
   selectedDevices: Device[] = [];
   isChecked: boolean = false;
@@ -39,16 +40,24 @@ export class VehicleEditComponent implements OnInit {
   protected readonly DeviceState = DeviceState;
   showStateOption: boolean = false;
   showSpinner: boolean = false;
+  rendered: boolean = false;
+  nameValid = false;
+
+  editVehicleForm: FormGroup = new FormGroup({
+    vehicleName: new FormControl<string | null>('', Validators.required),
+  });
 
   constructor(private vehicleService: VehicleService,
-              private router: ActivatedRoute,
+              private route: ActivatedRoute,
+              private router: Router,
               private errorHandler: ErrorHandlerService,
               private locationService: LocationService,
-              private navbarService: NavbarComponent) {
+              private navbarService: NavbarComponent,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.router.queryParams.subscribe(param => {
+    this.route.queryParams.subscribe(param => {
       this.uuid = param['id'];
     });
     this.getVehicle(this.uuid!);
@@ -65,6 +74,7 @@ export class VehicleEditComponent implements OnInit {
           this.errorHandler.setErrorMessage(res.errorMessage!);
         } else {
           this.vehicle = res.object;
+          this.editVehicleForm.get('vehicleName')?.setValue(this.vehicle?.name);
           this.getDevicesFromVehicle(this.vehicle!);
           this.navbarService.setCurrentObjectName(this.vehicle?.name!);
         }
@@ -73,6 +83,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   getDevicesFromVehicle(vehicle: Vehicle) {
+    this.rendered = false;
     this.showSpinner = true;
     this.vehicleService.getDevicesFromVehicle(vehicle).subscribe(res => {
       if (res) {
@@ -82,6 +93,7 @@ export class VehicleEditComponent implements OnInit {
         } else {
           this.devices = res.object;
           this.filteredDevices = this.devices;
+          this.rendered = true;
         }
       }
     });
@@ -100,16 +112,6 @@ export class VehicleEditComponent implements OnInit {
     }
   }
 
-  changeVehicleMode(event: MatTabChangeEvent) {
-    if (event.index === 0) {
-      this.manageDevices = true;
-      this.moveDevicesOption = true;
-    } else if (event.index === 1) {
-      this.manageDevices = false;
-      this.moveDevicesOption = false;
-    }
-  }
-
   changeVehicleOption(event: MatTabChangeEvent) {
     if (event.index === 0) {
       this.moveDevicesOption = true;
@@ -124,6 +126,18 @@ export class VehicleEditComponent implements OnInit {
   }
 
   save() {
+    const dialog = this.dialog.open(ConfirmDialogComponent, {
+      autoFocus: false,
+      hasBackdrop: false
+    });
+    dialog.componentInstance.confirm.subscribe(confirmed => {
+      if (confirmed) {
+        this.performMoveCall()
+      }
+    });
+  }
+
+  performMoveCall() {
     if ((this.selectedVehicleName || this.selectedLocationName) && this.droppedDevices.length > 0 && this.selectedState) {
       if (this.selectedVehicleName) {
         this.selectedState = DeviceState.ACTIVE;
@@ -281,4 +295,28 @@ export class VehicleEditComponent implements OnInit {
     this.selectedState = value;
   }
 
+  navigateToVehicleDashboard() {
+    void this.router.navigate(['fdm/dashboard/vehicle']);
+  }
+
+  updateVehicleName() {
+    const newVehicleName = this.editVehicleForm.get('vehicleName')?.value;
+    if (this.editVehicleForm.valid) {
+      this.vehicleService.updateVehicleName(this.vehicle?.uuId, newVehicleName).subscribe(res => {
+        if (res && !this.errorHandler.hasError(res)) {
+          this.errorHandler.setSuccessMessage('Fahrzeug konnte bearbeitet werden');
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          this.errorHandler.setErrorMessage(res.errorMessage!);
+        }
+      });
+    }
+  }
+
+  checkIfNameHasChanged() {
+    const vehicleName = this.editVehicleForm.get('vehicleName')?.value
+    this.nameValid = this.editVehicleForm.valid && vehicleName.toUpperCase() !== this.vehicle?.name;
+  }
 }
