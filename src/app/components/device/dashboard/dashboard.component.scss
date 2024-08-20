@@ -16,11 +16,10 @@ th {
   cursor: pointer;
 }
 
-.mat-mdc-row:hover .mat-mdc-cell {
-  border-top: 2px solid lightgrey;
-  border-bottom: 2px solid lightgrey;
-}
-
 .mat-elevation-z8 {
   overflow-x: auto;
+}
+
+.selected {
+  background-color: darkgrey;
 }

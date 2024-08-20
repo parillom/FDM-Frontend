@@ -1,5 +1,4 @@
-import {Component, ErrorHandler, EventEmitter, Inject, Output} from '@angular/core';
-import {Device} from '../../../../models/Device';
+import {Component, EventEmitter, Inject, Output} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {DeviceService} from '../../../../services/device.service';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
@@ -11,10 +10,10 @@ import {ModelAndError} from '../../../../models/ModelAndError';
 
 @Component({
   selector: 'app-delete-dialog',
-  templateUrl: './delete-multiple-dialog.html',
+  templateUrl: './delete-multiple-dialog.component.html',
   styleUrl: './delete-multiple-dialog.scss'
 })
-export class DeleteMultipleDialog {
+export class DeleteMultipleDialogComponent {
 
   objectsToDelete: any[] = [];
   objectToDeleteIds: (number | undefined)[] = [];
@@ -25,10 +24,10 @@ export class DeleteMultipleDialog {
   deleted?: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @Output()
-  change?: EventEmitter<any[]> = new EventEmitter<any[]>();
+  objectRemoved?: EventEmitter<any[]> = new EventEmitter<any[]>();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-              public dialogRef: MatDialogRef<DeleteMultipleDialog>,
+              public dialogRef: MatDialogRef<DeleteMultipleDialogComponent>,
               private deviceService: DeviceService,
               private matDialog: MatDialog,
               private vehicleService: VehicleService,
@@ -42,10 +41,10 @@ export class DeleteMultipleDialog {
     this.dialogRef.close();
   }
 
-  removeObjectFromList(object: any) {
-    const index = this.objectsToDelete.findIndex(object => object.id === object.id);
+  removeObjectFromList(objectToRemove: any) {
+    const index = this.objectsToDelete.findIndex(object => object.id === objectToRemove.id);
     this.objectsToDelete.splice(index, 1);
-    this.change!.emit(this.objectsToDelete);
+    this.objectRemoved!.emit(this.objectsToDelete);
   }
 
   openConfirmDialog() {

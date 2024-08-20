@@ -7,7 +7,7 @@
            placeholder="Wählen"
            matInput
            [matAutocomplete]="veh"
-           [disabled]="!stateIsActive && !showInputs"
+           [disabled]="!enableVehicleInput"
            (input)="filter($event, true)"
            (focus)="filter($event, true)">
     <mat-autocomplete #veh="matAutocomplete">
@@ -26,7 +26,7 @@
            type="text"
            placeholder="Wählen"
            matInput
-           [disabled]="stateIsActive && !showInputs"
+           [disabled]="!enableLocationInput"
            [matAutocomplete]="loc"
            (input)="filter($event, false)"
            (focus)="filter($event, false)">

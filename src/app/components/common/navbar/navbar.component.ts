@@ -1,8 +1,8 @@
-import {Component, HostBinding, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatSidenav} from '@angular/material/sidenav';
-import {FormControl} from '@angular/forms';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {SettingsComponent} from '../settings/settings.component';
 
 @Component({
   selector: 'app-navbar',
@@ -14,36 +14,15 @@ export class NavbarComponent implements OnInit {
   pageName: string = '';
   uuId?: number;
   url: string = '';
+  objectName: string | null = '';
   @ViewChild('sidenav') sidenav?: MatSidenav;
 
-  switchTheme = new FormControl(false);
-  @HostBinding('class') className = '';
-  darkClass = 'theme-dark';
-  lightClass = 'theme-light';
-  objectName: string | null = 'hallo';
-
-  constructor(private overlay: OverlayContainer,
-              private router: Router,
-              private route: ActivatedRoute) {
+  constructor(private router: Router,
+              private route: ActivatedRoute,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.className = savedTheme;
-      this.switchTheme.setValue(savedTheme === this.darkClass);
-      this.overlay.getContainerElement().classList.add(this.className);
-    } else {
-      this.overlay.getContainerElement().classList.add(this.lightClass);
-    }
-
-    this.switchTheme.valueChanges.subscribe((currentMode) => {
-      this.className = currentMode ? this.darkClass : this.lightClass;
-      localStorage.setItem('theme', this.className);
-      this.overlay.getContainerElement().classList.remove(this.darkClass, this.lightClass);
-      this.overlay.getContainerElement().classList.add(this.className);
-    });
-
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects;
@@ -68,7 +47,7 @@ export class NavbarComponent implements OnInit {
         return 'Fahrzeuge'
     } else if (url === '/fdm/dashboard/location' || url.includes('/fdm/dashboard/location/edit')) {
       return 'Orte'
-    } else{
+    } else {
       return '';
     }
   }
@@ -84,5 +63,14 @@ export class NavbarComponent implements OnInit {
 
   navigateToVehicle() {
     window.location.href = 'fdm/dashboard/vehicle';
+  }
+
+  openSettings() {
+    this.dialog.open(SettingsComponent, {
+      hasBackdrop: false,
+      autoFocus: false,
+      width: '400px',
+      height: '400px'
+    });
   }
 }

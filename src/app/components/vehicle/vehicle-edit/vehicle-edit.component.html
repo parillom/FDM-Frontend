@@ -34,12 +34,12 @@
                         mode="indeterminate"></mat-progress-spinner>
 
   <div class="d-flex align-items-center mt-5"
-       *ngIf="rendered && filteredDevices.length < 1 && this.droppedDevices.length < 1 && this.moveDevicesOption && !this.showSpinner">
+       *ngIf="rendered && devices.length < 1 && this.droppedDevices.length < 1 && this.moveDevicesOption && !this.showSpinner">
     <mat-icon class="material-icons-outlined">info</mat-icon>
     <p class="p-2 m-0">Es können keine Geräte verschoben werden. Dem Fahrzeug sind keine Geräte zugewiesen.</p>
   </div>
 
-  <div *ngIf="moveDevicesOption && (filteredDevices.length > 0 || droppedDevices.length > 0)"
+  <div *ngIf="moveDevicesOption && (devices.length > 0 || droppedDevices.length > 0)"
        class="d-flex align-items-center row mt-5 w-100 w-sm-50">
     <mat-form-field class="mt-3 col-12 col-lg-6">
       <mat-label>Gerät suchen</mat-label>
@@ -140,6 +140,7 @@
              [cdkDropListConnectedTo]="[devicesToMoveList]"
              class="example-list"
              (cdkDropListDropped)="drop($event)">
+          <span class="p-2 d-flex justify-content-center" *ngIf="droppedDevices.length < 1">Geräte hier platzieren</span>
           <div *ngFor="let device of droppedDevices">
             <mat-card class="m-1 drag drag-preview" cdkDrag>
               <mat-card-content class="row d-flex align-items-center">

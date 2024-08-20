@@ -26,7 +26,7 @@ export class EditDeviceDialogComponent implements OnInit {
   editDeviceFormLocation: FormGroup;
 
   protected readonly DeviceState = DeviceState;
-  locationIsVehicle?: boolean;
+  assignToVehicle?: boolean;
   vehicleFormDirty?: boolean;
   locationFormDirty?: boolean;
   showVehicleSearch: boolean = false;
@@ -46,18 +46,18 @@ export class EditDeviceDialogComponent implements OnInit {
     this.editDeviceFormVehicle = new FormGroup({
       name: new FormControl(data.device.name, Validators.required),
       vehicle: new FormControl(this.device?.vehicle?.name, Validators.required),
-      state: new FormControl(data.device.status?.deviceState, Validators.required)
+      state: new FormControl(null, Validators.required)
     });
     this.editDeviceFormLocation = new FormGroup({
       name: new FormControl(data.device.name, Validators.required),
       location: new FormControl(this.device?.location?.name, Validators.required),
-      state: new FormControl(data.device.status?.deviceState, Validators.required)
+      stateLocation: new FormControl(null, Validators.required)
     });
   }
 
   ngOnInit() {
     if (this.device?.vehicle) {
-      this.locationIsVehicle = true;
+      this.assignToVehicle = true;
       this.selectedIndex = 0;
     } else {
       this.selectedIndex = 1
@@ -67,13 +67,14 @@ export class EditDeviceDialogComponent implements OnInit {
 
   private setStateInitValue() {
     if (this.device) {
-      const stateControl = this.editDeviceFormLocation.get('state');
-      if (stateControl) {
-        stateControl.setValue(this.device!.state?.deviceState || '');
-      }
-      const stateControlVehicle = this.editDeviceFormVehicle.get('state');
-      if (stateControlVehicle) {
-        stateControlVehicle.setValue(DeviceState.ACTIVE);
+      if (!this.assignToVehicle) {
+        const stateControl = this.editDeviceFormLocation.get('stateLocation');
+        stateControl!.setValue(this.device!.state?.deviceState || '');
+      } else {
+        const stateControlVehicle = this.editDeviceFormVehicle.get('state');
+        if (stateControlVehicle) {
+          stateControlVehicle.setValue(DeviceState.ACTIVE);
+        }
       }
     }
   }
@@ -93,12 +94,12 @@ export class EditDeviceDialogComponent implements OnInit {
   }
 
   checkDeviceLocationChanged() {
-    let deviceLocation = (<HTMLInputElement>document.getElementById("location")).value;
+    const deviceLocation = (<HTMLInputElement>document.getElementById("location")).value;
     this.locationFormDirty = deviceLocation !== this.device?.location?.name;
   }
 
   checkDeviceVehicleChanged() {
-    let deviceLocation = (<HTMLInputElement>document.getElementById("vehicle")).value;
+    const deviceLocation = (<HTMLInputElement>document.getElementById("vehicle")).value;
     this.vehicleFormDirty = deviceLocation !== this.device?.vehicle?.name;
   }
 
@@ -108,7 +109,7 @@ export class EditDeviceDialogComponent implements OnInit {
 
   updateDevice() {
     const deviceToSave = {} as Device;
-    if (this.locationIsVehicle) {
+    if (this.assignToVehicle) {
       if (this.editDeviceFormVehicle.valid) {
         const deviceData = this.editDeviceFormVehicle.value;
 
@@ -145,7 +146,7 @@ export class EditDeviceDialogComponent implements OnInit {
         deviceToSave.name = deviceData.name;
         deviceToSave.vehicle = null;
         deviceToSave.location.name = deviceData.location;
-        deviceToSave.state!.deviceState! = deviceData.state;
+        deviceToSave.state!.deviceState! = deviceData.stateLocation;
 
         this.deviceService.updateDevice(deviceToSave, false).subscribe(res => {
             if (this.errorHandler.hasError(res)) {
@@ -163,9 +164,9 @@ export class EditDeviceDialogComponent implements OnInit {
 
   changeUpdateFormat($event: MatTabChangeEvent) {
     if ($event.index === 0) {
-      this.locationIsVehicle = true;
+      this.assignToVehicle = true;
     } else if ($event.index === 1) {
-      this.locationIsVehicle = false;
+      this.assignToVehicle = false;
     }
   }
 

@@ -20,7 +20,7 @@ import {MatCard, MatCardActions, MatCardContent} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogContainer, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -30,8 +30,8 @@ import {DeleteDialogComponent} from './components/dialog/common/delete-dialog/de
 import {AddMultipleDevicesComponent} from './components/dialog/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
 import {
-    DeleteMultipleDialog
-} from './components/dialog/common/delete-multiple-dialog/delete-multiple-dialog';
+    DeleteMultipleDialogComponent
+} from './components/dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {ConfirmDialogComponent} from './components/dialog/common/confirm-dialog/confirm-dialog.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
@@ -67,6 +67,7 @@ import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import { LocationDashboardComponent } from './components/location/location-dashboard/location-dashboard.component';
 import { AddLocationComponent } from './components/dialog/add-location/add-location.component';
 import { AddMultipleVehiclesComponent } from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
+import { SettingsComponent } from './components/common/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,7 @@ import { AddMultipleVehiclesComponent } from './components/dialog/add-multiple-v
     AddDeviceComponent,
     DeleteDialogComponent,
     AddMultipleDevicesComponent,
-    DeleteMultipleDialog,
+    DeleteMultipleDialogComponent,
     ConfirmDialogComponent,
     VehicleLocationAutocompletionDashboardComponent,
     VehicleLocationAutocompletionComponent,
@@ -89,6 +90,7 @@ import { AddMultipleVehiclesComponent } from './components/dialog/add-multiple-v
     LocationDashboardComponent,
     AddLocationComponent,
     AddMultipleVehiclesComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -148,7 +150,8 @@ import { AddMultipleVehiclesComponent } from './components/dialog/add-multiple-v
     MatCardContent,
     MatCardActions,
     MatGridList,
-    MatGridTile
+    MatGridTile,
+    MatDialogContainer
   ],
   providers: [
     BsModalService,

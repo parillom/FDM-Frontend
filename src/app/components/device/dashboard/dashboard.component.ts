@@ -1,4 +1,4 @@
-import {AfterViewInit, booleanAttribute, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DeviceService} from '../../../services/device.service';
 import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
@@ -7,7 +7,7 @@ import {AddDeviceComponent} from '../../dialog/add-device/add-device.component';
 import {ToastrService} from 'ngx-toastr';
 import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
-import {DeleteMultipleDialog} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog';
+import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {LocationService} from '../../../services/location.service';
 import {Location} from '../../../models/Location';
 import {VehicleService} from '../../../services/vehicle.service';
@@ -149,10 +149,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dataSource.data! = this.devices!.filter(device => {
       const matchesId = device.uuId!.toString().includes(deviceSearchId);
       const matchesName = device.name?.toLowerCase().includes(searchLower);
-      const matchesLocation = device.location?.name?.toLowerCase().includes(searchLower.toLowerCase());
-      const matchesVehicle = device.vehicle?.name?.toLowerCase().includes(searchLower.toLowerCase());
 
-      return matchesId || matchesName || matchesLocation || matchesVehicle;
+      return matchesId || matchesName;
     });
   }
 
@@ -437,7 +435,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   openDeleteMultipleDialog() {
     this.formShowing = true;
-    const dialogRef = this.dialog.open(DeleteMultipleDialog, {
+    const dialogRef = this.dialog.open(DeleteMultipleDialogComponent, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -447,7 +445,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         useCase: Usecase.DEVICE
       }
     });
-    dialogRef.componentInstance.change!.subscribe((updatedDeviceList) => {
+    dialogRef.componentInstance.objectRemoved!.subscribe((updatedDeviceList) => {
       if (updatedDeviceList.length !== this.devices!.length) {
         this.isChecked = false;
       }

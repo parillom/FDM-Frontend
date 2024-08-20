@@ -100,7 +100,7 @@
     </div>
 
 <!--    Ort angewählt-->
-    <form *ngIf="locationSelected" [formGroup]="deviceFormLocation">
+    <form *ngIf="locationSelected && addOneDevice" [formGroup]="deviceFormLocation">
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>

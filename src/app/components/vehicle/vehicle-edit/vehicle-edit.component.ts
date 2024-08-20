@@ -208,7 +208,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   handleCheckboxClickDropped(device: Device) {
-    let index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.id === device.id);
+    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.id === device.id);
     if (index !== -1) {
       this.selectedDevices.splice(index, 1);
     } else {

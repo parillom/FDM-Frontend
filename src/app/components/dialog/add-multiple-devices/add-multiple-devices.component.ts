@@ -38,7 +38,7 @@ export class AddMultipleDevicesComponent {
     const fileReader = new FileReader();
     fileReader.readAsBinaryString(file);
 
-    fileReader.onload = (e) => {
+    fileReader.onload = () => {
       const workBook = XLSX.read(fileReader.result, {type: 'binary'});
       const sheetNames = workBook.SheetNames;
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);

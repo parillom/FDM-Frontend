@@ -1,0 +1,17 @@
+<div>
+  <h1 class="m-0" mat-dialog-title>Einstellungen</h1>
+  <mat-dialog-content>
+    <div class="row d-flex align-items-center">
+      <p class="col-8 m-0">Darkmode</p>
+      <div class="d-flex align-items-center col-4">
+        <mat-slide-toggle color="primary" [formControl]="switchTheme">
+        </mat-slide-toggle>
+        <mat-icon>bedtime</mat-icon>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-raised-button (click)="closeModal()">schliessen</button>
+  </mat-dialog-actions>
+
+</div>

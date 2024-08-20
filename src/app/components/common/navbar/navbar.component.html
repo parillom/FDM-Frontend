@@ -3,18 +3,20 @@
     <button mat-icon-button (click)="toggleAndRotate()">
       <mat-icon [style.transform]="sidenavOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
     </button>
-    <h1>FDM</h1>
+    <h1 (click)="navigateToDashboard()">FDM</h1>
     <mat-icon class="fire-icon">local_fire_department</mat-icon>
   </div>
   <div>
     <span *ngIf="pageName === 'Dashboard'" class="m-0 me-3">{{pageName}}</span>
-    <div *ngIf="!(pageName === 'Dashboard') && !url.includes('vehicle/edit')" class="m-0 me-3 d-flex align-items-center">
+    <div *ngIf="!(pageName === 'Dashboard') && !url.includes('vehicle/edit')"
+         class="m-0 me-3 d-flex align-items-center">
       <span class="cursor-pointer"
             style="font-size: 15px"
             (click)="navigateToDashboard()">Dashboard</span>
       <mat-icon>arrow_right</mat-icon>
       {{pageName}}</div>
-    <div *ngIf="pageName === 'Fahrzeuge' && url.includes('vehicle/edit')" class="m-0 ms-2 me-3 d-flex align-items-center">
+    <div *ngIf="pageName === 'Fahrzeuge' && url.includes('vehicle/edit')"
+         class="m-0 ms-2 me-3 d-flex align-items-center">
       <span class="cursor-pointer"
             style="font-size: 15px"
             (click)="navigateToVehicle()">Fahrzeuge</span>
@@ -25,7 +27,7 @@
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
-    <mat-list>
+    <mat-nav-list>
       <mat-list-item class="bg-transparent">
         <a (click)="navigateToDashboard()" mat-list-item>
           <span class="entry cursor-pointer">
@@ -34,8 +36,8 @@
           </span>
         </a>
       </mat-list-item>
-      <div>
-        <hr>
+      <div style="margin-top: 10px; margin-bottom: 10px">
+        <mat-divider></mat-divider>
       </div>
       <mat-list-item class="cursor-pointer">
         <a mat-list-item href="/fdm/dashboard/vehicle">
@@ -53,16 +55,16 @@
           </span>
         </a>
       </mat-list-item>
-      <mat-list-item class="cursor-pointer">
+      <div class="flex-spacer"></div>
+      <mat-list-item (click)="openSettings()" class="cursor-pointer bottom-item">
         <a mat-list-item>
           <span class="entry cursor-pointer">
-            <mat-slide-toggle color="primary" [formControl]="switchTheme">
-              <mat-icon>bedtime</mat-icon>
-            </mat-slide-toggle>
+            <mat-icon>settings</mat-icon>
+            <span>Einstellungen</span>
           </span>
         </a>
       </mat-list-item>
-    </mat-list>
+    </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

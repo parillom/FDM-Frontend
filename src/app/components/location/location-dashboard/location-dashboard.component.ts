@@ -6,12 +6,11 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
 import {Usecase} from '../../../models/Usecase';
-import {DeleteMultipleDialog} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog';
+import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Device} from '../../../models/Device';
 import {AddLocationComponent} from '../../dialog/add-location/add-location.component';
-import {Vehicle} from '../../../models/Vehicle';
 
 @Component({
   selector: 'app-location-dashboard',
@@ -199,7 +198,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   }
 
   openDeleteMultipleDialog() {
-    const dialogRef = this.dialog.open(DeleteMultipleDialog, {
+    const dialogRef = this.dialog.open(DeleteMultipleDialogComponent, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -209,7 +208,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
         useCase: Usecase.LOCATION
       }
     });
-    dialogRef.componentInstance.change!.subscribe((updatedVehiclesList) => {
+    dialogRef.componentInstance.objectRemoved!.subscribe((updatedVehiclesList) => {
       if (updatedVehiclesList.length !== this.locations.length) {
         this.isChecked = false;
       }

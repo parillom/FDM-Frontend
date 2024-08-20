@@ -1,11 +1,8 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
-import {Device} from '../../../models/Device';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ToastrService} from 'ngx-toastr';
-import {DeviceService} from '../../../services/device.service';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import * as XLSX from 'xlsx';
-import {DeviceState} from '../../../models/DeviceState';
 import {Vehicle} from '../../../models/Vehicle';
 import {VehicleService} from '../../../services/vehicle.service';
 
@@ -40,7 +37,7 @@ export class AddMultipleVehiclesComponent {
     const fileReader = new FileReader();
     fileReader.readAsBinaryString(file);
 
-    fileReader.onload = (e) => {
+    fileReader.onload = () => {
       const workBook = XLSX.read(fileReader.result, {type: 'binary'});
       const sheetNames = workBook.SheetNames;
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);

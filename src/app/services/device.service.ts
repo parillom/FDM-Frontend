@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
-import {catchError, map, Observable, retry, throwError} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Device} from '../models/Device';
-import {HttpClient, HttpErrorResponse, HttpStatusCode} from '@angular/common/http';
-import {ToastrService} from 'ngx-toastr';
+import {HttpClient} from '@angular/common/http';
 import {ModelAndError} from '../models/ModelAndError';
-import {isClassReferenceArray} from '@angular/compiler-cli/src/ngtsc/annotations/common';
-import {ErrorHandlerService} from './error-handler.service';
 
 const COMMON_DEVICE_URL = 'fdm/api/device';
 

@@ -20,7 +20,8 @@
       <hr>
     </div>
 
-    <form [formGroup]="editDeviceFormVehicle" *ngIf="locationIsVehicle">
+<!--    Fahrzeug-->
+    <form [formGroup]="editDeviceFormVehicle" *ngIf="assignToVehicle">
       <mat-form-field class="w-100">
         <mat-label>Gerätename</mat-label>
         <input (input)="checkDeviceName($event)" formControlName="name" id="deviceName" matInput autofocus>
@@ -39,7 +40,7 @@
       </mat-form-field>
 
       <div class="mb-4">
-        <button *ngIf="locationIsVehicle"
+        <button *ngIf="assignToVehicle"
                 mat-raised-button
                 (click)="showVehiclesList()"
                 [disabled]="vehicles?.length === 0">
@@ -47,7 +48,7 @@
         </button>
       </div>
 
-      <app-vehicle-location-autocompletion *ngIf="locationIsVehicle && showVehicleSearch"
+      <app-vehicle-location-autocompletion *ngIf="assignToVehicle && showVehicleSearch"
                                            [showVehicleInput]="true"
                                            [showLocationInput]="false"
                                            [vehicles]="vehicles"
@@ -66,7 +67,8 @@
       </mat-form-field>
     </form>
 
-    <form [formGroup]="editDeviceFormLocation" *ngIf="!locationIsVehicle">
+<!--    Ort-->
+    <form [formGroup]="editDeviceFormLocation" *ngIf="!assignToVehicle">
       <mat-form-field class="w-100">
         <mat-label>Gerätename</mat-label>
         <input (input)="checkDeviceName($event)" formControlName="name" id="deviceNameLocation" matInput autofocus>
@@ -85,7 +87,7 @@
       </mat-form-field>
 
       <div class="mb-4">
-        <button *ngIf="!locationIsVehicle"
+        <button *ngIf="!assignToVehicle"
                 mat-raised-button
                 (click)="showLocationsList()"
                 [disabled]="locations?.length === 0">
@@ -93,7 +95,7 @@
         </button>
       </div>
 
-      <app-vehicle-location-autocompletion *ngIf="!locationIsVehicle && showLocationSearch"
+      <app-vehicle-location-autocompletion *ngIf="!assignToVehicle && showLocationSearch"
                                            [showVehicleInput]="false"
                                            [showLocationInput]="true"
                                            [locations]="locations"
@@ -101,12 +103,12 @@
 
       <mat-form-field>
         <mat-label>Geräte-Status</mat-label>
-        <mat-select formControlName="state">
+        <mat-select formControlName="stateLocation">
           <mat-option value="STORAGE" (click)="onStateChanged(DeviceState.ACTIVE)">LAGER</mat-option>
           <mat-option value="REESTABLISH" (click)="onStateChanged(DeviceState.ACTIVE)">RETABLIEREN</mat-option>
         </mat-select>
         <mat-error
-          *ngIf="editDeviceFormLocation.get('state')?.invalid && editDeviceFormLocation.get('state')?.touched">
+          *ngIf="editDeviceFormLocation.get('stateLocation')?.invalid && editDeviceFormLocation.get('stateLocation')?.touched">
           Status ist ein Pflichtfeld!
         </mat-error>
       </mat-form-field>
@@ -114,11 +116,11 @@
   </div>
 </div>
 <div mat-dialog-actions class="d-flex justify-content-end">
-  <button color="primary" *ngIf="locationIsVehicle" (click)="updateDevice()" class="btn text-white w-100"
+  <button color="primary" *ngIf="assignToVehicle" (click)="updateDevice()" class="btn text-white w-100"
           mat-raised-button [disabled]="!vehicleFormDirty || editDeviceFormVehicle.invalid">
     Übernehmen
   </button>
-  <button color="primary" *ngIf="!locationIsVehicle" class="btn text-white w-100" (click)="updateDevice()"
+  <button color="primary" *ngIf="!assignToVehicle" class="btn text-white w-100" (click)="updateDevice()"
           mat-raised-button [disabled]="!locationFormDirty || editDeviceFormLocation.invalid">
     Übernehmen
   </button>

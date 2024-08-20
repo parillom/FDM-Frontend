@@ -3,8 +3,7 @@ import {VehicleService} from '../../../services/vehicle.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {Vehicle} from '../../../models/Vehicle';
 import {MatPaginator} from '@angular/material/paginator';
-import {Device} from '../../../models/Device';
-import {DeleteMultipleDialog} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog';
+import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Usecase} from '../../../models/Usecase';
 import {MatDialog} from '@angular/material/dialog';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
@@ -25,7 +24,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   dataSource!: MatTableDataSource<Vehicle>;
   vehicles: Vehicle[] = [];
   vehicleSearch?: '';
-  devicesMap: Map<number, Device[]> = new Map();
+  vehicleMap: Map<number, Vehicle[]> = new Map();
   limit = 10;
   expandedMap = new Map<number, boolean>();
   showSpinner: boolean = false;
@@ -87,13 +86,13 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   getDevicesFromVehicle(vehicle: Vehicle) {
     this.vehicleService.getDevicesFromVehicle(vehicle).subscribe((response) => {
       if (response.object) {
-        this.devicesMap.set(vehicle.id!, response.object);
+        this.vehicleMap.set(vehicle.id!, response.object);
       }
     });
   }
 
   getLimitedDevices(id: number): string {
-    const devices = this.devicesMap.get(id);
+    const devices = this.vehicleMap.get(id);
     const isExpanded = this.expandedMap.get(id);
     if (!devices) {
       return '';
@@ -120,10 +119,6 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
 
   navigateToEdit(uuId: number) {
     void this.router.navigate(['fdm/dashboard/vehicle/edit/'], {queryParams: {id: uuId}});
-  }
-
-  isVehicleSelected(vehicle: Vehicle) {
-    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.id === vehicle.id);
   }
 
   openDeleteModal(vehicle: Vehicle) {
@@ -188,22 +183,38 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     this.isChecked = this.vehicles?.length === this.selectedVehicles.length;
   }
 
-  addAllDevices() {
+  handleRowClick(vehicle: Vehicle) {
+    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.id!)?.length === 0) {
+      const index = this.selectedVehicles.indexOf(vehicle);
+      if (index !== -1) {
+        this.selectedVehicles.splice(index, 1);
+      } else {
+        this.selectedVehicles.push(vehicle);
+      }
+      this.updateIsCheckedState();
+    }
+  }
+
+  isVehicleSelected(vehicle: Vehicle) {
+    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.id === vehicle.id);
+  }
+
+  addAllVehicles() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       this.vehicles!.forEach(vehicle => {
-        if (!this.selectedVehicles.includes(vehicle) && this.devicesMap.get(vehicle.id!)?.length! < 1) {
+        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.id!)?.length! < 1) {
           this.selectedVehicles.push(vehicle);
         }
       });
     } else {
-      const filteredDeviceIds = this.vehicles!.map(vehicle => vehicle.id);
-      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredDeviceIds.includes(vehicle.id));
+      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.id);
+      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.id));
     }
   }
 
   openDeleteMultipleDialog() {
-    const dialogRef = this.dialog.open(DeleteMultipleDialog, {
+    const dialogRef = this.dialog.open(DeleteMultipleDialogComponent, {
       width: '400px',
       height: 'auto',
       hasBackdrop: false,
@@ -213,7 +224,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
         useCase: Usecase.VEHICLE
       }
     });
-    dialogRef.componentInstance.change!.subscribe((updatedVehiclesList) => {
+    dialogRef.componentInstance.objectRemoved!.subscribe((updatedVehiclesList) => {
       if (updatedVehiclesList.length !== this.vehicles!.length) {
         this.isChecked = false;
       }

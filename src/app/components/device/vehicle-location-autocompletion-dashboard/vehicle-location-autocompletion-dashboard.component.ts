@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Vehicle} from '../../../models/Vehicle';
 import {Location} from '../../../models/Location';
 import {DeviceState} from '../../../models/DeviceState';
@@ -28,7 +28,8 @@ export class VehicleLocationAutocompletionDashboardComponent {
   @Input()
   locations?: Location[];
 
-  stateIsActive: boolean = false;
+  enableVehicleInput: boolean = false;
+  enableLocationInput: boolean = false;
   currentState: DeviceState | undefined;
   filteredVehicles?: Vehicle[];
   filteredLocations?: Location[];
@@ -38,12 +39,9 @@ export class VehicleLocationAutocompletionDashboardComponent {
   @Input()
   set currentStateValue(state: DeviceState | undefined) {
     this.currentState = state;
-    if (this.currentState) {
-      this.showInputs = false;
-    }
-    this.stateIsActive = this.currentState === DeviceState.ACTIVE;
+    this.enableVehicleInput = this.currentState === DeviceState.ACTIVE || this.currentState === undefined;
+    this.enableLocationInput = this.currentState === DeviceState.REESTABLISH || this.currentState === DeviceState.STORAGE || this.currentState === undefined;
   }
-
 
   resetFields() {
     this.vehicleSearch.nativeElement.value = '';

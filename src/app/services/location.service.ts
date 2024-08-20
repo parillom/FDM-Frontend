@@ -3,7 +3,6 @@ import {Observable} from 'rxjs';
 import {Device} from '../models/Device';
 import {HttpClient} from '@angular/common/http';
 import {ModelAndError} from '../models/ModelAndError';
-import {Vehicle} from '../models/Vehicle';
 import {Location} from '../models/Location';
 import {MoveDevicesRequest} from '../models/MoveDevicesRequest';
 

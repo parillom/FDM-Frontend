@@ -1,0 +1,52 @@
+@use '@angular/material' as mat;
+
+@import 'bootstrap/scss/bootstrap';
+
+@include mat.core();
+
+$my-primary: mat.define-palette(mat.$indigo-palette);
+$my-accent: mat.define-palette(mat.$pink-palette);
+$my-warn: mat.define-palette(mat.$red-palette);
+
+$my-theme: mat.define-light-theme((
+  color: (
+    primary: $my-primary,
+    accent: $my-accent,
+    warn: $my-warn
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+$my-theme-dark: mat.define-dark-theme((
+  color: (
+    primary: $my-primary,
+    accent: $my-accent,
+    warn: $my-warn
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+.theme-dark {
+  @include mat.all-component-colors($my-theme-dark);
+  .mat-icon#close-icon-delete-multiple {
+    color: white;
+  }
+  .mat-icon#close-icon-single-device {
+    color: white;
+  }
+  .mat-icon#close-icon-delete-device {
+    color: white;
+  }
+  .mat-icon#close-icon-update-device {
+    color: white;
+  }
+  .mat-icon#close-icon-confirm {
+    color: white;
+  }
+}
+
+.theme-light {
+  @include mat.all-component-colors($my-theme);
+}
