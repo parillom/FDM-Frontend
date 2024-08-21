@@ -271,7 +271,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.formShowing = true;
       dialogRef.componentInstance.delete!.subscribe(res => {
         if (res) {
-          this.deviceService.delete(device).subscribe(res => {
+          this.deviceService.deleteDevice(device).subscribe(res => {
             if (this.errorHandler.hasError(res)) {
               this.errorHandler.setErrorMessage(res.errorMessage!);
               dialogRef.close();

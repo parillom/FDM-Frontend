@@ -8,7 +8,8 @@ import {MatDialogRef} from '@angular/material/dialog';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
-export class SettingsComponent implements OnInit{
+export class SettingsComponent implements OnInit {
+
   switchTheme = new FormControl(false);
   @HostBinding('class') className = '';
   darkClass = 'theme-dark';

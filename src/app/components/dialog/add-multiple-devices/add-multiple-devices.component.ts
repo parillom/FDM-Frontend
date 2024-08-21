@@ -102,7 +102,7 @@ export class AddMultipleDevicesComponent {
   }
 
   addDevices() {
-    this.deviceService.addManyDevices(this.devices!).subscribe((res) => {
+    this.deviceService.createDevices(this.devices!).subscribe((res) => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.devicesCreated.emit(false);

@@ -11,7 +11,7 @@ import {ModelAndError} from '../../../../models/ModelAndError';
 @Component({
   selector: 'app-delete-dialog',
   templateUrl: './delete-multiple-dialog.component.html',
-  styleUrl: './delete-multiple-dialog.scss'
+  styleUrl: './delete-multiple-dialog.component.scss'
 })
 export class DeleteMultipleDialogComponent {
 

@@ -164,7 +164,7 @@ export class AddDeviceComponent implements OnInit {
   }
 
   performSaveCall(device: Device) {
-    this.deviceService.addDevice(device).subscribe(res => {
+    this.deviceService.createDevice(device).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!)
         this.createdSuccessful.emit(false);

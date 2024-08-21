@@ -4,7 +4,7 @@ import {Device} from '../models/Device';
 import {HttpClient} from '@angular/common/http';
 import {ModelAndError} from '../models/ModelAndError';
 
-const COMMON_DEVICE_URL = 'fdm/api/device';
+const COMMON_DEVICE_URL = 'fdm/api/devices';
 
 @Injectable({
   providedIn: 'root'
@@ -15,30 +15,31 @@ export class DeviceService {
   }
 
   getAllDevices(): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}/get-all`);
+    return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}`);
   }
 
-  addDevice(device: Device): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/create`, device);
+  createDevice(device: Device): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}`, device);
   }
 
-  addManyDevices(devices: Device[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/create-many`, devices);
+  createDevices(devices: Device[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/many`, devices);
   }
 
-  delete(device: Device): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/delete`, device);
+  deleteDevice(device: Device): Observable<ModelAndError> {
+    return this.http.delete<ModelAndError>(`${COMMON_DEVICE_URL}/${device.uuId}`);
   }
 
   deleteDevices(devicesToDelete: (number | undefined)[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/delete-many`, devicesToDelete);
+    const ids = devicesToDelete.filter(id => id !== undefined).join(',');
+    return this.http.delete<ModelAndError>(`${COMMON_DEVICE_URL}/many/${ids}`);
   }
 
   updateDevice(deviceToSave: Device, deviceHasVehicle: boolean): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}/update/${deviceHasVehicle}`, deviceToSave);
+    return this.http.put<ModelAndError>(`${COMMON_DEVICE_URL}/${deviceHasVehicle}`, deviceToSave);
   }
 
-  getDevice(uuId: number): Observable<ModelAndError> {
+  getDeviceWithUuId(uuId: number): Observable<ModelAndError> {
     return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}/${uuId}`);
   }
 }

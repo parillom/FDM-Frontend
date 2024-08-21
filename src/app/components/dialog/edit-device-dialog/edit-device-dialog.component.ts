@@ -17,7 +17,6 @@ import {MatTabChangeEvent} from '@angular/material/tabs';
   styleUrl: './edit-device-dialog.component.scss'
 })
 export class EditDeviceDialogComponent implements OnInit {
-
   @Output() updatedSuccessful = new EventEmitter<boolean>();
 
   device?: Device;
@@ -67,14 +66,11 @@ export class EditDeviceDialogComponent implements OnInit {
 
   private setStateInitValue() {
     if (this.device) {
-      if (!this.assignToVehicle) {
-        const stateControl = this.editDeviceFormLocation.get('stateLocation');
-        stateControl!.setValue(this.device!.state?.deviceState || '');
-      } else {
-        const stateControlVehicle = this.editDeviceFormVehicle.get('state');
-        if (stateControlVehicle) {
-          stateControlVehicle.setValue(DeviceState.ACTIVE);
-        }
+      const stateControl = this.editDeviceFormLocation.get('stateLocation');
+      stateControl!.setValue(this.device!.state?.deviceState || '');
+      const stateControlVehicle = this.editDeviceFormVehicle.get('state');
+      if (stateControlVehicle) {
+        stateControlVehicle.setValue(DeviceState.ACTIVE);
       }
     }
   }

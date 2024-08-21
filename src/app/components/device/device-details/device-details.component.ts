@@ -27,7 +27,7 @@ export class DeviceDetailsComponent implements OnInit {
   }
 
   private getDeviceDetails(uuId: number) {
-    this.deviceService.getDevice(uuId).subscribe(res => {
+    this.deviceService.getDeviceWithUuId(uuId).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
       } else {

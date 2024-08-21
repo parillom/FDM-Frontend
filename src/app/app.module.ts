@@ -155,6 +155,7 @@ import { SettingsComponent } from './components/common/settings/settings.compone
   ],
   providers: [
     BsModalService,
+    NavbarComponent,
     provideAnimationsAsync(),
     provideHttpClient(
       withInterceptors([errorInterceptor])

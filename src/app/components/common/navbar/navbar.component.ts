@@ -15,7 +15,7 @@ export class NavbarComponent implements OnInit {
   uuId?: number;
   url: string = '';
   objectName: string | null = '';
-  @ViewChild('sidenav') sidenav?: MatSidenav;
+  @ViewChild('sidenav') sidenav: MatSidenav | undefined;
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -70,7 +70,7 @@ export class NavbarComponent implements OnInit {
       hasBackdrop: false,
       autoFocus: false,
       width: '400px',
-      height: '400px'
+      height: 'auto'
     });
   }
 }
