@@ -86,7 +86,7 @@ export class AddMultipleVehiclesComponent {
   }
 
   addVehicles() {
-    this.vehicleService.addManyDevices(this.vehicles!).subscribe((res) => {
+    this.vehicleService.createVehicles(this.vehicles!).subscribe((res) => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.vehiclesCreated.emit(false);

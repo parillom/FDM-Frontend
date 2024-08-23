@@ -134,7 +134,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     });
     dialogRef.componentInstance.delete!.subscribe(res => {
       if (res) {
-        this.vehicleService.delete(vehicle).subscribe(res => {
+        this.vehicleService.deleteVehicle(vehicle).subscribe(res => {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);
             dialogRef.close();

@@ -6,7 +6,7 @@ import {Vehicle} from '../models/Vehicle';
 import {ModelAndError} from '../models/ModelAndError';
 import {MoveDevicesRequest} from '../models/MoveDevicesRequest';
 
-const COMMON_VEHICLE_URL = 'fdm/api/vehicle';
+const COMMON_VEHICLE_URL = 'fdm/api/vehicles';
 
 @Injectable({
   providedIn: 'root'
@@ -16,27 +16,28 @@ export class VehicleService {
   constructor(private http: HttpClient) { }
 
   getAllVehicles(): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/get-all`);
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}`);
   }
 
   getDevicesFromVehicle(vehicle: Vehicle): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/get-devices-from-vehicle`, vehicle);
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/devices-from-vehicle/${vehicle.uuId}`);
   }
 
   deleteVehicles(vehiclesToDelete: (number | undefined)[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/delete-many`, vehiclesToDelete);
+    const ids = vehiclesToDelete.filter(id => id !== undefined).join(',');
+    return this.http.delete<ModelAndError>(`${COMMON_VEHICLE_URL}/many/${ids}`);
   }
 
-  delete(vehicle: Vehicle): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/delete`, vehicle);
+  deleteVehicle(vehicle: Vehicle): Observable<ModelAndError> {
+    return this.http.delete<ModelAndError>(`${COMMON_VEHICLE_URL}/${vehicle.uuId}`);
   }
 
   createVehicle(vehicle: Vehicle): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/create`, vehicle);
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}`, vehicle);
   }
 
   getVehicle(uuId: number): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/get-vehicle/${uuId}`)
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/${uuId}`)
   }
 
   saveUpdatedDevicesOfVehicle(name: string, droppedDevices: Device[], hasVehicle: boolean, selectedState: string): Observable<ModelAndError> {
@@ -47,9 +48,8 @@ export class VehicleService {
     return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/moveDevicesToVehicle`, request);
   }
 
-  addManyDevices(vehicles: Vehicle[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/create-many`, vehicles)
-
+  createVehicles(vehicles: Vehicle[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/many`, vehicles)
   }
 
   updateVehicleName(uuId: number | undefined, newVehicleName: string): Observable<ModelAndError> {

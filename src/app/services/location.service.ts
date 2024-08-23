@@ -6,7 +6,7 @@ import {ModelAndError} from '../models/ModelAndError';
 import {Location} from '../models/Location';
 import {MoveDevicesRequest} from '../models/MoveDevicesRequest';
 
-const COMMON_LOCATION_URL = 'fdm/api/location';
+const COMMON_LOCATION_URL = 'fdm/api/locations';
 
 @Injectable({
   providedIn: 'root'
@@ -16,34 +16,35 @@ export class LocationService {
   constructor(private http: HttpClient) { }
 
   getAllLocations(): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/get-all`);
+    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}`);
   }
 
   getDevicesFromLocation(location: Location): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/get-devices-from-location`, location);
+    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/devices-from-location/${location.uuId}`);
   }
 
   deleteLocations(locationsToDelete: (number | undefined)[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/delete-many`, locationsToDelete);
+    const ids = locationsToDelete.filter(id => id !== undefined).join(',');
+    return this.http.delete<ModelAndError>(`${COMMON_LOCATION_URL}/many/${ids}`);
   }
 
   delete(location: Location): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/delete`, location);
+    return this.http.delete<ModelAndError>(`${COMMON_LOCATION_URL}/${location.uuId}`);
   }
 
   createLocation(location: Location): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/create`, location);
+    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}`, location);
   }
 
-  getVehicle(uuId: number): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/get-location/${uuId}`)
+  getLocation(uuId: number): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/${uuId}`)
   }
 
   saveUpdatedDevicesOfLocation(name: string, droppedDevices: Device[], hasVehicle: boolean, selectedState: string): Observable<ModelAndError> {
     return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/${name}/${hasVehicle}/${selectedState}`, droppedDevices);
   }
 
-  moveDevicesToVehicle(request: MoveDevicesRequest): Observable<ModelAndError> {
+  moveDevicesToLocation(request: MoveDevicesRequest): Observable<ModelAndError> {
     return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/moveDevicesToVehicle`, request);
   }
 }
