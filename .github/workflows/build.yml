@@ -1,4 +1,4 @@
-name: Meine Pipeline
+name: Node.js CI
 
 on:
   push:
@@ -25,19 +25,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Configure npm proxy
-        run: |
-          npm config set proxy http://127.0.0.1:3128
-          npm config set https-proxy http://127.0.0.1:3128
-          npm config set strict-ssl false
-
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run tests
         run: npm run test:ci
 
       - name: Build
         run: npm run build
-
-
