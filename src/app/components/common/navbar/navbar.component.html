@@ -28,41 +28,32 @@
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
     <mat-nav-list>
-      <mat-list-item class="bg-transparent">
-        <a (click)="navigateToDashboard()" mat-list-item>
-          <span class="entry cursor-pointer">
+      <mat-list-item (click)="navigateToDashboard()">
+          <span class="entry">
             <mat-icon>home</mat-icon>
             <span>Dashboard</span>
           </span>
-        </a>
       </mat-list-item>
       <div style="margin-top: 10px; margin-bottom: 10px">
         <mat-divider></mat-divider>
       </div>
-      <mat-list-item class="cursor-pointer">
-        <a mat-list-item href="/fdm/dashboard/vehicle">
-          <span class="entry cursor-pointer">
+      <mat-list-item (click)="navigateToVehicle()">
+          <span class="entry ">
             <mat-icon>fire_truck</mat-icon>
             <span>Fahrzeuge</span>
           </span>
-        </a>
       </mat-list-item>
-      <mat-list-item class="cursor-pointer">
-        <a mat-list-item href="/fdm/dashboard/location">
-          <span class="entry cursor-pointer">
+      <mat-list-item (click)="navigateToLocation()">
+          <span class="entry">
             <mat-icon>pin_drop</mat-icon>
             <span>Orte</span>
           </span>
-        </a>
       </mat-list-item>
-      <div class="flex-spacer"></div>
-      <mat-list-item (click)="openSettings()" class="cursor-pointer bottom-item">
-        <a mat-list-item>
-          <span class="entry cursor-pointer">
+      <mat-list-item (click)="openSettings()">
+          <span class="entry">
             <mat-icon>settings</mat-icon>
             <span>Einstellungen</span>
           </span>
-        </a>
       </mat-list-item>
     </mat-nav-list>
   </mat-sidenav>

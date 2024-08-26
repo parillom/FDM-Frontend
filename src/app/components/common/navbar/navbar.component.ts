@@ -34,6 +34,7 @@ export class NavbarComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.uuId = params['id'];
     });
+    sessionStorage.removeItem('settingsOpen');
   }
 
   setCurrentObjectName(name: string) {
@@ -65,12 +66,22 @@ export class NavbarComponent implements OnInit {
     window.location.href = 'fdm/dashboard/vehicle';
   }
 
+  navigateToLocation() {
+    window.location.href = 'fdm/dashboard/location';
+  }
+
   openSettings() {
-    this.dialog.open(SettingsComponent, {
-      hasBackdrop: false,
-      autoFocus: false,
-      width: '400px',
-      height: 'auto'
-    });
+    if (!sessionStorage.getItem('settingsOpen')) {
+      this.dialog.open(SettingsComponent, {
+        hasBackdrop: false,
+        autoFocus: false,
+        width: '400px',
+        height: 'auto'
+      });
+      sessionStorage.setItem('settingsOpen', 'opened')
+    } else {
+      sessionStorage.removeItem('settingsOpen');
+      this.dialog.closeAll();
+    }
   }
 }

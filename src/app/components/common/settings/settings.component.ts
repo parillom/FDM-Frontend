@@ -38,5 +38,6 @@ export class SettingsComponent implements OnInit {
 
   closeModal() {
     this.dialog.close();
+    sessionStorage.removeItem('settingsOpen');
   }
 }
