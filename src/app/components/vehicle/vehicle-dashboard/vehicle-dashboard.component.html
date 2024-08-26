@@ -114,7 +114,7 @@
             <mat-checkbox color="primary"
                           *ngIf="vehicles?.length! > 1 && vehicleMap.get(element.id)?.length === 0"
                           [checked]="isVehicleSelected(element)"
-                          (click)="handleCheckboxClick(element)">
+                          (click)="handleCheckboxClick(element, $event)">
             </mat-checkbox>
 
           </div>

@@ -169,7 +169,8 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  handleCheckboxClick(vehicle: Vehicle) {
+  handleCheckboxClick(vehicle: Vehicle, event: MouseEvent) {
+    event.stopPropagation();
     const index = this.selectedVehicles.indexOf(vehicle);
     if (index !== -1) {
       this.selectedVehicles.splice(index, 1);

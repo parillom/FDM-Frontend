@@ -12,7 +12,7 @@
   <div mat-dialog-content>
     <p class="text-wrap">Möchten sie das {{getObjectName()}} {{object?.name}} wirklich löschen?</p>
     <div>
-      <hr>
+      <mat-divider></mat-divider>
     </div>
     <div (click)="handleDetails()">
       <mat-icon *ngIf="showDetails" matTooltip="Details ausblenden" matTooltipPosition="above">visibility</mat-icon>
