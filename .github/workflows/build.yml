@@ -27,8 +27,8 @@ jobs:
 
       - name: Configure npm proxy
         run: |
-          npm config set proxy http://dein.proxy:port
-          npm config set https-proxy http://dein.proxy:port
+          npm config set proxy http://127.0.0.1:3128
+          npm config set https-proxy http://127.0.0.1:3128
           npm config set strict-ssl false
 
       - name: Install dependencies
