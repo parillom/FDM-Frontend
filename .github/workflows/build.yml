@@ -2,9 +2,9 @@ name: FDM-Pipeline
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -13,8 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 21.6.1 ]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [21.6.1]
 
     steps:
       - uses: actions/checkout@v4
@@ -25,14 +24,11 @@ jobs:
           node-version: 21.6.1
           cache: 'npm'
 
-      #      - name: Configure npm proxy
-      #        run: npm config set proxy http://127.0.0.1:3128
-
       - name: Install dependencies
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Install Angular CLI
-        run: npm ci
+        run: npm install @angular/cli --no-save
 
       - name: Lint
         run: npm run lint
