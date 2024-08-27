@@ -28,6 +28,9 @@ jobs:
 #      - name: Configure npm proxy
 #        run: npm config set proxy http://127.0.0.1:3128
 
+      - name: eslint
+        run: npm run lint
+
       - name: Install dependencies
         run: npm install
 
