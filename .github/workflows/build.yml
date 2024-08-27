@@ -22,14 +22,14 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: 21.6.1
           cache: 'npm'
 
       #      - name: Configure npm proxy
       #        run: npm config set proxy http://127.0.0.1:3128
 
       - name: Install Angular CLI
-        run: npm install -g @angular/cli
+        run: npm install -g @angular/cli --force
 
       - name: Install dependencies
         run: npm install
