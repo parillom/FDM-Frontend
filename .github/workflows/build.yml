@@ -32,7 +32,7 @@ jobs:
         run: npm install -g @angular/cli --force
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm install
 
       - name: Lint
         run: npm run lint
