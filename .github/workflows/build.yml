@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: 21.6.1
+        node-version: [ 21.6.1 ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -22,7 +22,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: [21.6.1]
+          node-version: 21.6.1
           cache: 'npm'
 
       #      - name: Configure npm proxy
