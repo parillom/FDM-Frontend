@@ -22,7 +22,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: [${{ matrix.node-version }}]
           cache: 'npm'
 
       #      - name: Configure npm proxy
