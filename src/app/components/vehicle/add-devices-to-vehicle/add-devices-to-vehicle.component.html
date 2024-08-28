@@ -19,10 +19,10 @@
 
   <div class="row" *ngIf="filteredDevices.length > 0">
     <div class="col-12 col-md-6" *ngFor="let device of filteredDevices">
-      <mat-card class="w-100 mb-2">
+      <mat-card class="w-100 mb-2 cursor-pointer">
         <mat-card-actions (click)="handleCheckboxClick(device)" class="d-flex row align-items-center">
           <p class="col-12 col-sm-10 m-0">{{device.name}}</p>
-          <mat-checkbox class="col-12 col-sm-2" color="primary"></mat-checkbox>
+          <mat-checkbox [checked]="isSelected(device)" class="col-12 col-sm-2" color="primary"></mat-checkbox>
         </mat-card-actions>
       </mat-card>
     </div>

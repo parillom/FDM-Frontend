@@ -1,6 +1,6 @@
 <div class="me-2" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <div class="d-flex justify-content-between align-items-center">
-    <p class="fs-5" mat-dialog-title>Objekte löschen ({{objectsToDelete.length}})</p>
+    <p class="fs-5" mat-dialog-title>{{getUsecase()}} löschen ({{objectsToDelete.length}})</p>
     <div class="d-flex align-items-center">
       <div (click)="closeDialog()" class="cursor-pointer">
         <button mat-icon-button>

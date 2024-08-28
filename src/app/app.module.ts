@@ -30,13 +30,13 @@ import {DeleteDialogComponent} from './components/dialog/common/delete-dialog/de
 import {AddMultipleDevicesComponent} from './components/dialog/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
 import {
-    DeleteMultipleDialogComponent
+  DeleteMultipleDialogComponent
 } from './components/dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {ConfirmDialogComponent} from './components/dialog/common/confirm-dialog/confirm-dialog.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {
-    VehicleLocationAutocompletionDashboardComponent
+  VehicleLocationAutocompletionDashboardComponent
 } from './components/device/vehicle-location-autocompletion-dashboard/vehicle-location-autocompletion-dashboard.component';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {
@@ -49,25 +49,30 @@ import {
   MatHeaderRowDef,
   MatRow,
   MatRowDef,
-  MatTable, MatTableModule
+  MatTable,
+  MatTableModule
 } from '@angular/material/table';
 import {RouterModule} from '@angular/router';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
-import { VehicleLocationAutocompletionComponent } from './components/common/vehicle-autocompletion/vehicle-location-autocompletion.component';
+import {
+  VehicleLocationAutocompletionComponent
+} from './components/common/vehicle-autocompletion/vehicle-location-autocompletion.component';
 import {MatPaginator} from '@angular/material/paginator';
-import { VehicleDashboardComponent } from './components/vehicle/vehicle-dashboard/vehicle-dashboard.component';
+import {VehicleDashboardComponent} from './components/vehicle/vehicle-dashboard/vehicle-dashboard.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {TooltipModule} from 'ngx-bootstrap/tooltip';
-import { AddVehicleComponent } from './components/dialog/add-vehicle/add-vehicle.component';
-import { DeviceDetailsComponent } from './components/device/device-details/device-details.component';
-import { VehicleEditComponent } from './components/vehicle/vehicle-edit/vehicle-edit.component';
-import { AddDevicesToVehicleComponent } from './components/vehicle/add-devices-to-vehicle/add-devices-to-vehicle.component';
+import {AddVehicleComponent} from './components/dialog/add-vehicle/add-vehicle.component';
+import {DeviceDetailsComponent} from './components/device/device-details/device-details.component';
+import {VehicleEditComponent} from './components/vehicle/vehicle-edit/vehicle-edit.component';
+import {
+  AddDevicesToVehicleComponent
+} from './components/vehicle/add-devices-to-vehicle/add-devices-to-vehicle.component';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
-import { LocationDashboardComponent } from './components/location/location-dashboard/location-dashboard.component';
-import { AddLocationComponent } from './components/dialog/add-location/add-location.component';
-import { AddMultipleVehiclesComponent } from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
-import { SettingsComponent } from './components/common/settings/settings.component';
+import {LocationDashboardComponent} from './components/location/location-dashboard/location-dashboard.component';
+import {AddLocationComponent} from './components/dialog/add-location/add-location.component';
+import {AddMultipleVehiclesComponent} from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
+import {SettingsComponent} from './components/common/settings/settings.component';
 
 @NgModule({
   declarations: [

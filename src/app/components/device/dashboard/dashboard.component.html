@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div class="d-flex row align-items-center mb-4 d-block d-sm-none text-nowrap">
+  <div class="d-flex row align-items-center mb-4 d-block d-md-none text-nowrap">
     <h2>Optionen</h2>
     <div class="col-xs mt-1 d-block d-sm-none">
       <button mat-icon-button
@@ -43,10 +43,10 @@
               (click)="openDeleteMultipleDialog()"
               class="btn cursor-pointer"
               [disabled]="selectedDevices.length < 1">
-        Gerät/e verwalten ({{selectedDevices.length}})
+        Geräte löschen ({{selectedDevices.length}})
       </button>
     </div>
-    <div class="col-12">
+    <div class="col-12 d-flex align-items-center">
       <mat-checkbox (click)="addAllDevices()"
                     labelPosition="before"
                     color="primary"
@@ -54,6 +54,14 @@
                     [checked]="isChecked">
         Alle auswählen
       </mat-checkbox>
+      <button (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
+              mat-icon-button>
+        <mat-icon>upgrade</mat-icon>
+      </button>
+    </div>
+    <div class="col-12" *ngIf="openExportMenu">
+      <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
+      <button mat-raised-button (click)="export('PDF')">PDF</button>
     </div>
   </div>
 
@@ -78,22 +86,31 @@
     <mat-divider></mat-divider>
   </div>
 
-  <div *ngIf="devices?.length! > 1" class="d-none d-sm-flex row align-items-center mb-4 text-nowrap">
-    <div class="col-9">
+  <div *ngIf="devices?.length! > 1" class="d-none d-md-flex d-flex align-items-center justify-content-between mb-2">
+    <div>
       <button mat-raised-button
               (click)="openDeleteMultipleDialog()"
               class="btn cursor-pointer"
               [disabled]="selectedDevices.length < 1">
-        Gerät/e verwalten ({{selectedDevices.length}})
+        Geräte löschen ({{selectedDevices.length}})
       </button>
     </div>
-    <div class="col-3">
+    <div class="d-flex align-items-center">
       <mat-checkbox (click)="addAllDevices()"
                     labelPosition="before"
                     color="primary"
                     [checked]="isChecked">
         Alle auswählen
       </mat-checkbox>
+
+      <button class="me-2" (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
+              mat-icon-button>
+        <mat-icon>upgrade</mat-icon>
+      </button>
+      <div *ngIf="openExportMenu">
+        <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
+        <button mat-raised-button (click)="export('PDF')">PDF</button>
+      </div>
     </div>
   </div>
 
@@ -104,35 +121,40 @@
     <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource">
       <ng-container style="width: 4%" matColumnDef="Geräte-ID">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Geräte-ID']}">Geräte-ID</th>
-        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte-ID']}" [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.uuId}} </td>
+        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte-ID']}"
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.uuId}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.name}} </td>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.name}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Fahrzeug">
         <th mat-header-cell *matHeaderCellDef>Fahrzeug</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}" [class.not-defined]="!element.vehicle">
+        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}"
+            [class.not-defined]="!element.vehicle">
           {{getVehicleText(element)}}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="Ort">
         <th mat-header-cell *matHeaderCellDef>Ort</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}" [class.not-defined]="!element.location">
+        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}"
+            [class.not-defined]="!element.location">
           {{getLocationText(element)}}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="Status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}"> {{getDeviceState(element)}} </td>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{getDeviceState(element)}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Aktionen">
-        <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+        <th mat-header-cell *matHeaderCellDef>Aktionen<span class="ms-1" *ngIf="selectedDevices.length > 0">({{selectedDevices.length}})</span></th>
         <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}">
           <div class="d-flex align-items-center">
             <mat-icon (click)="openEditModal(element)"
@@ -164,4 +186,5 @@
                    [showFirstLastButtons]="true">
     </mat-paginator>
   </div>
+
 </div>

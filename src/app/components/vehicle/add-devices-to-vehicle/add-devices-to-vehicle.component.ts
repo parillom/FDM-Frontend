@@ -100,4 +100,8 @@ export class AddDevicesToVehicleComponent implements OnInit {
       }
     });
   }
+
+  isSelected(device: Device) {
+    return this.selectedDevices.includes(device);
+  }
 }

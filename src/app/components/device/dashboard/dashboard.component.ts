@@ -4,10 +4,11 @@ import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
 import {EditDeviceDialogComponent} from '../../dialog/edit-device-dialog/edit-device-dialog.component';
 import {AddDeviceComponent} from '../../dialog/add-device/add-device.component';
-import {ToastrService} from 'ngx-toastr';
 import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
-import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
+import {
+  DeleteMultipleDialogComponent
+} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
 import {LocationService} from '../../../services/location.service';
 import {Location} from '../../../models/Location';
 import {VehicleService} from '../../../services/vehicle.service';
@@ -21,6 +22,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Usecase} from '../../../models/Usecase';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {Router} from '@angular/router';
+import {ExportService} from '../../../services/export.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,25 +54,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   dataSource!: MatTableDataSource<Device>;
   showSpinner: boolean = false;
   disableRowClick: boolean = false;
+  openExportMenu = false;
 
   columnWidths = {
     'Geräte-ID': '15%'
   }
 
+
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
-              private toastr: ToastrService,
               private locationService: LocationService,
               private vehicleService: VehicleService,
               private errorHandler: ErrorHandlerService,
-              private router: Router
+              private router: Router,
+              private exportService: ExportService
   ) {
     this.dataSource = new MatTableDataSource<Device>();
   }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<Device>();
-    this.getAllDevices();
+    this.getAllDevices(true);
     this.getAllLocations();
     this.getAllVehicles();
   }
@@ -82,13 +86,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dataSource!.paginator = this.paginator!;
   }
 
-  getAllDevices() {
+  getAllDevices(resetSelectedDevices: boolean) {
     this.showSpinner = true;
     return this.deviceService.getAllDevices().subscribe(res => {
       if (res.object) {
         this.devices = res.object;
         this.filteredDevices = res.object;
-        this.selectedDevices.splice(0);
+        if (resetSelectedDevices) {
+          this.selectedDevices.splice(0);
+        }
         this.dataSource.data! = this.filteredDevices!;
         this.showSpinner = false;
       }
@@ -162,7 +168,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.dataSource.data = this.devices!;
     } else {
       if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
-        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.state?.deviceState === deviceCriteria!.state;
         });
@@ -185,14 +190,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       }
       if (deviceCriteria!.vehicleName && !deviceCriteria?.state) {
         this.isChecked = false;
-        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.vehicle?.name === deviceCriteria?.vehicleName;
         });
       }
       if (deviceCriteria!.locationName && !deviceCriteria!.state) {
         this.isChecked = false;
-        this.selectedDevices.splice(0);
         this.dataSource.data = this.devices!.filter(device => {
           return device.location?.name === deviceCriteria?.locationName;
         });
@@ -211,14 +214,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     addDeviceDialog.componentInstance.createdSuccessful.subscribe(value => {
       if (value) {
-        this.getAllDevices();
+        this.getAllDevices(true);
         this.getAllVehicles();
         this.getAllLocations();
       }
     });
     addDeviceDialog.componentInstance.manyCreatedSuccessful.subscribe(value => {
       if (value) {
-        this.getAllDevices();
+        this.getAllDevices(true);
         addDeviceDialog.close();
       }
     });
@@ -248,7 +251,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       });
       dialogRef.componentInstance.updatedSuccessful.subscribe(res => {
         if (res) {
-          this.getAllDevices();
+          this.getAllDevices(true);
           dialogRef.close();
         }
       });
@@ -277,7 +280,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               dialogRef.close();
             } else {
               this.errorHandler.setSuccessMessage(`Gerät ${device.name} konnte gelöscht werden`);
-              this.getAllDevices();
+              this.getAllDevices(true);
               dialogRef.close();
             }
           });
@@ -310,7 +313,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   refreshDevices() {
-    this.getAllDevices();
+    this.getAllDevices(true);
     this.handleFocusAndResetState();
     this.isChecked = false;
   }
@@ -380,7 +383,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           const filteredDevices = this.filteredDevices!.filter(device =>
             device.state?.deviceState === this.currentState
           );
-          this.selectedDevices.push(...filteredDevices);
+          filteredDevices.forEach(device => {
+            if (!this.selectedDevices.includes(device)) {
+              this.selectedDevices.push(device);
+            }
+          })
         } else {
           //nach Status und Fahrzeug filtern
           if (this.vehicleName) {
@@ -452,7 +459,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
     dialogRef.componentInstance.deleted!.subscribe(deleted => {
       if (deleted) {
-        this.getAllDevices();
+        this.getAllDevices(true);
         this.selectedDevices = [];
         this.errorHandler.setSuccessMessage('Geräte konnten erfolgreich gelöscht werden');
         dialogRef.close();
@@ -477,7 +484,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.isChecked = false;
     this.currentState = undefined;
     if (!this.vehicleName && !this.locationName) {
-      this.getAllDevices();
+      this.getAllDevices(false);
     } else if (this.vehicleName) {
       this.deviceCriteria = {
         vehicleName: this.vehicleName
@@ -491,9 +498,30 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  navigateToDetails(uuId: number) {
-    this.disableRowClick = true;
-    void this.router.navigate(['fdm/dashboard/device'], {queryParams: {id: uuId}});
+  openExportOption() {
+    this.openExportMenu = !this.openExportMenu;
   }
 
+  export(type: string) {
+    if (type === 'EXCEL') {
+      if (this.selectedDevices.length > 0) {
+        this.exportService.exportExcel(this.selectedDevices);
+        this.selectedDevices = [];
+        this.isChecked = false;
+      } else {
+        this.exportService.exportExcel(this.dataSource.data);
+      }
+      this.openExportMenu = false;
+    } else {
+      if (this.selectedDevices.length > 0) {
+        this.exportService.exportPfd(this.selectedDevices);
+        this.selectedDevices = []
+        this.isChecked = false;
+      } else {
+        this.exportService.exportPfd(this.dataSource.data);
+      }
+      this.openExportMenu = false;
+      window.location.reload();
+    }
+  }
 }
