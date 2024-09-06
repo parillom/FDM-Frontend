@@ -73,6 +73,7 @@ import {LocationDashboardComponent} from './components/location/location-dashboa
 import {AddLocationComponent} from './components/dialog/add-location/add-location.component';
 import {AddMultipleVehiclesComponent} from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
 import {SettingsComponent} from './components/common/settings/settings.component';
+import { TestComponent } from './components/test/test.component';
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import {SettingsComponent} from './components/common/settings/settings.component
     AddLocationComponent,
     AddMultipleVehiclesComponent,
     SettingsComponent,
+    TestComponent,
   ],
   imports: [
     BrowserModule,

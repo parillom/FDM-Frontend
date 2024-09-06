@@ -1,0 +1,26 @@
+<form class="d-flex flex-column justify-content-center w-50" #form="ngForm" style="margin-top: 5em" (submit)="validateLength()">
+  <label for="test">Eingabe</label>
+
+  <input
+    id="test"
+    name="test"
+    [(ngModel)]="example.value"
+    #testModel="ngModel"
+    required
+  />
+
+  <mat-error *ngIf="testModel.invalid && testModel.errors?.['maxlength'] && testModel.errors?.errorKey">
+    {{testModel.errors?.errorKey}}
+  </mat-error>
+  <mat-error *ngIf="testModel.invalid && testModel.touched && testModel.errors?.['required'] && testModel.errors?.errorKey">
+    {{testModel.errors?.errorKey}}
+  </mat-error>
+  <mat-error *ngIf="testModel.invalid && testModel.errors?.errorKey && testModel.errors?.['nameEquals']">
+    {{testModel.errors?.errorKey}}
+  </mat-error>
+  <button type="submit">Submit</button>
+</form>
+
+<div class="mt-5" *ngFor="let example of examples">
+  <p>{{example.value}}</p>
+</div>

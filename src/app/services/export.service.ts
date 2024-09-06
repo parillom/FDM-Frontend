@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as XLSX from 'xlsx';
 import {Device} from '../models/Device';
-import {ErrorHandlerService} from './error-handler.service';
 import autoTable from 'jspdf-autotable';
 import {DeviceState} from '../models/DeviceState';
 import jsPDF from 'jspdf';
@@ -10,11 +9,8 @@ import jsPDF from 'jspdf';
   providedIn: 'root'
 })
 export class ExportService {
-  data: (number | string | string)[][] = [];
+  data: (number | string)[][] = [];
   headers: string[][] = [];
-
-  constructor(private errorHandler: ErrorHandlerService) {
-  }
 
   //Excel
   exportExcel(data: Device[]) {
@@ -23,7 +19,7 @@ export class ExportService {
       Name: item.name,
       Ort: item.location?.name || '-',
       Fahrzeug: item.vehicle?.name || '-',
-      Status: this.getDeviceState(item.state?.deviceState),
+      Status: this.getDeviceState(item.state?.deviceState)
     }));
 
     const workSheet = XLSX.utils.json_to_sheet(exportData, {header: ['ID', 'Name', 'Ort', 'Fahrzeug', 'Status']});

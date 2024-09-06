@@ -5,6 +5,7 @@ import {VehicleDashboardComponent} from './components/vehicle/vehicle-dashboard/
 import {DeviceDetailsComponent} from './components/device/device-details/device-details.component';
 import {VehicleEditComponent} from './components/vehicle/vehicle-edit/vehicle-edit.component';
 import {LocationDashboardComponent} from './components/location/location-dashboard/location-dashboard.component';
+import {TestComponent} from './components/test/test.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/fdm/dashboard', pathMatch: 'full'},
@@ -16,6 +17,7 @@ const routes: Routes = [
       { path: 'dashboard/vehicle', component: VehicleDashboardComponent},
       { path: 'dashboard/vehicle/edit', component: VehicleEditComponent},
       { path: 'dashboard/location', component: LocationDashboardComponent},
+      { path: 'dashboard/test', component: TestComponent},
     ]
   }
 ];
