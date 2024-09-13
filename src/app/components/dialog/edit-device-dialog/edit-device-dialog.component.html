@@ -42,6 +42,7 @@
       <div class="mb-4">
         <button *ngIf="assignToVehicle"
                 mat-raised-button
+                type="button"
                 (click)="showVehiclesList()"
                 [disabled]="vehicles?.length === 0">
           Fahrzeug suchen
@@ -89,6 +90,7 @@
       <div class="mb-4">
         <button *ngIf="!assignToVehicle"
                 mat-raised-button
+                type="button"
                 (click)="showLocationsList()"
                 [disabled]="locations?.length === 0">
           Ort suchen

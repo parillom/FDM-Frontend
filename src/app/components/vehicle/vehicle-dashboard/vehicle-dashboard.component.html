@@ -69,7 +69,7 @@
         <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte']}" [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.id)?.length === 0}">
           <div class="d-flex align-items-center flex-wrap">
             <div class="d-flex align-items-center flex-grow-1">
-              <span [innerHTML]="getLimitedDevices(element.id)"></span>
+              <span class="text-info" [innerHTML]="getLimitedDevices(element.id)"></span>
               <span *ngIf="vehicleMap.get(element.id)?.length! > 1"
                     class="ms-3">({{vehicleMap.get(element.id)?.length!}})</span>
               <span *ngIf="vehicleMap.get(element.id!!)?.length! === 0">({{vehicleMap.get(element.id)?.length!}})</span>

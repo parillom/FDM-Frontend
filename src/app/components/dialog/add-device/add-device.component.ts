@@ -35,14 +35,14 @@ export class AddDeviceComponent implements OnInit {
   @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
 
   deviceFormVehicle: FormGroup = new FormGroup({
-    name: new FormControl(null),
-    vehicle: new FormControl<string | null>(null),
+    name: new FormControl(null, Validators.required),
+    vehicle: new FormControl<string | null>(null, Validators.required),
     state: new FormControl('', Validators.required),
   });
 
   deviceFormLocation: FormGroup = new FormGroup({
-    name: new FormControl(null),
-    location: new FormControl<string | null>(null),
+    name: new FormControl(null, Validators.required),
+    location: new FormControl<string | null>(null, Validators.required),
     state: new FormControl('', Validators.required),
   });
 
@@ -120,11 +120,6 @@ export class AddDeviceComponent implements OnInit {
   }
 
   createDeviceWithLocation() {
-    this.deviceFormLocation.get('name')?.setValidators(Validators.required);
-    this.deviceFormLocation.get('name')?.updateValueAndValidity();
-    this.deviceFormLocation.get('location')?.setValidators(Validators.required);
-    this.deviceFormLocation.get('location')?.updateValueAndValidity();
-
     if (this.deviceFormLocation.valid) {
       const locationForm = this.deviceFormLocation.value;
       this.isSubmitting = true;
@@ -143,10 +138,6 @@ export class AddDeviceComponent implements OnInit {
   }
 
   createDeviceWithVehicle() {
-    this.deviceFormVehicle.get('name')?.setValidators(Validators.required);
-    this.deviceFormVehicle.get('name')?.updateValueAndValidity();
-    this.deviceFormVehicle.get('vehicle')?.setValidators(Validators.required);
-    this.deviceFormVehicle.get('vehicle')?.updateValueAndValidity();
     if (this.deviceFormVehicle.valid) {
       const vehicleForm = this.deviceFormVehicle.value;
 
@@ -172,7 +163,7 @@ export class AddDeviceComponent implements OnInit {
       } else {
         this.errorHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
         this.createdSuccessful.emit(true);
-        this.clearValidators();
+        this.clearNameInput();
         this.getLocations();
         this.getVehicles();
         this.isSubmitting = false;
@@ -180,7 +171,7 @@ export class AddDeviceComponent implements OnInit {
     });
   }
 
-  clearValidators() {
+  clearNameInput() {
     this.deviceFormVehicle.get('name')?.reset();
     this.deviceFormVehicle.get('name')?.clearValidators();
     this.deviceFormVehicle.get('name')?.updateValueAndValidity();

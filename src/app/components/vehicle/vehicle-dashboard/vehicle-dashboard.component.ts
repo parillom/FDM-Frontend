@@ -98,12 +98,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
       return '';
     }
     if (isExpanded) {
-      return devices.map(device => `<span class="text-info">${device.name}</span>`).join(', ');
+      return devices.map(device => `<span>${device.name}</span>`).join(', ');
     } else {
       if (devices.length > this.limit) {
-        return devices.slice(0, this.limit).map(device => `<span class="text-info">${device.name}</span>`).join(', ');
+        return devices.slice(0, this.limit).map(device => `<span>${device.name}</span>`).join(', ');
       } else {
-        return devices.map(device => `<span class="text-info">${device.name}</span>`).join(', ');
+        return devices.map(device => `<span>${device.name}</span>`).join(', ');
       }
     }
   }
