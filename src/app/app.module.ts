@@ -74,6 +74,8 @@ import {AddLocationComponent} from './components/dialog/add-location/add-locatio
 import {AddMultipleVehiclesComponent} from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
 import {SettingsComponent} from './components/common/settings/settings.component';
 import { TestComponent } from './components/test/test.component';
+import { DeviceStatePipe } from './services/pipe/device-state.pipe';
+import { HighlightSearchTextPipe } from './services/pipe/highlight.search-text.pipe';
 
 @NgModule({
   declarations: [
@@ -98,6 +100,8 @@ import { TestComponent } from './components/test/test.component';
     AddMultipleVehiclesComponent,
     SettingsComponent,
     TestComponent,
+    DeviceStatePipe,
+    HighlightSearchTextPipe,
   ],
   imports: [
     BrowserModule,

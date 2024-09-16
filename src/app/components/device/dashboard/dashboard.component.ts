@@ -60,7 +60,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     'Geräte-ID': '15%'
   }
 
-
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
               private locationService: LocationService,
@@ -169,21 +168,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } else {
       if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
         this.dataSource.data = this.devices!.filter(device => {
-          return device.state?.deviceState === deviceCriteria!.state;
+          return device.state === deviceCriteria.state;
         });
       }
       if (deviceCriteria!.state && deviceCriteria!.vehicleName) {
         this.dataSource.data = this.devices!.filter(device => {
-          const matchesState = device.state?.deviceState === deviceCriteria!.state;
+          const matchesState = device.state === deviceCriteria.state;
           const matchesVehicleName = device.vehicle?.name === deviceCriteria!.vehicleName;
 
           return matchesState && matchesVehicleName;
         });
       }
-      if (deviceCriteria!.state && deviceCriteria!.locationName) {
+      if (deviceCriteria.state && deviceCriteria.locationName) {
         this.dataSource.data = this.devices!.filter(device => {
-          const matchesState = device.state?.deviceState === deviceCriteria!.state;
-          const matchesLocationName = device.location?.name === deviceCriteria!.locationName;
+          const matchesState = device.state === deviceCriteria.state;
+          const matchesLocationName = device.location.name === deviceCriteria.locationName;
 
           return matchesState && matchesLocationName;
         });
@@ -293,25 +292,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getDeviceState(device: Device): string {
-    let state = 'UNBEKANNT';
-    switch (device.state?.deviceState) {
-      case DeviceState.ACTIVE: {
-        state = 'AKTIV';
-        break;
-      }
-      case DeviceState.STORAGE: {
-        state = 'LAGER';
-        break;
-      }
-      case DeviceState.REESTABLISH: {
-        state = 'RETABLIEREN';
-        break;
-      }
-    }
-    return state;
-  }
-
   refreshDevices() {
     this.getAllDevices(true);
     this.handleFocusAndResetState();
@@ -381,7 +361,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         //nur nach Status filtern
         if (!this.vehicleName && !this.locationName) {
           const filteredDevices = this.filteredDevices!.filter(device =>
-            device.state?.deviceState === this.currentState
+            device.state === this.currentState
           );
           filteredDevices.forEach(device => {
             if (!this.selectedDevices.includes(device)) {
@@ -392,7 +372,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           //nach Status und Fahrzeug filtern
           if (this.vehicleName) {
             const filteredDevices = this.filteredDevices!.filter(device => device.vehicle?.name === this.vehicleName
-              && device.state?.deviceState === this.currentState);
+              && device.state === this.currentState);
             filteredDevices.forEach(device => {
               if (!this.selectedDevices.includes(device)) {
                 this.selectedDevices.push(device);
@@ -401,7 +381,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           } else {
             //nach Status und Ort filtern
             const filteredDevices = this.filteredDevices!.filter(device => device.location?.name === this.locationName
-              && device.state?.deviceState === this.currentState);
+              && device.state === this.currentState);
             filteredDevices.forEach(device => {
               if (!this.selectedDevices.includes(device)) {
                 this.selectedDevices.push(device);

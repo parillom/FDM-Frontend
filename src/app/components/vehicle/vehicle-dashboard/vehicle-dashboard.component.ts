@@ -86,7 +86,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   getDevicesFromVehicle(vehicle: Vehicle) {
     this.vehicleService.getDevicesFromVehicle(vehicle).subscribe((response) => {
       if (response.object) {
-        this.vehicleMap.set(vehicle.id!, response.object);
+        this.vehicleMap.set(vehicle.uuId!, response.object);
       }
     });
   }
@@ -247,6 +247,6 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   getTooltipActionsText(): string {
-    return 'Es können nur Fahrzeuge gelöscht werden die mit keinen Geräten verknüpft sind.';
+    return 'Es können nur Fahrzeuge gelöscht werden, die mit keinen Geräten verknüpft sind.';
   }
 }

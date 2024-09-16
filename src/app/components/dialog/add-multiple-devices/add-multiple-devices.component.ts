@@ -52,7 +52,7 @@ export class AddMultipleDevicesComponent {
               name: device.name,
               location: device.location ? {name: device.location} : null,
               vehicle: device.vehicle ? {name: device.vehicle} : null,
-              state: {deviceState: device.state}
+              state: device.state
             };
             newDevices.push(deviceToSave);
           } else {

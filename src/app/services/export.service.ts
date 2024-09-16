@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import * as XLSX from 'xlsx';
 import {Device} from '../models/Device';
 import autoTable from 'jspdf-autotable';
-import {DeviceState} from '../models/DeviceState';
 import jsPDF from 'jspdf';
+import {DeviceStatePipe} from './pipe/device-state.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 export class ExportService {
   data: (number | string)[][] = [];
   headers: string[][] = [];
+  deviceStatePipe = new DeviceStatePipe();
 
   //Excel
   exportExcel(data: Device[]) {
@@ -19,7 +20,7 @@ export class ExportService {
       Name: item.name,
       Ort: item.location?.name || '-',
       Fahrzeug: item.vehicle?.name || '-',
-      Status: this.getDeviceState(item.state?.deviceState)
+      Status: this.deviceStatePipe.transform(item.state)
     }));
 
     const workSheet = XLSX.utils.json_to_sheet(exportData, {header: ['ID', 'Name', 'Ort', 'Fahrzeug', 'Status']});
@@ -71,21 +72,21 @@ export class ExportService {
         device.name || 'Unbekannt',
         device.location?.name || '-',
         device.vehicle?.name || '-',
-        this.getDeviceState(device.state?.deviceState) || 'Unbekannt'
+        this.deviceStatePipe.transform(device.state)
       ]);
     } else if (this.hasLocations(devices) && !this.hasVehicles(devices)) {
       this.data = devices.map(device => [
         device.uuId || 'Unbekannt',
         device.name || 'Unbekannt',
         device.location?.name || '-',
-        this.getDeviceState(device.state?.deviceState) || 'Unbekannt'
+        this.deviceStatePipe.transform(device.state)
       ]);
     } else if (!this.hasLocations(devices) && this.hasVehicles(devices)) {
       this.data = devices.map(device => [
         device.uuId || 'Unbekannt',
         device.name || 'Unbekannt',
         device.vehicle?.name || '-',
-        this.getDeviceState(device.state?.deviceState) || 'Unbekannt'
+        this.deviceStatePipe.transform(device.state)
       ]);
     }
 
@@ -99,24 +100,6 @@ export class ExportService {
     });
 
     doc.save('devices.pdf');
-  }
-
-  getDeviceState(deviceState: DeviceState | undefined): string | undefined {
-    let state: string | undefined;
-    switch (deviceState) {
-      case DeviceState.ACTIVE:
-        state = 'AKTIV';
-        break;
-      case DeviceState.STORAGE:
-        state = 'LAGER';
-        break;
-      case DeviceState.REESTABLISH:
-        state = 'RETABLIEREN';
-        break;
-      default:
-        state = undefined;
-    }
-    return state;
   }
 
   hasLocations(devices: Device[]) {

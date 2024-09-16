@@ -122,13 +122,13 @@
       <ng-container style="width: 4%" matColumnDef="Geräte-ID">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Geräte-ID']}">Geräte-ID</th>
         <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte-ID']}"
-            [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.uuId}} </td>
+            [ngClass]="{'selected': isDeviceSelected(element)}" [innerHtml]="element.uuId | highlightSearchText: deviceSearch">  </td>
       </ng-container>
 
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element"
-            [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.name}} </td>
+            [ngClass]="{'selected': isDeviceSelected(element)}" [innerHtml]="element.name | highlightSearchText: deviceSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Fahrzeug">
@@ -150,7 +150,7 @@
       <ng-container matColumnDef="Status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let element"
-            [ngClass]="{'selected': isDeviceSelected(element)}"> {{getDeviceState(element)}} </td>
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{element.state | deviceState}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Aktionen">

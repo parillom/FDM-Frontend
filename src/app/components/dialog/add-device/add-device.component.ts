@@ -1,7 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Device} from '../../../models/Device';
-import {State} from '../../../models/State';
 import {Location} from '../../../models/Location';
 import {MatDialogRef} from '@angular/material/dialog';
 import {LocationService} from '../../../services/location.service';
@@ -127,11 +126,11 @@ export class AddDeviceComponent implements OnInit {
       const deviceToSave = {} as Device;
       deviceToSave.location = {} as Location;
       deviceToSave.vehicle = {} as Vehicle;
-      deviceToSave.state = {} as State;
+      deviceToSave.state = {} as DeviceState;
       deviceToSave.name = locationForm.name;
       deviceToSave.location.name = locationForm.location;
       deviceToSave.vehicle = null;
-      deviceToSave.state.deviceState = locationForm.state;
+      deviceToSave.state = locationForm.state;
 
       this.performSaveCall(deviceToSave);
     }
@@ -144,11 +143,11 @@ export class AddDeviceComponent implements OnInit {
       const deviceToSave = {} as Device;
       deviceToSave.location = {} as Location;
       deviceToSave.vehicle = {} as Vehicle;
-      deviceToSave.state = {} as State;
+      deviceToSave.state = {} as DeviceState;
       deviceToSave.name = vehicleForm.name;
       deviceToSave.location = null;
       deviceToSave.vehicle.name = vehicleForm.vehicle;
-      deviceToSave.state.deviceState = vehicleForm.state;
+      deviceToSave.state = vehicleForm.state;
 
       this.performSaveCall(deviceToSave);
     }

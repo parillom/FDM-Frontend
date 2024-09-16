@@ -19,6 +19,7 @@ export class DeviceService {
   }
 
   createDevice(device: Device): Observable<ModelAndError> {
+    console.log(device)
     return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}`, device);
   }
 
@@ -35,8 +36,8 @@ export class DeviceService {
     return this.http.delete<ModelAndError>(`${COMMON_DEVICE_URL}/many/${ids}`);
   }
 
-  updateDevice(deviceToSave: Device, deviceHasVehicle: boolean): Observable<ModelAndError> {
-    return this.http.put<ModelAndError>(`${COMMON_DEVICE_URL}/${deviceHasVehicle}`, deviceToSave);
+  updateDevice(deviceToSave: Device): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}`, deviceToSave);
   }
 
   getDeviceWithUuId(uuId: number): Observable<ModelAndError> {

@@ -5,7 +5,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {DeviceState} from '../../../models/DeviceState';
 import {Location} from '../../../models/Location';
 import {Vehicle} from '../../../models/Vehicle';
-import {State} from '../../../models/State';
 import {DeviceService} from '../../../services/device.service';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {ToastrService} from 'ngx-toastr';
@@ -67,7 +66,7 @@ export class EditDeviceDialogComponent implements OnInit {
   private setStateInitValue() {
     if (this.device) {
       const stateControl = this.editDeviceFormLocation.get('stateLocation');
-      stateControl!.setValue(this.device!.state?.deviceState || '');
+      stateControl!.setValue(this.device!.state || '');
       const stateControlVehicle = this.editDeviceFormVehicle.get('state');
       if (stateControlVehicle) {
         stateControlVehicle.setValue(DeviceState.ACTIVE);
@@ -78,7 +77,7 @@ export class EditDeviceDialogComponent implements OnInit {
   onStateChanged(state: DeviceState) {
     this.selectedState = state;
     const stateControlLocation = this.editDeviceFormLocation.get('state')?.value;
-    this.locationFormDirty = this.device?.state?.deviceState !== stateControlLocation;
+    this.locationFormDirty = this.device?.state !== stateControlLocation;
   }
 
   checkDeviceName(event: any) {
@@ -105,56 +104,32 @@ export class EditDeviceDialogComponent implements OnInit {
 
   updateDevice() {
     const deviceToSave = {} as Device;
-    if (this.assignToVehicle) {
-      if (this.editDeviceFormVehicle.valid) {
-        const deviceData = this.editDeviceFormVehicle.value;
+    const formValid = this.assignToVehicle ? this.editDeviceFormVehicle.valid : this.editDeviceFormLocation.valid;
 
-        deviceToSave.location = {} as Location;
-        deviceToSave.vehicle = {} as Vehicle;
-        deviceToSave.state = {} as State;
+    if (formValid) {
+      const deviceData = this.assignToVehicle ? this.editDeviceFormVehicle.value : this.editDeviceFormLocation.value;
 
-        deviceToSave.id = this.device?.id;
-        deviceToSave.name = deviceData.name;
-        deviceToSave.vehicle.name = deviceData.vehicle;
+      deviceToSave.id = this.device?.id;
+      deviceToSave.name = deviceData.name;
+      deviceToSave.state = this.assignToVehicle ? deviceData.state : deviceData.stateLocation;
+
+      if (this.assignToVehicle) {
+        deviceToSave.vehicle = {name: deviceData.vehicle } as Vehicle;
         deviceToSave.location = null;
-        deviceToSave.state!.deviceState! = deviceData.state;
-
-        this.deviceService.updateDevice(deviceToSave, true).subscribe(res => {
-            if (this.errorHandler.hasError(res)) {
-              this.errorHandler.setErrorMessage(res.errorMessage!);
-              this.updatedSuccessful.emit(false);
-            } else {
-              this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);
-              this.updatedSuccessful.emit(true);
-            }
-          }
-        );
-      }
-    } else {
-      if (this.editDeviceFormLocation.valid) {
-        const deviceData = this.editDeviceFormLocation.value;
-
-        deviceToSave.location = {} as Location;
-        deviceToSave.vehicle = {} as Vehicle;
-        deviceToSave.state = {} as State;
-
-        deviceToSave.id = this.device?.id;
-        deviceToSave.name = deviceData.name;
+      } else {
         deviceToSave.vehicle = null;
-        deviceToSave.location.name = deviceData.location;
-        deviceToSave.state!.deviceState! = deviceData.stateLocation;
-
-        this.deviceService.updateDevice(deviceToSave, false).subscribe(res => {
-            if (this.errorHandler.hasError(res)) {
-              this.errorHandler.setErrorMessage(res.errorMessage!);
-              this.updatedSuccessful.emit(false);
-            } else {
-              this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);
-              this.updatedSuccessful.emit(true);
-            }
-          }
-        );
+        deviceToSave.location = { name: deviceData.location } as Location;
       }
+
+      this.deviceService.updateDevice(deviceToSave).subscribe(res => {
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage!);
+          this.updatedSuccessful.emit(false);
+        } else {
+          this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);
+          this.updatedSuccessful.emit(true);
+        }
+      });
     }
   }
 

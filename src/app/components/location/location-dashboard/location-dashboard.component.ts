@@ -84,7 +84,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   getDevicesFromLocation(location: Location) {
     this.locationService.getDevicesFromLocation(location).subscribe((response) => {
       if (response.object) {
-        this.devicesMap.set(location.id!, response.object);
+        this.devicesMap.set(location.uuId, response.object);
       } else {
         this.errorHandler.setErrorMessage(response.errorMessage!);
       }
@@ -230,6 +230,6 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   }
 
   getTooltipActionsText(): string {
-    return 'Es können nur Orte gelöscht werden die mit keinen Geräten verknüpft sind.';
+    return 'Es können nur Orte gelöscht werden, die mit keinen Geräten verknüpft sind.';
   }
 }

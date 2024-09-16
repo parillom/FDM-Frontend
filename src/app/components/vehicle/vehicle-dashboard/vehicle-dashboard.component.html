@@ -56,23 +56,24 @@
       <ng-container matColumnDef="Fahrzeug-ID">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Fahrzeug-ID']}">Fahrzeug-ID</th>
         <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.id)?.length === 0}"
-            [ngStyle]="{'width': columnWidths['Fahrzeug-ID']}"> {{element.uuId}} </td>
+            [ngStyle]="{'width': columnWidths['Fahrzeug-ID']}" [innerHtml]="element.uuId | highlightSearchText: vehicleSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Name']}"> Name</th>
-        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Name']}" [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.id)?.length === 0}"> {{element.name}} </td>
+        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Name']}"
+            [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.id)?.length === 0}" [innerHtml]="element.name | highlightSearchText: vehicleSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Geräte">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Geräte']}">Geräte</th>
-        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte']}" [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.id)?.length === 0}">
+        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte']}" [ngClass]="{'selected': isVehicleSelected(element) && vehicleMap.get(element.uuId)?.length === 0}">
           <div class="d-flex align-items-center flex-wrap">
             <div class="d-flex align-items-center flex-grow-1">
-              <span class="text-info" [innerHTML]="getLimitedDevices(element.id)"></span>
-              <span *ngIf="vehicleMap.get(element.id)?.length! > 1"
-                    class="ms-3">({{vehicleMap.get(element.id)?.length!}})</span>
-              <span *ngIf="vehicleMap.get(element.id!!)?.length! === 0">({{vehicleMap.get(element.id)?.length!}})</span>
+              <span class="text-info" [innerHTML]="getLimitedDevices(element.uuId)"></span>
+              <span *ngIf="vehicleMap.get(element.uuId)?.length! > 1"
+                    class="ms-3">({{vehicleMap.get(element.uuId)?.length!}})</span>
+              <span *ngIf="vehicleMap.get(element.uuId!!)?.length! === 0">({{vehicleMap.get(element.uuId)?.length!}})</span>
             </div>
           </div>
         </td>

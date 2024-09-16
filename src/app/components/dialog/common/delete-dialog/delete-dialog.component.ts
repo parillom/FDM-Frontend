@@ -61,25 +61,6 @@ export class DeleteDialogComponent {
     }
   }
 
-  getDeviceState(deviceState: DeviceState | undefined): string | undefined {
-    let state: string | undefined;
-    switch (deviceState) {
-      case DeviceState.ACTIVE:
-        state = 'AKTIV';
-        break;
-      case DeviceState.STORAGE:
-        state = 'LAGER';
-        break;
-      case DeviceState.REESTABLISH:
-        state = 'RETABLIEREN';
-        break;
-      default:
-        state = undefined;
-    }
-
-    return state;
-  }
-
   getObjectName() {
     if (this.useCase === Usecase.DEVICE) {
       return 'Gerät';

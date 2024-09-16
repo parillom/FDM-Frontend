@@ -47,12 +47,12 @@
       <ng-container matColumnDef="Ort-ID">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Ort-ID']}">Ort-ID</th>
         <td mat-cell *matCellDef="let element"
-            [ngStyle]="{'width': columnWidths['Ort-ID']}"> {{element.uuId}} </td>
+            [ngStyle]="{'width': columnWidths['Ort-ID']}" [innerHtml]="element.uuId | highlightSearchText: locationSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Name">
-        <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Name']}"> Name</th>
-        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Name']}"> {{element.name}} </td>
+        <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Name']}">Name</th>
+        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Name']}" [innerHtml]="element.name | highlightSearchText: locationSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Geräte">
@@ -60,10 +60,10 @@
         <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte']}">
           <div class="d-flex align-items-center flex-wrap">
             <div class="d-flex align-items-center flex-grow-1">
-              <span [innerHTML]="getLimitedDevices(element.id)"></span>
-              <span *ngIf="devicesMap.get(element.id)?.length! > 1"
-                    class="ms-3">({{devicesMap.get(element.id)?.length!}})</span>
-              <span *ngIf="devicesMap.get(element.id!!)?.length! === 0">({{devicesMap.get(element.id)?.length!}})</span>
+              <span [innerHTML]="getLimitedDevices(element.uuId)"></span>
+              <span *ngIf="devicesMap.get(element.uuId)?.length! > 1"
+                    class="ms-3">({{devicesMap.get(element.uuId)?.length!}})</span>
+              <span *ngIf="devicesMap.get(element.uuId)?.length! === 0">({{devicesMap.get(element.uuId)?.length!}})</span>
             </div>
           </div>
         </td>
