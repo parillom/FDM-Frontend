@@ -27,46 +27,9 @@
     </div>
   </div>
 
-  <div class="d-flex row align-items-center mb-4 d-block d-md-none text-nowrap">
-    <h2>Optionen</h2>
-    <div class="col-xs mt-1 d-block d-sm-none">
-      <button mat-icon-button
-              (click)="openCreateDeviceDialog()"
-              [disabled]="formShowing"
-              matTooltip="Gerät hinzufügen"
-              matTooltipPosition="above">
-        <mat-icon color="primary">add</mat-icon>
-      </button>
-    </div>
-    <div class="col-12 mt-3 mb-2">
-      <button mat-raised-button
-              (click)="openDeleteMultipleDialog()"
-              class="btn cursor-pointer"
-              [disabled]="selectedDevices.length < 1">
-        Geräte löschen ({{selectedDevices.length}})
-      </button>
-    </div>
-    <div class="col-12 d-flex align-items-center">
-      <mat-checkbox (click)="addAllDevices()"
-                    labelPosition="before"
-                    color="primary"
-                    *ngIf="devices?.length! > 1"
-                    [checked]="isChecked">
-        Alle auswählen
-      </mat-checkbox>
-      <button (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
-              mat-icon-button>
-        <mat-icon>upgrade</mat-icon>
-      </button>
-    </div>
-    <div class="col-12" *ngIf="openExportMenu">
-      <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
-      <button mat-raised-button (click)="export('PDF')">PDF</button>
-    </div>
-  </div>
-
   <div class="d-flex align-items-center mb-1">
-    <mat-radio-group [disabled]="selectedState !== ''" color="primary" (change)="vehicleOrLocationSelected($event.value)" [(ngModel)]="vehicleOrLocationSelectedValue">
+    <mat-radio-group [disabled]="stateSelected" color="primary" (change)="vehicleOrLocationSelected($event.value)"
+                     [(ngModel)]="vehicleOrLocationSelectedValue">
       <mat-radio-button class="me-2" value="vehicle">Nur Fahrzeuge</mat-radio-button>
       <mat-radio-button class="me-2" value="location">Nur Orte</mat-radio-button>
     </mat-radio-group>
@@ -75,8 +38,10 @@
       <mat-icon>history</mat-icon>
     </button>
   </div>
+  <mat-divider class="d-sm-none"></mat-divider>
   <div class="mb-3">
-    <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected" (change)="stateFilterChanged($event.value)" [(ngModel)]="selectedState">
+    <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected" (change)="stateFilterChanged($event.value)"
+                     [(ngModel)]="selectedState">
       <mat-radio-button class="me-2" [value]="DeviceState.ACTIVE">AKTIV</mat-radio-button>
       <mat-radio-button class="me-2" [value]="DeviceState.STORAGE">LAGER</mat-radio-button>
       <mat-radio-button [value]="DeviceState.REESTABLISH">RETABLIEREN</mat-radio-button>
@@ -121,6 +86,44 @@
     </div>
   </div>
 
+  <div class="d-flex row align-items-center mb-4 d-block d-md-none text-nowrap">
+    <h2>Optionen</h2>
+    <div class="col-xs mt-1 d-block d-sm-none">
+      <button mat-icon-button
+              (click)="openCreateDeviceDialog()"
+              [disabled]="formShowing"
+              matTooltip="Gerät hinzufügen"
+              matTooltipPosition="above">
+        <mat-icon color="primary">add</mat-icon>
+      </button>
+    </div>
+    <div class="col-12 mt-3 mb-2">
+      <button mat-raised-button
+              (click)="openDeleteMultipleDialog()"
+              class="btn cursor-pointer"
+              [disabled]="selectedDevices.length < 1">
+        Geräte löschen ({{selectedDevices.length}})
+      </button>
+    </div>
+    <div class="col-12 d-flex align-items-center">
+      <mat-checkbox (click)="addAllDevices()"
+                    labelPosition="before"
+                    color="primary"
+                    *ngIf="devices?.length! > 1"
+                    [checked]="isChecked">
+        Alle auswählen
+      </mat-checkbox>
+      <button (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
+              mat-icon-button>
+        <mat-icon>upgrade</mat-icon>
+      </button>
+    </div>
+    <div class="col-12" *ngIf="openExportMenu">
+      <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
+      <button mat-raised-button (click)="export('PDF')">PDF</button>
+    </div>
+  </div>
+
   <mat-progress-spinner *ngIf="showSpinner" style="margin:0 auto;"
                         mode="indeterminate"></mat-progress-spinner>
 
@@ -129,13 +132,15 @@
       <ng-container style="width: 4%" matColumnDef="Geräte-ID">
         <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Geräte-ID']}">Geräte-ID</th>
         <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte-ID']}"
-            [ngClass]="{'selected': isDeviceSelected(element)}" [innerHtml]="element.uuId | highlightSearchText: deviceSearch">  </td>
+            [ngClass]="{'selected': isDeviceSelected(element)}"
+            [innerHtml]="element.uuId | highlightSearchText: deviceSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element"
-            [ngClass]="{'selected': isDeviceSelected(element)}" [innerHtml]="element.name | highlightSearchText: deviceSearch"></td>
+            [ngClass]="{'selected': isDeviceSelected(element)}"
+            [innerHtml]="element.name | highlightSearchText: deviceSearch"></td>
       </ng-container>
 
       <ng-container matColumnDef="Fahrzeug">
@@ -161,7 +166,9 @@
       </ng-container>
 
       <ng-container matColumnDef="Aktionen">
-        <th mat-header-cell *matHeaderCellDef>Aktionen<span class="ms-1" *ngIf="selectedDevices.length > 0">({{selectedDevices.length}})</span></th>
+        <th mat-header-cell *matHeaderCellDef>Aktionen<span class="ms-1"
+                                                            *ngIf="selectedDevices.length > 0">({{selectedDevices.length}}
+          )</span></th>
         <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}">
           <div class="d-flex align-items-center">
             <mat-icon (click)="openEditModal(element)"

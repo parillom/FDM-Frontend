@@ -49,6 +49,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   deviceCriteria?: DeviceSearch;
   selectedState?: string;
   vehiclesOrLocationsSelected: boolean = false;
+  stateSelected: boolean = false;
   vehicleOrLocationSelectedValue: string;
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
@@ -97,6 +98,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           this.selectedDevices.splice(0);
         }
         this.dataSource.data! = this.filteredDevices!;
+        this.stateSelected = false;
+        this.vehiclesOrLocationsSelected = false;
+        this.selectedState = '';
+        this.vehicleOrLocationSelectedValue = '';
         this.showSpinner = false;
       }
     });
@@ -126,6 +131,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   stateFilterChanged(value: DeviceState) {
     this.currentState = value;
+    this.stateSelected = true;
     if (!this.vehicleName && !this.locationName) {
       this.deviceCriteria = {
         state: this.currentState,
@@ -489,6 +495,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   handleFocusAndResetState() {
     this.selectedState = '';
+    this.stateSelected = false;
     this.vehicleOrLocationSelectedValue = '';
     this.vehiclesOrLocationsSelected = false;
     this.vehicleLocationAutoCompletion.resetFields();
@@ -496,6 +503,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   resetStatus() {
     this.selectedState = '';
+    this.stateSelected = false;
     this.vehiclesOrLocationsSelected = false;
     this.vehicleOrLocationSelectedValue = '';
     this.isChecked = false;
