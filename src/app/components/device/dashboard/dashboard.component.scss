@@ -25,6 +25,10 @@ th {
 }
 
 .export-menu-container {
-  position: relative; /* Positionierung des Containers für das Menü */
-  display: inline-block; /* Damit das Menü nur so viel Platz wie nötig einnimmt */
+  position: relative;
+  display: inline-block;
+}
+
+.radio-btn {
+  pointer-events: none;
 }

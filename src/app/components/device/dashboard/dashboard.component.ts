@@ -48,6 +48,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   vehicleName: string | null | undefined = '';
   deviceCriteria?: DeviceSearch;
   selectedState?: string;
+  vehiclesOrLocationsSelected: boolean = false;
+  vehicleOrLocationSelectedValue: string;
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
   displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Aktionen'];
@@ -147,6 +149,37 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  vehicleOrLocationSelected(value: any) {
+    this.vehicleOrLocationSelectedValue = value;
+    this.vehiclesOrLocationsSelected = true;
+    if (value === "vehicle") {
+      this.deviceCriteria = {
+        vehicleName: value,
+        locationName: null
+      }
+      this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
+    } else {
+        this.deviceCriteria = {
+          locationName: value,
+          vehicleName: null
+        }
+        this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
+    }
+  }
+
+  filterOnlyVehiclesOrLocations(deviceCriteria: DeviceSearch) {
+    if (!deviceCriteria.locationName && deviceCriteria.vehicleName && !deviceCriteria.state && !this.vehicleName) {
+      this.dataSource.data = this.devices!.filter(device => {
+        return device.location === null && (device.vehicle !== null && device.vehicle !== undefined);
+      });
+    }
+    if (deviceCriteria.locationName && !deviceCriteria.vehicleName && !deviceCriteria.state) {
+      this.dataSource.data = this.devices!.filter(device => {
+        return device.vehicle === null && (device.location !== null && device.location !== undefined);
+      });
+    }
+  }
+
   filterWithAllProperties() {
     const deviceSearchId = this.deviceSearch ? this.deviceSearch : '';
     const searchLower = this.deviceSearch?.toLowerCase() || '';
@@ -179,10 +212,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           return matchesState && matchesVehicleName;
         });
       }
-      if (deviceCriteria.state && deviceCriteria.locationName) {
-        this.dataSource.data = this.devices!.filter(device => {
-          const matchesState = device.state === deviceCriteria.state;
-          const matchesLocationName = device.location.name === deviceCriteria.locationName;
+      if (deviceCriteria!.state && deviceCriteria!.locationName) {
+        this.dataSource.data = this.devices.filter(device => {
+          const matchesState = device.state === deviceCriteria!.state;
+          const matchesLocationName = device?.location?.name === deviceCriteria?.locationName;
 
           return matchesState && matchesLocationName;
         });
@@ -456,11 +489,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   handleFocusAndResetState() {
     this.selectedState = '';
+    this.vehicleOrLocationSelectedValue = '';
+    this.vehiclesOrLocationsSelected = false;
     this.vehicleLocationAutoCompletion.resetFields();
   }
 
   resetStatus() {
     this.selectedState = '';
+    this.vehiclesOrLocationsSelected = false;
+    this.vehicleOrLocationSelectedValue = '';
     this.isChecked = false;
     this.currentState = undefined;
     if (!this.vehicleName && !this.locationName) {
@@ -504,4 +541,5 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       window.location.reload();
     }
   }
+
 }

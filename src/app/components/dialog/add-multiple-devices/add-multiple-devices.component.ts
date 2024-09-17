@@ -49,6 +49,8 @@ export class AddMultipleDevicesComponent {
         for (const device of this.extractedElements) {
           if (this.excelIsValid(device, this.extractedElements)) {
             const deviceToSave: Device = {
+              id: null,
+              uuId: null,
               name: device.name,
               location: device.location ? {name: device.location} : null,
               vehicle: device.vehicle ? {name: device.vehicle} : null,

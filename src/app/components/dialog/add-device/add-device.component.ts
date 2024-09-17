@@ -21,7 +21,7 @@ export class AddDeviceComponent implements OnInit {
   showLocations: boolean = false;
   showVehicles: boolean = false;
   filteredLocations?: Location[] = [];
-  filteredVehicles?: Device[] = [];
+  filteredVehicles?: Vehicle[] = [];
   addOneDevice: boolean = true;
   locationSelected: boolean = false;
   isSubmitting: boolean = false;
@@ -80,9 +80,9 @@ export class AddDeviceComponent implements OnInit {
     });
   }
 
-  setLocationInput(device: Device) {
+  setLocationInput(location: Location) {
     this.deviceFormLocation.patchValue({
-      location: device.name
+      location: location.name
     });
     this.showLocations = false;
   }

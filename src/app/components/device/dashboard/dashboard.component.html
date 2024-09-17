@@ -65,19 +65,26 @@
     </div>
   </div>
 
-  <div class="d-flex align-items-center mb-3">
-    <mat-radio-group color="primary" (change)="stateFilterChanged($event.value)" [(ngModel)]="selectedState">
-      <mat-radio-button [value]="DeviceState.ACTIVE">AKTIV</mat-radio-button>
-      <mat-radio-button [value]="DeviceState.STORAGE">LAGER</mat-radio-button>
-      <mat-radio-button [value]="DeviceState.REESTABLISH">RETABLIEREN</mat-radio-button>
+  <div class="d-flex align-items-center mb-1">
+    <mat-radio-group [disabled]="selectedState !== ''" color="primary" (change)="vehicleOrLocationSelected($event.value)" [(ngModel)]="vehicleOrLocationSelectedValue">
+      <mat-radio-button class="me-2" value="vehicle">Nur Fahrzeuge</mat-radio-button>
+      <mat-radio-button class="me-2" value="location">Nur Orte</mat-radio-button>
     </mat-radio-group>
     <button matTooltip="Statusfilter zurücksetzen" class="ms-1"
             matTooltipPosition="above" (click)="resetStatus()" mat-icon-button>
       <mat-icon>history</mat-icon>
     </button>
   </div>
+  <div class="mb-3">
+    <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected" (change)="stateFilterChanged($event.value)" [(ngModel)]="selectedState">
+      <mat-radio-button class="me-2" [value]="DeviceState.ACTIVE">AKTIV</mat-radio-button>
+      <mat-radio-button class="me-2" [value]="DeviceState.STORAGE">LAGER</mat-radio-button>
+      <mat-radio-button [value]="DeviceState.REESTABLISH">RETABLIEREN</mat-radio-button>
+    </mat-radio-group>
+  </div>
 
   <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
+                                                 *ngIf="!vehiclesOrLocationsSelected"
                                                  [currentStateValue]="currentState"
                                                  (doFilter)="filterWithSpecifiedProperties($event)">
   </app-vehicle-location-autocompletion-dashboard>

@@ -7,10 +7,10 @@ import {Vehicle} from './Vehicle';
 import {DeviceState} from './DeviceState';
 
 export class Device {
-  id?: number;
-  uuId?: number;
-  name?: string;
-  location?: Location | null;
-  state?: DeviceState;
-  vehicle?: Vehicle | null;
+  id: number;
+  uuId: number;
+  name: string;
+  location: Location | null;
+  state: DeviceState;
+  vehicle: Vehicle | null;
 }
