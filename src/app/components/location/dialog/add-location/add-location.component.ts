@@ -1,10 +1,10 @@
 import {Component, EventEmitter} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
-import {Location} from '../../../models/Location';
-import {LocationService} from '../../../services/location.service';
+import {Location} from '../../../../models/Location';
+import {LocationService} from '../../../../services/location.service';
 
 @Component({
   selector: 'app-add-location',

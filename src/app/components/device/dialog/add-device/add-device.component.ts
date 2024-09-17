@@ -1,14 +1,14 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Device} from '../../../models/Device';
-import {Location} from '../../../models/Location';
+import {Device} from '../../../../models/Device';
+import {Location} from '../../../../models/Location';
 import {MatDialogRef} from '@angular/material/dialog';
-import {LocationService} from '../../../services/location.service';
-import {Vehicle} from '../../../models/Vehicle';
-import {VehicleService} from '../../../services/vehicle.service';
-import {DeviceState} from '../../../models/DeviceState';
-import {DeviceService} from '../../../services/device.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {LocationService} from '../../../../services/location.service';
+import {Vehicle} from '../../../../models/Vehicle';
+import {VehicleService} from '../../../../services/vehicle.service';
+import {DeviceState} from '../../../../models/DeviceState';
+import {DeviceService} from '../../../../services/device.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 
 @Component({

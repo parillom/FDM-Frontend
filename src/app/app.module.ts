@@ -6,8 +6,8 @@ import {AppComponent} from './app.component';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {NavbarComponent} from './components/common/navbar/navbar.component';
 import {DashboardComponent} from './components/device/dashboard/dashboard.component';
-import {EditDeviceDialogComponent} from './components/dialog/edit-device-dialog/edit-device-dialog.component';
-import {AddDeviceComponent} from './components/dialog/add-device/add-device.component';
+import {EditDeviceDialogComponent} from './components/device/dialog/edit-device-dialog/edit-device-dialog.component';
+import {AddDeviceComponent} from './components/device/dialog/add-device/add-device.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
@@ -26,13 +26,13 @@ import {BsModalService} from 'ngx-bootstrap/modal';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ToastrModule} from 'ngx-toastr';
-import {DeleteDialogComponent} from './components/dialog/common/delete-dialog/delete-dialog.component';
-import {AddMultipleDevicesComponent} from './components/dialog/add-multiple-devices/add-multiple-devices.component';
+import {DeleteDialogComponent} from './components/common/dialog/delete-dialog/delete-dialog.component';
+import {AddMultipleDevicesComponent} from './components/device/dialog/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
 import {
   DeleteMultipleDialogComponent
-} from './components/dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
-import {ConfirmDialogComponent} from './components/dialog/common/confirm-dialog/confirm-dialog.component';
+} from './components/common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
+import {ConfirmDialogComponent} from './components/common/dialog/confirm-dialog/confirm-dialog.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {
@@ -57,12 +57,12 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {
   VehicleLocationAutocompletionComponent
-} from './components/common/vehicle-autocompletion/vehicle-location-autocompletion.component';
+} from './components/common/vehicle-location-autocompletion/vehicle-location-autocompletion.component';
 import {MatPaginator} from '@angular/material/paginator';
 import {VehicleDashboardComponent} from './components/vehicle/vehicle-dashboard/vehicle-dashboard.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {TooltipModule} from 'ngx-bootstrap/tooltip';
-import {AddVehicleComponent} from './components/dialog/add-vehicle/add-vehicle.component';
+import {AddVehicleComponent} from './components/vehicle/dialog/add-vehicle/add-vehicle.component';
 import {DeviceDetailsComponent} from './components/device/device-details/device-details.component';
 import {VehicleEditComponent} from './components/vehicle/vehicle-edit/vehicle-edit.component';
 import {
@@ -70,8 +70,8 @@ import {
 } from './components/vehicle/add-devices-to-vehicle/add-devices-to-vehicle.component';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {LocationDashboardComponent} from './components/location/location-dashboard/location-dashboard.component';
-import {AddLocationComponent} from './components/dialog/add-location/add-location.component';
-import {AddMultipleVehiclesComponent} from './components/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
+import {AddLocationComponent} from './components/location/dialog/add-location/add-location.component';
+import {AddMultipleVehiclesComponent} from './components/vehicle/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
 import {SettingsComponent} from './components/common/settings/settings.component';
 import { TestComponent } from './components/test/test.component';
 import { DeviceStatePipe } from './services/pipe/device-state.pipe';

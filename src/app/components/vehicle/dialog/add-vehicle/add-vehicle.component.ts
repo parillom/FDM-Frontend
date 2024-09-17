@@ -2,9 +2,9 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Vehicle} from '../../../models/Vehicle';
-import {VehicleService} from '../../../services/vehicle.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {Vehicle} from '../../../../models/Vehicle';
+import {VehicleService} from '../../../../services/vehicle.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
 
 @Component({
   selector: 'app-add-vehicle',

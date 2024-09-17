@@ -1,10 +1,10 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ToastrService} from 'ngx-toastr';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import * as XLSX from 'xlsx';
-import {Vehicle} from '../../../models/Vehicle';
-import {VehicleService} from '../../../services/vehicle.service';
+import {Vehicle} from '../../../../models/Vehicle';
+import {VehicleService} from '../../../../services/vehicle.service';
 
 @Component({
   selector: 'app-add-multiple-vehicles',

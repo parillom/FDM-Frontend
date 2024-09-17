@@ -6,7 +6,7 @@ import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {VehicleService} from '../../../services/vehicle.service';
 import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '../../dialog/common/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-add-devices-to-vehicle',

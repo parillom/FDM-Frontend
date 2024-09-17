@@ -3,12 +3,12 @@ import {VehicleService} from '../../../services/vehicle.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {Vehicle} from '../../../models/Vehicle';
 import {MatPaginator} from '@angular/material/paginator';
-import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
+import {DeleteMultipleDialogComponent} from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Usecase} from '../../../models/Usecase';
 import {MatDialog} from '@angular/material/dialog';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
-import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
-import {AddVehicleComponent} from '../../dialog/add-vehicle/add-vehicle.component';
+import {DeleteDialogComponent} from '../../common/dialog/delete-dialog/delete-dialog.component';
+import {AddVehicleComponent} from '../dialog/add-vehicle/add-vehicle.component';
 import {Router} from '@angular/router';
 
 @Component({

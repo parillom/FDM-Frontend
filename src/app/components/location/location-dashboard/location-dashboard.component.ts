@@ -4,13 +4,13 @@ import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {Location} from '../../../models/Location';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
-import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
+import {DeleteDialogComponent} from '../../common/dialog/delete-dialog/delete-dialog.component';
 import {Usecase} from '../../../models/Usecase';
-import {DeleteMultipleDialogComponent} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
+import {DeleteMultipleDialogComponent} from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Device} from '../../../models/Device';
-import {AddLocationComponent} from '../../dialog/add-location/add-location.component';
+import {AddLocationComponent} from '../dialog/add-location/add-location.component';
 
 @Component({
   selector: 'app-location-dashboard',

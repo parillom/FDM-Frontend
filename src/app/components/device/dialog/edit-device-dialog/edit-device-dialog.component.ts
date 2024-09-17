@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
-import {Device} from '../../../models/Device';
+import {Device} from '../../../../models/Device';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {DeviceState} from '../../../models/DeviceState';
-import {Location} from '../../../models/Location';
-import {Vehicle} from '../../../models/Vehicle';
-import {DeviceService} from '../../../services/device.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {DeviceState} from '../../../../models/DeviceState';
+import {Location} from '../../../../models/Location';
+import {Vehicle} from '../../../../models/Vehicle';
+import {DeviceService} from '../../../../services/device.service';
+import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {ToastrService} from 'ngx-toastr';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 

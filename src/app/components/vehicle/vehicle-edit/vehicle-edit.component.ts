@@ -12,7 +12,7 @@ import {LocationService} from '../../../services/location.service';
 import {DeviceState} from '../../../models/DeviceState';
 import {NavbarComponent} from '../../common/navbar/navbar.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '../../dialog/common/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({

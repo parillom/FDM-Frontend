@@ -2,13 +2,13 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {DeviceService} from '../../../services/device.service';
 import {Device} from '../../../models/Device';
 import {MatDialog} from '@angular/material/dialog';
-import {EditDeviceDialogComponent} from '../../dialog/edit-device-dialog/edit-device-dialog.component';
-import {AddDeviceComponent} from '../../dialog/add-device/add-device.component';
-import {DeleteDialogComponent} from '../../dialog/common/delete-dialog/delete-dialog.component';
+import {EditDeviceDialogComponent} from '../dialog/edit-device-dialog/edit-device-dialog.component';
+import {AddDeviceComponent} from '../dialog/add-device/add-device.component';
+import {DeleteDialogComponent} from '../../common/dialog/delete-dialog/delete-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
 import {
   DeleteMultipleDialogComponent
-} from '../../dialog/common/delete-multiple-dialog/delete-multiple-dialog.component';
+} from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
 import {LocationService} from '../../../services/location.service';
 import {Location} from '../../../models/Location';
 import {VehicleService} from '../../../services/vehicle.service';

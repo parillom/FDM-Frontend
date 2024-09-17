@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Inject, Output} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {DeviceState} from '../../../../models/DeviceState';
 import {Usecase} from '../../../../models/Usecase';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 
@@ -26,7 +25,7 @@ export class DeleteDialogComponent {
     this.useCase = this.data.useCase;
   }
 
-  openConfirmDialog() {
+  openConfirmDialog(): void {
     const modal = this.dialog.open(ConfirmDialogComponent, {
       autoFocus: false
     });
@@ -37,7 +36,7 @@ export class DeleteDialogComponent {
     });
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogRef.close();
   }
 
@@ -61,7 +60,7 @@ export class DeleteDialogComponent {
     }
   }
 
-  getObjectName() {
+  getObjectName(): string {
     if (this.useCase === Usecase.DEVICE) {
       return 'Gerät';
     } else if (this.useCase === Usecase.VEHICLE) {
