@@ -9,7 +9,6 @@ import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component
   styleUrl: './delete-dialog.component.scss'
 })
 export class DeleteDialogComponent {
-
   object?: any;
   useCase: Usecase;
 

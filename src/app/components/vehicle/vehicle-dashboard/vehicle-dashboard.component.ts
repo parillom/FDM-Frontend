@@ -185,7 +185,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleRowClick(vehicle: Vehicle) {
-    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.id!)?.length === 0) {
+    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.uuId!)?.length === 0) {
       const index = this.selectedVehicles.indexOf(vehicle);
       if (index !== -1) {
         this.selectedVehicles.splice(index, 1);
@@ -197,20 +197,21 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   isVehicleSelected(vehicle: Vehicle) {
-    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.id === vehicle.id);
+    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.uuId === vehicle.uuId);
   }
 
   addAllVehicles() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       this.vehicles!.forEach(vehicle => {
-        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.id!)?.length! < 1) {
+        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.uuId!)?.length! < 1) {
           this.selectedVehicles.push(vehicle);
         }
       });
     } else {
-      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.id);
-      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.id));
+      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.uuId);
+      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuId));
+      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuId));
     }
   }
 

@@ -42,7 +42,7 @@ export class DeleteMultipleDialogComponent {
   }
 
   removeObjectFromList(objectToRemove: any) {
-    const index = this.objectsToDelete.findIndex(object => object.id === objectToRemove.id);
+    const index = this.objectsToDelete.findIndex(object => object.uuId === objectToRemove.uuId);
     this.objectsToDelete.splice(index, 1);
     this.objectRemoved!.emit(this.objectsToDelete);
   }
@@ -54,7 +54,7 @@ export class DeleteMultipleDialogComponent {
     confirmDialog.componentInstance.confirm.subscribe(res => {
       if (res && (this.useCase !== null && this.useCase !== undefined)) {
         if (this.useCase === Usecase.DEVICE) {
-          this.objectToDeleteIds = this.objectsToDelete.map(device => device.id);
+          this.objectToDeleteIds = this.objectsToDelete.map(device => device.uuId);
           if (this.objectToDeleteIds.length === this.objectsToDelete.length) {
             if (this.useCase === Usecase.DEVICE) {
               this.deviceService.deleteDevices(this.objectToDeleteIds).subscribe(res => {
@@ -63,11 +63,12 @@ export class DeleteMultipleDialogComponent {
             }
           }
         } else if (this.useCase === Usecase.VEHICLE) {
-          this.objectToDeleteIds = this.objectsToDelete.map(vehicle => vehicle.id);
+          this.objectToDeleteIds = this.objectsToDelete.map(vehicle => vehicle.uuId);
           this.vehicleService.deleteVehicles(this.objectToDeleteIds).subscribe(res => {
             this.handleResponse(res);
           });
-        } else {
+        } else if (this.useCase === Usecase.LOCATION){
+          this.objectToDeleteIds = this.objectsToDelete.map(location => location.uuId);
           this.locationService.deleteLocations(this.objectToDeleteIds).subscribe(res => {
             if (res && !this.errorHandler.hasError(res)) {
               this.deleted!.emit(true);

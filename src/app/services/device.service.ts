@@ -19,7 +19,6 @@ export class DeviceService {
   }
 
   createDevice(device: Device): Observable<ModelAndError> {
-    console.log(device)
     return this.http.post<ModelAndError>(`${COMMON_DEVICE_URL}`, device);
   }
 

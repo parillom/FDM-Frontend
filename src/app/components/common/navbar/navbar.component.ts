@@ -3,6 +3,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {SettingsComponent} from '../settings/settings.component';
+import {ScreenSizeService} from '../../../services/screen-size.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,10 +17,12 @@ export class NavbarComponent implements OnInit {
   url: string = '';
   objectName: string | null = '';
   @ViewChild('sidenav') sidenav: MatSidenav | undefined;
+  isScreenSmall: boolean = false
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private screenSizeService: ScreenSizeService) {
   }
 
   ngOnInit() {
@@ -35,9 +38,13 @@ export class NavbarComponent implements OnInit {
       this.uuId = params['id'];
     });
     sessionStorage.removeItem('settingsOpen');
+
+    this.screenSizeService.isScreenExtraSmall$.subscribe(isSmall => {
+      this.isScreenSmall = isSmall;
+    });
   }
 
-  setCurrentObjectName(name: string) {
+  setCurrentObjectName(name: string): void {
     this.objectName = name;
   }
 
@@ -54,7 +61,7 @@ export class NavbarComponent implements OnInit {
   }
 
   toggleAndRotate() {
-    this.sidenav?.toggle();
+    void this.sidenav?.toggle();
     this.sidenavOpen = !this.sidenavOpen;
   }
 
