@@ -46,7 +46,7 @@ export class AddVehicleComponent {
 
       this.isSubmitting = true;
 
-      this.vehicleService.createVehicle(vehicle).subscribe((res) => {
+      this.vehicleService.saveVehicle(vehicle).subscribe((res) => {
         if (res) {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);

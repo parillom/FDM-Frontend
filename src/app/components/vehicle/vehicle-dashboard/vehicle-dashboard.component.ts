@@ -3,7 +3,9 @@ import {VehicleService} from '../../../services/vehicle.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {Vehicle} from '../../../models/Vehicle';
 import {MatPaginator} from '@angular/material/paginator';
-import {DeleteMultipleDialogComponent} from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
+import {
+  DeleteMultipleDialogComponent
+} from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Usecase} from '../../../models/Usecase';
 import {MatDialog} from '@angular/material/dialog';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
@@ -35,7 +37,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     'Fahrzeug-ID': '15%',
     'Name': '10%',
     'Geräte': '40%'
-  }
+  };
 
   constructor(private vehicleService: VehicleService,
               private dialog: MatDialog,

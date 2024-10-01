@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit {
   url: string = '';
   objectName: string | null = '';
   @ViewChild('sidenav') sidenav: MatSidenav | undefined;
-  isScreenSmall: boolean = false
+  isScreenSmall: boolean = false;
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -52,9 +52,9 @@ export class NavbarComponent implements OnInit {
     if (url === '/fdm/dashboard') {
       return 'Dashboard';
     } else if (url === '/fdm/dashboard/vehicle' || url.includes('/fdm/dashboard/vehicle/edit')) {
-        return 'Fahrzeuge'
+        return 'Fahrzeuge';
     } else if (url === '/fdm/dashboard/location' || url.includes('/fdm/dashboard/location/edit')) {
-      return 'Orte'
+      return 'Orte';
     } else {
       return '';
     }
@@ -85,7 +85,7 @@ export class NavbarComponent implements OnInit {
         width: '400px',
         height: 'auto'
       });
-      sessionStorage.setItem('settingsOpen', 'opened')
+      sessionStorage.setItem('settingsOpen', 'opened');
     } else {
       sessionStorage.removeItem('settingsOpen');
       this.dialog.closeAll();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,9 @@ export class ScreenSizeService {
   private isScreenExtraLargeSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isScreenExtraLarge$: Observable<boolean> = this.isScreenExtraLargeSubject.asObservable();
 
+  private subject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  subject$: Observable<boolean> = this.subject.asObservable();
+
   constructor() {
     this.checkScreenSize();
     window.addEventListener('resize', () => this.checkScreenSize());
@@ -38,5 +41,9 @@ export class ScreenSizeService {
     this.isScreenLargeSubject.next(screenWidth >= 992 && screenWidth < 1200);
 
     this.isScreenExtraLargeSubject.next(screenWidth >= 1200);
+  }
+
+  changeValue() {
+    this.subject.next(!this.subject.getValue());
   }
 }

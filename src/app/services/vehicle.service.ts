@@ -32,27 +32,24 @@ export class VehicleService {
     return this.http.delete<ModelAndError>(`${COMMON_VEHICLE_URL}/${vehicle.uuId}`);
   }
 
-  createVehicle(vehicle: Vehicle): Observable<ModelAndError> {
+  saveVehicle(vehicle: Vehicle): Observable<ModelAndError> {
     return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}`, vehicle);
   }
 
-  getVehicle(uuId: number): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/${uuId}`)
+  getVehicleByName(name: string): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/by-name/${name}`);
   }
 
-  saveUpdatedDevicesOfVehicle(name: string, droppedDevices: Device[], hasVehicle: boolean, selectedState: string): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/${name}/${hasVehicle}/${selectedState}`, droppedDevices);
+  getVehicleByUuId(uuid: number): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/${uuid}`);
   }
 
-  moveDevicesToVehicle(request: MoveDevicesRequest): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/moveDevicesToVehicle`, request);
+  moveDevices(request: MoveDevicesRequest): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/moveDevices`, request);
   }
 
-  createVehicles(vehicles: Vehicle[]): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/many`, vehicles)
+  saveMany(vehicles: Vehicle[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/many`, vehicles);
   }
 
-  updateVehicleName(uuId: number | undefined, newVehicleName: string): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_VEHICLE_URL}/updateVehicleName/${uuId}/${newVehicleName}`)
-  }
 }

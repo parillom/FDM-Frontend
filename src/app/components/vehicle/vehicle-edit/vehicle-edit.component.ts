@@ -14,6 +14,7 @@ import {NavbarComponent} from '../../common/navbar/navbar.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 
 @Component({
   selector: 'app-vehicle-edit',
@@ -36,11 +37,12 @@ export class VehicleEditComponent implements OnInit {
   selectedVehicleName: string = '';
   selectedLocationName: string = '';
   selected: boolean = false;
-  selectedState: string = '';
+  selectedState: DeviceState;
   protected readonly DeviceState = DeviceState;
   showStateOption: boolean = false;
   showSpinner: boolean = false;
   rendered: boolean = false;
+  isVehicle: boolean = false;
   nameValid = false;
 
   editVehicleForm: FormGroup = new FormGroup({
@@ -66,9 +68,8 @@ export class VehicleEditComponent implements OnInit {
   }
 
 
-
   getVehicle(uuId: number) {
-    this.vehicleService.getVehicle(uuId).subscribe(res => {
+    this.vehicleService.getVehicleByUuId(uuId).subscribe(res => {
       if (res) {
         if (this.errorHandler.hasError(res)) {
           this.errorHandler.setErrorMessage(res.errorMessage!);
@@ -132,30 +133,36 @@ export class VehicleEditComponent implements OnInit {
     });
     dialog.componentInstance.confirm.subscribe(confirmed => {
       if (confirmed) {
-        this.performMoveCall()
+        this.performMoveCall();
       }
     });
   }
 
   performMoveCall() {
     if ((this.selectedVehicleName || this.selectedLocationName) && this.droppedDevices.length > 0 && this.selectedState) {
-      if (this.selectedVehicleName) {
-        this.selectedState = DeviceState.ACTIVE;
-        this.vehicleService.saveUpdatedDevicesOfVehicle(this.selectedVehicleName, this.droppedDevices, true, this.selectedState).subscribe(res => {
-          this.handleResponse(res);
-        });
-      } else {
-        this.vehicleService.saveUpdatedDevicesOfVehicle(this.selectedLocationName, this.droppedDevices, false, this.selectedState).subscribe(res => {
-          this.handleResponse(res);
-        });
-      }
+      const vehicle = new Vehicle();
+      vehicle.name = this.selectedVehicleName;
+
+      const location = new Location();
+      location.name = this.selectedLocationName;
+
+      const request: MoveDevicesRequest = {
+        object: this.selectedVehicleName ? vehicle : location,
+        objectList: this.droppedDevices,
+        state: this.selectedVehicleName ? DeviceState.ACTIVE : this.selectedState,
+        isVehicle: this.isVehicle
+      };
+
+      this.vehicleService.moveDevices(request).subscribe(res => {
+        this.handleResponse(res);
+      });
     }
   }
 
   handleResponse(res: ModelAndError) {
     if (res) {
       if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!)
+        this.errorHandler.setErrorMessage(res.errorMessage!);
       } else {
         this.errorHandler.setSuccessMessage('Die Geräte konnten erfolgreich verschoben werden');
         this.droppedDevices.splice(0);
@@ -269,6 +276,7 @@ export class VehicleEditComponent implements OnInit {
   setVehicleInput(vehicle: Vehicle) {
     if (vehicle.name) {
       this.selectedVehicleName = vehicle.name;
+      this.isVehicle = true;
       this.selected = true;
       this.selectedLocationName = '';
       this.showStateOption = false;
@@ -278,11 +286,12 @@ export class VehicleEditComponent implements OnInit {
 
   setLocationInput(location: Location) {
     if (location.name) {
+      this.isVehicle = false;
       this.selectedLocationName = location.name;
       this.selected = true;
       this.selectedVehicleName = '';
       this.showStateOption = true;
-      this.selectedState = '';
+      this.selectedState = undefined;
     }
   }
 
@@ -299,10 +308,11 @@ export class VehicleEditComponent implements OnInit {
     void this.router.navigate(['fdm/dashboard/vehicle']);
   }
 
-  updateVehicleName() {
+  updateVehicle() {
     const newVehicleName = this.editVehicleForm.get('vehicleName')?.value;
     if (this.editVehicleForm.valid) {
-      this.vehicleService.updateVehicleName(this.vehicle?.uuId, newVehicleName).subscribe(res => {
+      this.vehicle.name = newVehicleName;
+      this.vehicleService.saveVehicle(this.vehicle).subscribe(res => {
         if (res && !this.errorHandler.hasError(res)) {
           this.errorHandler.setSuccessMessage('Fahrzeug konnte bearbeitet werden');
           setTimeout(() => {
@@ -316,7 +326,11 @@ export class VehicleEditComponent implements OnInit {
   }
 
   checkIfNameHasChanged() {
-    const vehicleName = this.editVehicleForm.get('vehicleName')?.value
+    const vehicleName = this.editVehicleForm.get('vehicleName')?.value;
     this.nameValid = this.editVehicleForm.valid && vehicleName.toUpperCase() !== this.vehicle?.name;
+  }
+
+  filterVehicles(vehicles: Vehicle[]) {
+    return vehicles.filter(vehicle => vehicle.name !== this.vehicle.name);
   }
 }

@@ -1,13 +1,9 @@
 <div class="common-margin-top ms-5 me-5 mb-5" xmlns="http://www.w3.org/1999/html">
-  <div class="row d-flex align-items-center mb-5">
-    <h1 class="col-12 col-sm-7 col-lg-8 col-md-7 col-xl-9 col-xxl-10 m-0 mb-4 mb-sm-0">
-      ID: <span>{{vehicle?.uuId}}</span>
+  <div class="d-flex align-items-center justify-content-between align-items-center mb-5 w-50">
+    <h1 class="m-0">
+      ID: <span>{{ vehicle?.uuId }}</span>
     </h1>
-    <div class="d-flex align-items-center col-12 col-sm-5 col-md-5 col-lg-4 col-xl-3 col-xxl-2">
-      <button (click)="navigateToVehicleDashboard()" mat-raised-button>
-        Fahrzeugübersicht
-      </button>
-    </div>
+    <h3 class="ms-4 mb-0 cursor-pointer" (click)="navigateToVehicleDashboard()">Zur Fahrzeugübersicht</h3>
   </div>
 
   <form class="mb-5" [formGroup]="editVehicleForm">
@@ -16,7 +12,7 @@
         <mat-label>Fahrzeugname</mat-label>
         <input (input)="checkIfNameHasChanged()" matInput formControlName="vehicleName">
       </mat-form-field>
-      <button (click)="updateVehicleName()" mat-raised-button [disabled]="!nameValid">Übernehmen</button>
+      <button (click)="updateVehicle()" mat-raised-button [disabled]="!nameValid">Übernehmen</button>
     </div>
   </form>
 
@@ -48,7 +44,7 @@
     <button class="col-12 col-lg-2 offset-lg-3 mb-4" color="accent" [disabled]="selectedDevices.length < 1"
             (click)="moveDevices()"
             mat-raised-button>
-      Verschieben ({{selectedDevices.length!}})
+      Verschieben ({{ selectedDevices.length! }})
     </button>
 
 
@@ -56,7 +52,7 @@
       <div class="col-12 col-sm-6 mb-3">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <div class="d-flex align-items-center">
-            <h2 class="m-0">Aktuelle Geräte ({{filteredDevices.length!}})</h2>
+            <h2 class="m-0">Aktuelle Geräte ({{ filteredDevices.length! }})</h2>
             <mat-checkbox [disabled]="filteredDevices.length! < 1" [checked]="isChecked" (click)="selectAll()"
                           color="primary" matTooltip="Alle anwählen"
                           matTooltipPosition="above"></mat-checkbox>
@@ -73,7 +69,7 @@
             <mat-card class="m-1 drag drag-preview" cdkDrag>
               <mat-card-content class="row d-flex align-items-center">
                 <div class="col-10">
-                  {{device.name}}
+                  {{ device.name }}
                 </div>
                 <mat-checkbox (click)="handleCheckboxClick(device)"
                               [checked]="isDeviceSelected(device)"
@@ -87,7 +83,7 @@
 
       <div class="col-12 col-sm-6">
         <div class="d-flex align-items-center mb-3">
-          <h2 class="m-0">Geräte zum verschieben ({{droppedDevices.length!}})</h2>
+          <h2 class="m-0">Geräte zum verschieben ({{ droppedDevices.length! }})</h2>
           <mat-checkbox [disabled]="droppedDevices.length < 1" [checked]="dropListIsChecked"
                         (click)="selectAllDropList()" color="primary"
                         matTooltip="Alle anwählen" matTooltipPosition="above"></mat-checkbox>
@@ -96,7 +92,7 @@
           <app-vehicle-location-autocompletion class="col-12 col-md-6"
                                                *ngIf="!selected"
                                                [showVehicleInput]="true"
-                                               [vehicles]="vehicles"
+                                               [vehicles]="filterVehicles(vehicles)"
                                                (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
           <app-vehicle-location-autocompletion class="col-12 col-md-6"
                                                *ngIf="!selected"
@@ -107,13 +103,13 @@
 
         <div class="row mb-3 d-flex align-items-center">
           <h3 class="m-0 d-flex align-items-center col-12 col-lg-9" *ngIf="selected && selectedVehicleName">
-            Fahrzeug: {{selectedVehicleName}}
+            Fahrzeug: {{ selectedVehicleName }}
             <button mat-icon-button class="ms-1" (click)="openVehicleAndLocationSearch()">
               <mat-icon>edit</mat-icon>
             </button>
           </h3>
           <h3 class="m-0 d-flex align-items-center col-12 col-lg-9" *ngIf="selected && selectedLocationName">
-            Ort: {{selectedLocationName}}
+            Ort: {{ selectedLocationName }}
             <button mat-icon-button class="ms-1" (click)="openVehicleAndLocationSearch()">
               <mat-icon>edit</mat-icon>
             </button>
@@ -139,12 +135,13 @@
              [cdkDropListConnectedTo]="[devicesToMoveList]"
              class="example-list"
              (cdkDropListDropped)="drop($event)">
-          <span class="p-2 d-flex justify-content-center" *ngIf="droppedDevices.length < 1">Geräte hier platzieren</span>
+          <span class="p-2 d-flex justify-content-center"
+                *ngIf="droppedDevices.length < 1">Geräte hier platzieren</span>
           <div *ngFor="let device of droppedDevices">
             <mat-card class="m-1 drag drag-preview" cdkDrag>
               <mat-card-content class="row d-flex align-items-center">
                 <div class="col-10">
-                  {{device.name}}
+                  {{ device.name }}
                 </div>
                 <mat-checkbox (click)="handleCheckboxClickDropped(device)"
                               [checked]="isDeviceSelected(device)"

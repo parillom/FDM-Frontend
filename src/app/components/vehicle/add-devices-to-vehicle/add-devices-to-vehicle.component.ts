@@ -7,6 +7,7 @@ import {VehicleService} from '../../../services/vehicle.service';
 import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
+import {DeviceState} from '../../../models/DeviceState';
 
 @Component({
   selector: 'app-add-devices-to-vehicle',
@@ -53,7 +54,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   getTooltipInfoText(): string {
-    return 'Es werden nur Geräte angezeigt die nicht bereits dem ausgewählten Fahrzeug zugewiesen sind.';
+    return 'Es werden nur Geräte angezeigt, die nicht bereits dem ausgewählten Fahrzeug zugewiesen sind.';
   }
 
   handleCheckboxClick(device: Device) {
@@ -68,7 +69,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   filterWithAllProperties() {
     const name = this.deviceSearch.toLowerCase() || '';
     this.filteredDevices = this.devicesForSearch.filter(device => {
-      return device.name!.includes(name)
+      return device.name!.includes(name);
     });
   }
 
@@ -86,11 +87,16 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   moveDevices() {
-    const moveDevicesToVehicle = new MoveDevicesRequest();
-    moveDevicesToVehicle.object = this.vehicle;
-    moveDevicesToVehicle.objectList = this.selectedDevices;
+    const moveDevicesRequest: MoveDevicesRequest = {
+      object: this.vehicle,
+      objectList: this.selectedDevices,
+      state: DeviceState.ACTIVE,
+      isVehicle: true
+    };
 
-    this.vehicleService.moveDevicesToVehicle(moveDevicesToVehicle).subscribe(res => {
+    console.log(moveDevicesRequest)
+
+    this.vehicleService.moveDevices(moveDevicesRequest).subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.getAllDevices();
         this.selectedDevices.splice(0);

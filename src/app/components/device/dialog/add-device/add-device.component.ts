@@ -136,27 +136,37 @@ export class AddDeviceComponent implements OnInit {
     }
   }
 
-  createDeviceWithVehicle() {
+  async createDeviceWithVehicle() {
     if (this.deviceFormVehicle.valid) {
       const vehicleForm = this.deviceFormVehicle.value;
 
       const deviceToSave = {} as Device;
       deviceToSave.location = {} as Location;
-      deviceToSave.vehicle = {} as Vehicle;
       deviceToSave.state = {} as DeviceState;
-      deviceToSave.name = vehicleForm.name;
-      deviceToSave.location = null;
-      deviceToSave.vehicle.name = vehicleForm.vehicle;
-      deviceToSave.state = vehicleForm.state;
+      deviceToSave.vehicle = {} as Vehicle;
 
-      this.performSaveCall(deviceToSave);
+      deviceToSave.name = vehicleForm.name;
+
+      // getting the current Vehicle
+      this.vehicleService.getVehicleByName(vehicleForm.vehicle).subscribe(res => {
+        if (res.object === null) {
+          deviceToSave.vehicle.name = vehicleForm.vehicle;
+        } else {
+          deviceToSave.vehicle = res.object;
+        }
+
+        deviceToSave.location = null;
+        deviceToSave.state = vehicleForm.state;
+
+        this.performSaveCall(deviceToSave);
+      });
     }
   }
 
   performSaveCall(device: Device) {
     this.deviceService.createDevice(device).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!)
+        this.errorHandler.setErrorMessage(res.errorMessage!);
         this.createdSuccessful.emit(false);
         this.isSubmitting = false;
       } else {

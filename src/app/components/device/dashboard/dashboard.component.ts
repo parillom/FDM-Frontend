@@ -23,6 +23,7 @@ import {Usecase} from '../../../models/Usecase';
 import {ErrorHandlerService} from '../../../services/error-handler.service';
 import {Router} from '@angular/router';
 import {ExportService} from '../../../services/export.service';
+import {ScreenSizeService} from '../../../services/screen-size.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -61,7 +62,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   columnWidths = {
     'Geräte-ID': '15%'
-  }
+  };
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
@@ -69,7 +70,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               private vehicleService: VehicleService,
               private errorHandler: ErrorHandlerService,
               private router: Router,
-              private exportService: ExportService
+              private exportService: ExportService,
+              private screenSize: ScreenSizeService
   ) {
     this.dataSource = new MatTableDataSource<Device>();
   }
@@ -135,21 +137,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (!this.vehicleName && !this.locationName) {
       this.deviceCriteria = {
         state: this.currentState,
-      }
+      };
       this.filterWithSpecifiedProperties(this.deviceCriteria);
     } else {
       if (this.vehicleName) {
         this.deviceCriteria = {
           state: this.currentState,
           vehicleName: this.vehicleName
-        }
+        };
         this.filterWithSpecifiedProperties(this.deviceCriteria);
       }
       if (this.locationName) {
         this.deviceCriteria = {
           state: this.currentState,
           locationName: this.locationName
-        }
+        };
         this.filterWithSpecifiedProperties(this.deviceCriteria);
       }
     }
@@ -162,13 +164,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.deviceCriteria = {
         vehicleName: value,
         locationName: null
-      }
+      };
       this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
     } else {
         this.deviceCriteria = {
           locationName: value,
           vehicleName: null
-        }
+        };
         this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
     }
   }
@@ -338,7 +340,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   getLocationText(device: Device) {
-    let locationText: string
+    let locationText: string;
     if (!device.location) {
       locationText = 'nicht definiert';
     } else {
@@ -348,7 +350,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   getVehicleText(device: Device) {
-    let vehicleText: string
+    let vehicleText: string;
     if (!device.vehicle) {
       vehicleText = 'nicht definiert';
     } else {
@@ -406,7 +408,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             if (!this.selectedDevices.includes(device)) {
               this.selectedDevices.push(device);
             }
-          })
+          });
         } else {
           //nach Status und Fahrzeug filtern
           if (this.vehicleName) {
@@ -498,7 +500,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.stateSelected = false;
     this.vehicleOrLocationSelectedValue = '';
     this.vehiclesOrLocationsSelected = false;
-    this.vehicleLocationAutoCompletion.resetFields();
+    if (this.vehicleLocationAutoCompletion) {
+      this.vehicleLocationAutoCompletion.resetFields();
+    }
   }
 
   resetStatus() {
@@ -513,12 +517,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } else if (this.vehicleName) {
       this.deviceCriteria = {
         vehicleName: this.vehicleName
-      }
+      };
       this.filterWithSpecifiedProperties(this.deviceCriteria);
     } else if (this.locationName) {
       this.deviceCriteria = {
         locationName: this.locationName
-      }
+      };
       this.filterWithSpecifiedProperties(this.deviceCriteria);
     }
   }
@@ -540,7 +544,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } else {
       if (this.selectedDevices.length > 0) {
         this.exportService.exportPfd(this.selectedDevices);
-        this.selectedDevices = []
+        this.selectedDevices = [];
         this.isChecked = false;
       } else {
         this.exportService.exportPfd(this.dataSource.data);
@@ -550,4 +554,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  changeValue() {
+    this.screenSize.changeValue();
+  }
 }
