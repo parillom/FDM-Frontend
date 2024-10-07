@@ -7,8 +7,7 @@ import {Vehicle} from './Vehicle';
 import {DeviceState} from './DeviceState';
 
 export class Device {
-  id: number;
-  uuId: number;
+  uuId: string;
   name: string;
   location: Location | null;
   state: DeviceState;

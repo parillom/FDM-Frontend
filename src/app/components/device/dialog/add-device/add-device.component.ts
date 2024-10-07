@@ -10,6 +10,8 @@ import {DeviceState} from '../../../../models/DeviceState';
 import {DeviceService} from '../../../../services/device.service';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
+import {CreateDevice} from '../../../../models/CreateDevice';
+import {StorageType} from '../../../../models/StorageType';
 
 @Component({
   selector: 'app-add-device',
@@ -21,13 +23,15 @@ export class AddDeviceComponent implements OnInit {
   showLocations: boolean = false;
   showVehicles: boolean = false;
   filteredLocations?: Location[] = [];
+  devicesToSave: CreateDevice[] = [];
   filteredVehicles?: Vehicle[] = [];
   addOneDevice: boolean = true;
   locationSelected: boolean = false;
   isSubmitting: boolean = false;
+  dragDisabled = false;
 
-  locations?: Location[];
-  vehicles?: Vehicle[];
+  locations: Location[] = [];
+  vehicles: Vehicle[] = [];
 
   @Output() closeModalEvent = new EventEmitter<void>();
   @Output() createdSuccessful = new EventEmitter<boolean>();
@@ -59,7 +63,7 @@ export class AddDeviceComponent implements OnInit {
   }
 
   private getLocations() {
-    this.locationService.getAllLocations().subscribe(res => {
+    this.locationService.getAll().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.locations = res.object;
         this.filteredLocations = this.locations;
@@ -70,7 +74,7 @@ export class AddDeviceComponent implements OnInit {
   }
 
   private getVehicles() {
-    this.vehicleService.getAllVehicles().subscribe(res => {
+    this.vehicleService.getAll().subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
       } else {
@@ -120,51 +124,68 @@ export class AddDeviceComponent implements OnInit {
 
   createDeviceWithLocation() {
     if (this.deviceFormLocation.valid) {
-      const locationForm = this.deviceFormLocation.value;
-      this.isSubmitting = true;
+      this.devicesToSave = [];
 
-      const deviceToSave = {} as Device;
-      deviceToSave.location = {} as Location;
-      deviceToSave.vehicle = {} as Vehicle;
-      deviceToSave.state = {} as DeviceState;
-      deviceToSave.name = locationForm.name;
-      deviceToSave.location.name = locationForm.location;
-      deviceToSave.vehicle = null;
-      deviceToSave.state = locationForm.state;
+      const locationForm = this.deviceFormVehicle.value;
 
-      this.performSaveCall(deviceToSave);
-    }
-  }
+      let location = {} as Location;
 
-  async createDeviceWithVehicle() {
-    if (this.deviceFormVehicle.valid) {
-      const vehicleForm = this.deviceFormVehicle.value;
-
-      const deviceToSave = {} as Device;
-      deviceToSave.location = {} as Location;
-      deviceToSave.state = {} as DeviceState;
-      deviceToSave.vehicle = {} as Vehicle;
-
-      deviceToSave.name = vehicleForm.name;
-
-      // getting the current Vehicle
-      this.vehicleService.getVehicleByName(vehicleForm.vehicle).subscribe(res => {
-        if (res.object === null) {
-          deviceToSave.vehicle.name = vehicleForm.vehicle;
+      //getting the current location
+      this.locationService.getLocationByName(locationForm.vehicle).subscribe(res => {
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage);
+          return;
         } else {
-          deviceToSave.vehicle = res.object;
+          location = res.object;
         }
 
-        deviceToSave.location = null;
-        deviceToSave.state = vehicleForm.state;
+        const device: CreateDevice = {
+          name: locationForm.name,
+          storageId: location.uuid,
+          state: locationForm.state,
+          storageType: StorageType.LOCATION
+        };
 
-        this.performSaveCall(deviceToSave);
+        this.devicesToSave.push(device);
+
+        this.performSaveCall(this.devicesToSave);
       });
     }
   }
 
-  performSaveCall(device: Device) {
-    this.deviceService.createDevice(device).subscribe(res => {
+  createDeviceWithVehicle() {
+    if (this.deviceFormVehicle.valid) {
+      this.devicesToSave = [];
+
+      const vehicleForm = this.deviceFormVehicle.value;
+
+      let vehicle = {} as Vehicle;
+
+      // getting the current Vehicle
+      this.vehicleService.getVehicleByName(vehicleForm.vehicle).subscribe(res => {
+        if (this.errorHandler.hasError(res)) {
+          this.errorHandler.setErrorMessage(res.errorMessage);
+          return;
+        } else {
+          vehicle = res.object;
+        }
+
+        const device: CreateDevice = {
+          name: vehicleForm.name,
+          storageId: vehicle.uuid,
+          state: DeviceState.ACTIVE,
+          storageType: StorageType.VEHICLE
+        };
+
+        this.devicesToSave.push(device);
+
+        this.performSaveCall(this.devicesToSave);
+      });
+    }
+  }
+
+  performSaveCall(devices: CreateDevice[]) {
+    this.deviceService.create(devices).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.createdSuccessful.emit(false);
@@ -239,5 +260,13 @@ export class AddDeviceComponent implements OnInit {
 
   emitCreatedSuccessfullyValue(value: boolean) {
     this.manyCreatedSuccessful.emit(value);
+  }
+
+  disableDrag() {
+    this.dragDisabled = true;
+  }
+
+  enableDrag() {
+    this.dragDisabled = false;
   }
 }

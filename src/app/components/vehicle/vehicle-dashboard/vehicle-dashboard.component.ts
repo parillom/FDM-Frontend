@@ -26,9 +26,9 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   dataSource!: MatTableDataSource<Vehicle>;
   vehicles: Vehicle[] = [];
   vehicleSearch?: '';
-  vehicleMap: Map<number, Vehicle[]> = new Map();
+  vehicleMap: Map<string, Vehicle[]> = new Map();
   limit = 10;
-  expandedMap = new Map<number, boolean>();
+  expandedMap = new Map<string, boolean>();
   showSpinner: boolean = false;
   selectedVehicles: Vehicle[] = [];
   isChecked: boolean = false;
@@ -59,7 +59,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
 
   getAllVehicles() {
     this.showSpinner = true;
-    this.vehicleService.getAllVehicles().subscribe(res => {
+    this.vehicleService.getAll().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.dataSource.data! = res.object;
         this.vehicles = res.object;
@@ -78,7 +78,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     const searchLower = this.vehicleSearch?.toLowerCase() || '';
 
     this.dataSource.data! = this.vehicles.filter(vehicle => {
-      const matchesId = vehicle.uuId!.toString().includes(vehicleSearchId);
+      const matchesId = vehicle.uuid!.toString().includes(vehicleSearchId);
       const matchesName = vehicle.name?.toLowerCase().includes(searchLower);
 
       return matchesId || matchesName;
@@ -88,12 +88,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   getDevicesFromVehicle(vehicle: Vehicle) {
     this.vehicleService.getDevicesFromVehicle(vehicle).subscribe((response) => {
       if (response.object) {
-        this.vehicleMap.set(vehicle.uuId!, response.object);
+        this.vehicleMap.set(vehicle.uuid!, response.object);
       }
     });
   }
 
-  getLimitedDevices(id: number): string {
+  getLimitedDevices(id: string): string {
     const devices = this.vehicleMap.get(id);
     const isExpanded = this.expandedMap.get(id);
     if (!devices) {
@@ -110,7 +110,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleExpand(id: number): void {
+  toggleExpand(id: string): void {
     const isExpanded = this.expandedMap.get(id);
     this.expandedMap.set(id, !isExpanded);
   }
@@ -119,8 +119,8 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     this.getAllVehicles();
   }
 
-  navigateToEdit(uuId: number) {
-    void this.router.navigate(['fdm/dashboard/vehicle/edit/'], {queryParams: {id: uuId}});
+  navigateToEdit(uuid: number) {
+    void this.router.navigate(['fdm/dashboard/vehicle/edit/'], {queryParams: {id: uuid}});
   }
 
   openDeleteModal(vehicle: Vehicle) {
@@ -136,7 +136,9 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     });
     dialogRef.componentInstance.delete!.subscribe(res => {
       if (res) {
-        this.vehicleService.deleteVehicle(vehicle).subscribe(res => {
+        const uuIds = [];
+        uuIds.push(vehicle.uuid);
+        this.vehicleService.delete(uuIds).subscribe(res => {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);
             dialogRef.close();
@@ -183,11 +185,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   private updateIsCheckedState() {
-    this.isChecked = this.vehicles?.length === this.selectedVehicles.length;
+    const count = this.vehicles.filter(vehicle => this.vehicleMap.get(vehicle.uuid)?.length === 0).length;
+    this.isChecked = count === this.selectedVehicles.length;
   }
 
   handleRowClick(vehicle: Vehicle) {
-    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.uuId!)?.length === 0) {
+    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.uuid!)?.length === 0) {
       const index = this.selectedVehicles.indexOf(vehicle);
       if (index !== -1) {
         this.selectedVehicles.splice(index, 1);
@@ -199,21 +202,21 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   isVehicleSelected(vehicle: Vehicle) {
-    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.uuId === vehicle.uuId);
+    return this.selectedVehicles.some(selectedVehicle => selectedVehicle.uuid === vehicle.uuid);
   }
 
   addAllVehicles() {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       this.vehicles!.forEach(vehicle => {
-        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.uuId!)?.length! < 1) {
+        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.uuid!)?.length! < 1) {
           this.selectedVehicles.push(vehicle);
         }
       });
     } else {
-      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.uuId);
-      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuId));
-      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuId));
+      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.uuid);
+      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuid));
+      this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuid));
     }
   }
 
@@ -229,7 +232,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
       }
     });
     dialogRef.componentInstance.objectRemoved!.subscribe((updatedVehiclesList) => {
-      if (updatedVehiclesList.length !== this.vehicles!.length) {
+      if (updatedVehiclesList.length !== this.vehicles.length) {
         this.isChecked = false;
       }
     });
@@ -251,5 +254,9 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
 
   getTooltipActionsText(): string {
     return 'Es können nur Fahrzeuge gelöscht werden, die mit keinen Geräten verknüpft sind.';
+  }
+
+  devicesLinked() {
+    return this.vehicleMap.size === 0 || Array.from(this.vehicleMap.values()).every(vehicles => vehicles.length > 0);
   }
 }

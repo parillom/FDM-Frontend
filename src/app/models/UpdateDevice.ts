@@ -1,9 +1,10 @@
 import {DeviceState} from './DeviceState';
 import {StorageType} from './StorageType';
 
-export interface MoveDevicesRequest {
+export interface UpdateDevice {
+  uuid: string;
+  name: string;
   storageId: string;
-  deviceList: string[];
   state: DeviceState;
   storageType: StorageType;
 }

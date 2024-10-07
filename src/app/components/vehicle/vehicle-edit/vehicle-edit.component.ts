@@ -15,6 +15,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
+import {StorageType} from '../../../models/StorageType';
+import {CreateStorage} from '../../../models/CreateStorage';
+import {Storage} from '../../../models/Storage';
 
 @Component({
   selector: 'app-vehicle-edit',
@@ -44,6 +47,8 @@ export class VehicleEditComponent implements OnInit {
   rendered: boolean = false;
   isVehicle: boolean = false;
   nameValid = false;
+  createRequestList: CreateStorage[] = [];
+  private storageId: string;
 
   editVehicleForm: FormGroup = new FormGroup({
     vehicleName: new FormControl<string | null>('', Validators.required),
@@ -123,7 +128,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   isDeviceSelected(device: Device) {
-    return this.selectedDevices.some(deviceInList => deviceInList.id === device.id);
+    return this.selectedDevices.some(deviceInList => deviceInList.uuId === device.uuId);
   }
 
   save() {
@@ -140,23 +145,38 @@ export class VehicleEditComponent implements OnInit {
 
   performMoveCall() {
     if ((this.selectedVehicleName || this.selectedLocationName) && this.droppedDevices.length > 0 && this.selectedState) {
-      const vehicle = new Vehicle();
-      vehicle.name = this.selectedVehicleName;
-
-      const location = new Location();
-      location.name = this.selectedLocationName;
-
-      const request: MoveDevicesRequest = {
-        object: this.selectedVehicleName ? vehicle : location,
-        objectList: this.droppedDevices,
-        state: this.selectedVehicleName ? DeviceState.ACTIVE : this.selectedState,
-        isVehicle: this.isVehicle
-      };
-
-      this.vehicleService.moveDevices(request).subscribe(res => {
-        this.handleResponse(res);
-      });
+      if (this.selectedVehicleName) {
+        this.vehicleService.getVehicleByName(this.selectedVehicleName).subscribe(res => {
+          this.storageId = res.object.uuid;
+          this.move(StorageType.VEHICLE, DeviceState.ACTIVE);
+        });
+      } else if (this.selectedLocationName) {
+        this.locationService.getLocationByName(this.selectedLocationName).subscribe(res => {
+          this.storageId = res.object.uuid;
+          this.move(StorageType.LOCATION, this.selectedState);
+        });
+      }
     }
+  }
+
+  move(storageType: StorageType, state: DeviceState) {
+    const objectListIds = this.droppedDevices.map(device => device.uuId);
+    const objectListIdsAsString: string[] = [];
+
+    objectListIds.forEach(object => {
+      objectListIdsAsString.push(object.toString());
+    });
+
+    const request: MoveDevicesRequest = {
+      storageId: this.storageId,
+      deviceList: objectListIdsAsString,
+      state: state,
+      storageType: storageType
+    };
+
+    this.vehicleService.moveDevices(request).subscribe(res => {
+      this.handleResponse(res);
+    });
   }
 
   handleResponse(res: ModelAndError) {
@@ -201,7 +221,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   handleCheckboxClick(device: Device) {
-    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.id === device.id);
+    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.uuId === device.uuId);
     if (index !== -1) {
       this.selectedDevices.splice(index, 1);
     } else {
@@ -215,7 +235,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   handleCheckboxClickDropped(device: Device) {
-    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.id === device.id);
+    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.uuId === device.uuId);
     if (index !== -1) {
       this.selectedDevices.splice(index, 1);
     } else {
@@ -246,13 +266,13 @@ export class VehicleEditComponent implements OnInit {
     const searchLower = this.deviceSearch.toLowerCase() || '';
 
     this.filteredDevices = this.devices.filter(device =>
-      !this.droppedDevices.some(droppedDevice => droppedDevice.id === device.id) &&
+      !this.droppedDevices.some(droppedDevice => droppedDevice.uuId === device.uuId) &&
       device.name?.toLowerCase().includes(searchLower)
     );
   }
 
   private getVehicles() {
-    this.vehicleService.getAllVehicles().subscribe(res => {
+    this.vehicleService.getAll().subscribe(res => {
       if (res) {
         if (this.errorHandler.hasError(res)) {
           this.errorHandler.setErrorMessage(res.errorMessage!);
@@ -264,7 +284,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   private getLocations() {
-    this.locationService.getAllLocations().subscribe(res => {
+    this.locationService.getAll().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.locations = res.object;
       } else {
@@ -311,13 +331,15 @@ export class VehicleEditComponent implements OnInit {
   updateVehicle() {
     const newVehicleName = this.editVehicleForm.get('vehicleName')?.value;
     if (this.editVehicleForm.valid) {
-      this.vehicle.name = newVehicleName;
-      this.vehicleService.saveVehicle(this.vehicle).subscribe(res => {
+      const request: Storage = {
+        uuid: this.vehicle.uuid,
+        name: newVehicleName
+      };
+
+      this.vehicleService.update(request).subscribe(res => {
         if (res && !this.errorHandler.hasError(res)) {
-          this.errorHandler.setSuccessMessage('Fahrzeug konnte bearbeitet werden');
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+          this.errorHandler.setSuccessMessage(`${res.object.name} erfolgreich bearbeitet`);
+          this.editVehicleForm.get('vehicleName').setValue(res.object.name);
         } else {
           this.errorHandler.setErrorMessage(res.errorMessage!);
         }

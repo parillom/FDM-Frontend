@@ -3,8 +3,8 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
-import {Location} from '../../../../models/Location';
 import {LocationService} from '../../../../services/location.service';
+import {CreateStorage} from '../../../../models/CreateStorage';
 
 @Component({
   selector: 'app-add-location',
@@ -14,6 +14,7 @@ import {LocationService} from '../../../../services/location.service';
 export class AddLocationComponent {
   addOneLocation: boolean = true;
   isSubmitting: boolean = false;
+  dragDisabled = true;
   created: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   locationForm: FormGroup = new FormGroup({
@@ -39,25 +40,34 @@ export class AddLocationComponent {
 
   createLocation() {
     if (this.locationForm.valid) {
-      const form = this.locationForm.value;
-      const location = new Location();
-      location.name = form.name;
-
       this.isSubmitting = true;
+      const form = this.locationForm.value;
 
-      this.locationService.createLocation(location).subscribe((res) => {
+      const request: CreateStorage = {
+        name: form.name
+      };
+
+      this.locationService.create(request).subscribe((res) => {
         if (res) {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
-            this.errorHandler.setSuccessMessage(`Ort ${location.name} konnte erfolgreich erstellt werden`);
+            this.errorHandler.setSuccessMessage(`Ort ${request.name} konnte erfolgreich erstellt werden`);
             this.isSubmitting = false;
             this.created.emit(true);
           }
         }
       });
     }
+  }
+
+  disableDrag() {
+    this.dragDisabled = false;
+  }
+
+  enableDrag() {
+    this.dragDisabled = true;
   }
 }

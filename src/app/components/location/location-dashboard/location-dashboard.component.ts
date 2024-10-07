@@ -27,8 +27,8 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   dataSource!: MatTableDataSource<Location>;
   displayedColumns: string[] = ['Ort-ID', 'Name', 'Geräte', 'Aktionen'];
   isChecked: boolean = false;
-  devicesMap: Map<number, Device[]> = new Map();
-  expandedMap: Map<number, boolean> = new Map();
+  devicesMap: Map<string, Device[]> = new Map();
+  expandedMap: Map<string, boolean> = new Map();
   limit: number = 10;
 
   columnWidths = {
@@ -41,7 +41,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
               private errorHandler: ErrorHandlerService,
               private router: Router,
               private dialog: MatDialog) {
-    this.dataSource = new MatTableDataSource<Location>()
+    this.dataSource = new MatTableDataSource<Location>();
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     const searchLower = this.locationSearch?.toLowerCase() || '';
 
     this.dataSource.data! = this.locations.filter(location => {
-      const matchesId = location.uuId!.toString().includes(vehicleSearchId);
+      const matchesId = location.uuid!.toString().includes(vehicleSearchId);
       const matchesName = location.name?.toLowerCase().includes(searchLower);
 
       return matchesId || matchesName;
@@ -68,7 +68,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   }
 
   private getAllLocations() {
-    this.locationService.getAllLocations().subscribe(res => {
+    this.locationService.getAll().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.locations = res.object;
         this.dataSource.data = this.locations;
@@ -84,14 +84,14 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   getDevicesFromLocation(location: Location) {
     this.locationService.getDevicesFromLocation(location).subscribe((response) => {
       if (response.object) {
-        this.devicesMap.set(location.uuId, response.object);
+        this.devicesMap.set(location.uuid, response.object);
       } else {
         this.errorHandler.setErrorMessage(response.errorMessage!);
       }
     });
   }
 
-  getLimitedDevices(id: number): string {
+  getLimitedDevices(id: string): string {
     const devices = this.devicesMap.get(id);
     const isExpanded = this.expandedMap.get(id);
     if (!devices) {
@@ -108,7 +108,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleExpand(id: number): void {
+  toggleExpand(id: string): void {
     const isExpanded = this.expandedMap.get(id);
     this.expandedMap.set(id, !isExpanded);
   }
@@ -122,7 +122,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   }
 
   isLocationSelected(location: Location) {
-    return this.selectedLocations.some(selectedLocation => selectedLocation.id === location.id);
+    return this.selectedLocations.some(selectedLocation => selectedLocation.uuid === location.uuid);
   }
 
   openDeleteModal(location: Location) {
@@ -138,7 +138,9 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     });
     dialogRef.componentInstance.delete!.subscribe(res => {
       if (res) {
-        this.locationService.delete(location).subscribe(res => {
+        const uuIds: string[] = [];
+        uuIds.push(location.uuid);
+        this.locationService.delete(uuIds).subscribe(res => {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);
             dialogRef.close();
@@ -164,7 +166,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
       } else {
         dialog.close();
       }
-    })
+    });
   }
 
   handleCheckboxClick(location: Location) {
@@ -185,15 +187,15 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       this.locations!.forEach(location => {
-        if (!this.selectedLocations.includes(location) && this.devicesMap.get(location.id!)?.length! < 1) {
+        if (!this.selectedLocations.includes(location) && this.devicesMap.get(location.uuid!)?.length! < 1) {
           this.selectedLocations.push(location);
         }
       });
     }
     //Nach allem filtern
     else {
-      const filteredDeviceIds = this.locations!.map(location => location.id);
-      this.selectedLocations = this.selectedLocations.filter(location => !filteredDeviceIds.includes(location.id));
+      const filteredDeviceIds = this.locations!.map(location => location.uuid);
+      this.selectedLocations = this.selectedLocations.filter(location => !filteredDeviceIds.includes(location.uuid));
     }
   }
 

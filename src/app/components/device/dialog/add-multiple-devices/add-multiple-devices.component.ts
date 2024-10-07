@@ -6,6 +6,7 @@ import {ToastrService} from 'ngx-toastr';
 import {DeviceService} from '../../../../services/device.service';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {DeviceState} from '../../../../models/DeviceState';
+import {CreateDevice} from '../../../../models/CreateDevice';
 
 @Component({
   selector: 'app-add-multiple-devices',
@@ -16,7 +17,7 @@ export class AddMultipleDevicesComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   extractedElements?: any[];
-  devices: Device[] = [];
+  devices: CreateDevice[] = [];
   displayedColumns: string[] = ['Name', 'Fahrzeug', 'Ort', 'Status'];
 
   @Output()
@@ -44,24 +45,22 @@ export class AddMultipleDevicesComponent {
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
 
       if (this.extractedElements && this.extractedElements.length > 0) {
-        const newDevices: Device[] = [];
+        const newDevices: CreateDevice[] = [];
 
-        for (const device of this.extractedElements) {
-          if (this.excelIsValid(device, this.extractedElements)) {
-            const deviceToSave: Device = {
-              id: null,
-              uuId: null,
-              name: device.name,
-              location: device.location ? {name: device.location} : null,
-              vehicle: device.vehicle ? {name: device.vehicle} : null,
-              state: device.state
-            };
-            newDevices.push(deviceToSave);
-          } else {
-            this.resetFile();
-            return;
-          }
-        }
+        // for (const device of this.extractedElements) {
+        //   if (this.excelIsValid(device, this.extractedElements)) {
+        //     const deviceToSave: CreateDevice = {
+        //       name: device.name,
+        //       storageUuid: device.vehicle ? {name: device.vehicle} : {name: device.location},
+        //       state: device.state,
+        //       storageType: device.vehicle ? StorageType.VEHICLE : StorageType.LOCATION
+        //     };
+        //     newDevices.push(deviceToSave);
+        //   } else {
+        //     this.resetFile();
+        //     return;
+        //   }
+        // }
         this.devices = newDevices;
         this.cdr.detectChanges();
       }
@@ -103,8 +102,8 @@ export class AddMultipleDevicesComponent {
     return false;
   }
 
-  addDevices() {
-    this.deviceService.createDevices(this.devices!).subscribe((res) => {
+  saveDevices() {
+    this.deviceService.create(this.devices!).subscribe((res) => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.devicesCreated.emit(false);

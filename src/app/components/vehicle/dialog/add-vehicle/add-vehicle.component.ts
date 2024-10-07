@@ -2,9 +2,9 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Vehicle} from '../../../../models/Vehicle';
 import {VehicleService} from '../../../../services/vehicle.service';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {CreateStorage} from '../../../../models/CreateStorage';
 
 @Component({
   selector: 'app-add-vehicle',
@@ -16,6 +16,7 @@ export class AddVehicleComponent {
   isSubmitting: boolean = false;
   created: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
+  createRequestList: CreateStorage[] = [];
 
   vehicleForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -41,19 +42,23 @@ export class AddVehicleComponent {
   createVehicle() {
     if (this.vehicleForm.valid) {
       const form = this.vehicleForm.value;
-      const vehicle = new Vehicle();
-      vehicle.name = form.name;
-
       this.isSubmitting = true;
 
-      this.vehicleService.saveVehicle(vehicle).subscribe((res) => {
+      const request: CreateStorage = {
+        name: form.name
+      };
+
+      this.createRequestList.push(request);
+
+      this.vehicleService.create(this.createRequestList).subscribe((res) => {
         if (res) {
           if (this.errorHandler.hasError(res)) {
             this.errorHandler.setErrorMessage(res.errorMessage!);
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
-            this.errorHandler.setSuccessMessage(`Fahrzeug ${vehicle.name} konnte erfolgreich erstellt werden`);
+            const nameList = this.createRequestList.filter(name => name !== undefined);
+            this.errorHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
             this.isSubmitting = false;
             this.created.emit(true);
           }

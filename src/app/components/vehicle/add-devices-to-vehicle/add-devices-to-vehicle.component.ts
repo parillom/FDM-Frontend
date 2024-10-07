@@ -8,6 +8,7 @@ import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
+import {StorageType} from '../../../models/StorageType';
 
 @Component({
   selector: 'app-add-devices-to-vehicle',
@@ -58,7 +59,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   handleCheckboxClick(device: Device) {
-    const index = this.selectedDevices.findIndex(deviceInList => deviceInList.id === device.id);
+    const index = this.selectedDevices.findIndex(deviceInList => deviceInList.uuId === device.uuId);
     if (index !== -1) {
       this.selectedDevices.splice(index, 1);
     } else {
@@ -87,16 +88,21 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   moveDevices() {
-    const moveDevicesRequest: MoveDevicesRequest = {
-      object: this.vehicle,
-      objectList: this.selectedDevices,
+    const objectListIds = this.selectedDevices.map(device => device.uuId);
+    const objectListIdsAsString: string[] = [];
+
+    objectListIds.forEach(object => {
+      objectListIdsAsString.push(object.toString());
+    });
+
+    const request: MoveDevicesRequest = {
+      storageId: this.vehicle.uuid,
+      deviceList: objectListIdsAsString,
       state: DeviceState.ACTIVE,
-      isVehicle: true
+      storageType: StorageType.VEHICLE
     };
 
-    console.log(moveDevicesRequest)
-
-    this.vehicleService.moveDevices(moveDevicesRequest).subscribe(res => {
+    this.vehicleService.moveDevices(request).subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.getAllDevices();
         this.selectedDevices.splice(0);

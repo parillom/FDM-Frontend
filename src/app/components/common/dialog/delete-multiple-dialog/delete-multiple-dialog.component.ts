@@ -16,7 +16,7 @@ import {ModelAndError} from '../../../../models/ModelAndError';
 export class DeleteMultipleDialogComponent {
 
   objectsToDelete: any[] = [];
-  objectToDeleteIds: (number | undefined)[] = [];
+  objectToDeleteUuIds: string[] = [];
   useCase!: string;
   protected readonly Usecase = Usecase;
 
@@ -54,22 +54,22 @@ export class DeleteMultipleDialogComponent {
     confirmDialog.componentInstance.confirm.subscribe(res => {
       if (res && (this.useCase !== null && this.useCase !== undefined)) {
         if (this.useCase === Usecase.DEVICE) {
-          this.objectToDeleteIds = this.objectsToDelete.map(device => device.uuId);
-          if (this.objectToDeleteIds.length === this.objectsToDelete.length) {
+          this.objectToDeleteUuIds = this.objectsToDelete.map(device => device.uuId);
+          if (this.objectToDeleteUuIds.length === this.objectsToDelete.length) {
             if (this.useCase === Usecase.DEVICE) {
-              this.deviceService.deleteDevices(this.objectToDeleteIds).subscribe(res => {
+              this.deviceService.delete(this.objectToDeleteUuIds).subscribe(res => {
                 this.handleResponse(res);
               });
             }
           }
         } else if (this.useCase === Usecase.VEHICLE) {
-          this.objectToDeleteIds = this.objectsToDelete.map(vehicle => vehicle.uuId);
-          this.vehicleService.deleteVehicles(this.objectToDeleteIds).subscribe(res => {
+          this.objectToDeleteUuIds = this.objectsToDelete.map(vehicle => vehicle.uuid);
+          this.vehicleService.delete(this.objectToDeleteUuIds).subscribe(res => {
             this.handleResponse(res);
           });
         } else if (this.useCase === Usecase.LOCATION){
-          this.objectToDeleteIds = this.objectsToDelete.map(location => location.uuId);
-          this.locationService.deleteLocations(this.objectToDeleteIds).subscribe(res => {
+          this.objectToDeleteUuIds = this.objectsToDelete.map(location => location.uuid);
+          this.locationService.delete(this.objectToDeleteUuIds).subscribe(res => {
             if (res && !this.errorHandler.hasError(res)) {
               this.deleted!.emit(true);
             } else {
@@ -91,20 +91,20 @@ export class DeleteMultipleDialogComponent {
   }
 
   getUsecase(): string {
-    let value = 'UNBEKANNT'
+    let value = 'UNBEKANNT';
     if (this.useCase) {
       switch (this.useCase) {
         case Usecase.DEVICE:
-          value = 'Geräte'
+          value = 'Geräte';
           break;
         case Usecase.LOCATION:
           value = 'Orte';
           break;
         case Usecase.VEHICLE:
           value = 'Fahrzeuge';
-          break
+          break;
         default:
-          value = 'UNBEKANNT'
+          value = 'UNBEKANNT';
       }
     }
     return value;

@@ -1,6 +1,6 @@
-<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+<div cdkDrag [cdkDragDisabled]="dragDisabled" cdkDragRootElement=".cdk-overlay-pane">
   <div class="d-flex justify-content-between align-items-center">
-    <p class="fs-5" mat-dialog-title>Fahrzeug/e hinzufügen</p>
+    <p class="fs-5" mat-dialog-title>Ort hinzufügen</p>
     <div class="d-flex align-items-center">
       <div class="cursor-pointer me-2">
         <button (click)="closeDialog()" mat-icon-button>
@@ -12,17 +12,20 @@
 
   <div mat-dialog-content>
     <mat-tab-group (selectedTabChange)="changeCreateFormat($event)">
-      <mat-tab label="Ein Fahrzeug"></mat-tab>
-      <mat-tab label="Mehrere Fahrzeuge"></mat-tab>
+      <mat-tab label="Ein Ort"></mat-tab>
+      <mat-tab label="Mehrere Orte"></mat-tab>
     </mat-tab-group>
-    <div>
+    <div class="mt-4 mb-3">
       <mat-divider></mat-divider>
     </div>
 
     <form *ngIf="addOneLocation" [formGroup]="locationForm">
       <mat-form-field class="w-100">
         <mat-label>Name</mat-label>
-        <input formControlName="name" matInput>
+        <input formControlName="name"
+               matInput
+               (focus)="enableDrag()"
+               (blur)="disableDrag()">
         <mat-error class="mt-0" *ngIf="locationForm.get('name')?.invalid && locationForm.get('name')?.touched">
           Name ist ein Pflichtfeld!
         </mat-error>

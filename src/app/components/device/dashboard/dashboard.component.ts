@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   getAllLocations() {
-    this.locationService.getAllLocations().subscribe(res => {
+    this.locationService.getAll().subscribe(res => {
       if (res && !this.errorHandler.hasError(res)) {
         this.locations = res.object;
         this.filteredLocations = this.locations;
@@ -121,7 +121,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   getAllVehicles() {
-    this.vehicleService.getAllVehicles().subscribe(res => {
+    this.vehicleService.getAll().subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
       } else {
@@ -452,13 +452,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
       }
     } else {
-      const filteredDeviceIds = this.filteredDevices!.map(device => device.id);
-      this.selectedDevices = this.selectedDevices.filter(device => !filteredDeviceIds.includes(device.id));
+      const filteredDeviceIds = this.filteredDevices!.map(device => device.uuId);
+      this.selectedDevices = this.selectedDevices.filter(device => !filteredDeviceIds.includes(device.uuId));
     }
   }
 
   isDeviceSelected(device: Device) {
-    return this.selectedDevices.some(selectedDevice => selectedDevice.id === device.id);
+    return this.selectedDevices.some(selectedDevice => selectedDevice.uuId === device.uuId);
   }
 
   openDeleteMultipleDialog() {
@@ -554,7 +554,4 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  changeValue() {
-    this.screenSize.changeValue();
-  }
 }

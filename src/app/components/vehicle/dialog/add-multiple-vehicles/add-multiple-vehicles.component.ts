@@ -3,8 +3,8 @@ import {MatDialogRef} from '@angular/material/dialog';
 import {ToastrService} from 'ngx-toastr';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import * as XLSX from 'xlsx';
-import {Vehicle} from '../../../../models/Vehicle';
 import {VehicleService} from '../../../../services/vehicle.service';
+import {CreateStorage} from '../../../../models/CreateStorage';
 
 @Component({
   selector: 'app-add-multiple-vehicles',
@@ -14,8 +14,8 @@ import {VehicleService} from '../../../../services/vehicle.service';
 export class AddMultipleVehiclesComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  extractedElements?: any[];
-  vehicles: Vehicle[] = [];
+  extractedElements: any[] = [];
+  createRequestList: CreateStorage[] = [];
   displayedColumns: string[] = ['Name'];
 
   @Output()
@@ -43,20 +43,20 @@ export class AddMultipleVehiclesComponent {
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
 
       if (this.extractedElements && this.extractedElements.length > 0) {
-        const newVehicles: Vehicle[] = [];
+        const newVehicles: CreateStorage[] = [];
 
         for (const vehicle of this.extractedElements) {
           if (this.excelIsValid(vehicle, this.extractedElements)) {
-            const vehicleToSave: Vehicle = {
+            const request: CreateStorage = {
               name: vehicle.name,
             };
-            newVehicles.push(vehicleToSave);
+            newVehicles.push(request);
           } else {
             this.resetFile();
             return;
           }
         }
-        this.vehicles = newVehicles;
+        this.createRequestList = newVehicles;
         this.cdr.detectChanges();
       }
     };
@@ -86,13 +86,13 @@ export class AddMultipleVehiclesComponent {
   }
 
   addVehicles() {
-    this.vehicleService.saveMany(this.vehicles!).subscribe((res) => {
+    this.vehicleService.create(this.createRequestList).subscribe((res) => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.vehiclesCreated.emit(false);
         this.resetFile();
       } else {
-        this.toastr.success('', 'Fahrzeuge wurden erfolgreich hinzugefügt');
+        this.toastr.success('Fahrzeuge wurden erfolgreich hinzugefügt');
         this.vehiclesCreated.emit(true);
         this.resetFile();
       }
@@ -101,7 +101,7 @@ export class AddMultipleVehiclesComponent {
 
   resetFile() {
     this.fileInput.nativeElement.value = '';
-    this.vehicles = [];
+    this.createRequestList = [];
   }
 
 }

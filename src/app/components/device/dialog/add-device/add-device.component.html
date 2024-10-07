@@ -1,4 +1,4 @@
-<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+<div cdkDrag [cdkDragDisabled]="dragDisabled" cdkDragRootElement=".cdk-overlay-pane">
   <div class="d-flex justify-content-between align-items-center">
     <p class="fs-5" mat-dialog-title>Gerät/e hinzufügen</p>
     <div class="d-flex align-items-center">
@@ -43,7 +43,11 @@
         <div class="d-flex flex-column flex-wrap">
           <mat-form-field>
             <mat-label>Name</mat-label>
-            <input class="mb-0" formControlName="name" matInput>
+            <input class="mb-0"
+                   formControlName="name"
+                   matInput
+                   (focus)="disableDrag()"
+                   (blur)="enableDrag()">
             <mat-error class="mt-0"
                        *ngIf="deviceFormVehicle.get('name')?.invalid && deviceFormVehicle.get('name')?.touched">
               Name ist ein Pflichtfeld!
@@ -52,7 +56,10 @@
 
           <mat-form-field>
             <mat-label>Fahrzeug</mat-label>
-            <input formControlName="vehicle" matInput>
+            <input formControlName="vehicle"
+                   matInput
+                   (focus)="disableDrag()"
+                   (blur)="enableDrag()">
             <mat-error
               *ngIf="deviceFormVehicle.get('vehicle')?.invalid && deviceFormVehicle.get('vehicle')?.touched">
               Fahrzeug ist ein Pflichtfeld!
@@ -64,12 +71,14 @@
                     mat-raised-button
                     type="button"
                     (click)="handleVehicleList()"
-                    [disabled]="vehicles?.length === 0">
+                    [disabled]="vehicles.length === 0">
               Fahrzeuge suchen
             </button>
           </div>
 
           <app-vehicle-location-autocompletion *ngIf="showVehicles"
+                                               (focus)="disableDrag()"
+                                               (blur)="enableDrag()"
                                                [showVehicleInput]="true"
                                                [showLocationInput]="false"
                                                [vehicles]="vehicles"
@@ -105,7 +114,10 @@
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>
-          <input class="mb-0" formControlName="name" matInput>
+          <input class="mb-0" formControlName="name"
+                 matInput
+                 (focus)="disableDrag()"
+                 (blur)="enableDrag()">
           <mat-error class="mt-0"
                      *ngIf="deviceFormLocation.get('name')?.invalid && deviceFormLocation.get('name')?.touched">
             Name ist ein Pflichtfeld!
@@ -114,7 +126,10 @@
 
         <mat-form-field>
           <mat-label>Ort</mat-label>
-          <input formControlName="location" matInput>
+          <input formControlName="location"
+                 matInput
+                 (focus)="disableDrag()"
+                 (blur)="enableDrag()">
           <mat-error
             *ngIf="deviceFormLocation.get('location')?.invalid && deviceFormLocation.get('location')?.touched">
             Ort ist ein Pflichtfeld!
@@ -132,6 +147,8 @@
         </div>
 
         <app-vehicle-location-autocompletion *ngIf="showLocations"
+                                             (focus)="disableDrag()"
+                                             (blur)="enableDrag()"
                                              [showVehicleInput]="false"
                                              [showLocationInput]="true"
                                              [locations]="locations"
