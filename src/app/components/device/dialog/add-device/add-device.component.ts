@@ -1,6 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Device} from '../../../../models/Device';
 import {Location} from '../../../../models/Location';
 import {MatDialogRef} from '@angular/material/dialog';
 import {LocationService} from '../../../../services/location.service';
@@ -19,16 +18,16 @@ import {StorageType} from '../../../../models/StorageType';
   styleUrl: './add-device.component.scss',
 })
 export class AddDeviceComponent implements OnInit {
-  device: Device = new Device();
   showLocations: boolean = false;
   showVehicles: boolean = false;
-  filteredLocations?: Location[] = [];
+  filteredLocations: Location[] = [];
   devicesToSave: CreateDevice[] = [];
-  filteredVehicles?: Vehicle[] = [];
+  filteredVehicles: Vehicle[] = [];
   addOneDevice: boolean = true;
   locationSelected: boolean = false;
   isSubmitting: boolean = false;
   dragDisabled = false;
+  createMultiple = true;
 
   locations: Location[] = [];
   vehicles: Vehicle[] = [];
@@ -126,12 +125,12 @@ export class AddDeviceComponent implements OnInit {
     if (this.deviceFormLocation.valid) {
       this.devicesToSave = [];
 
-      const locationForm = this.deviceFormVehicle.value;
+      const locationForm = this.deviceFormLocation.value;
 
       let location = {} as Location;
 
       //getting the current location
-      this.locationService.getLocationByName(locationForm.vehicle).subscribe(res => {
+      this.locationService.getLocationByName(locationForm.location).subscribe(res => {
         if (this.errorHandler.hasError(res)) {
           this.errorHandler.setErrorMessage(res.errorMessage);
           return;
@@ -187,7 +186,7 @@ export class AddDeviceComponent implements OnInit {
   performSaveCall(devices: CreateDevice[]) {
     this.deviceService.create(devices).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.errorHandler.setErrorMessage(res.errorMessage);
         this.createdSuccessful.emit(false);
         this.isSubmitting = false;
       } else {
@@ -197,6 +196,9 @@ export class AddDeviceComponent implements OnInit {
         this.getLocations();
         this.getVehicles();
         this.isSubmitting = false;
+        if (!this.createMultiple) {
+          this.closeDialog();
+        }
       }
     });
   }
@@ -231,7 +233,6 @@ export class AddDeviceComponent implements OnInit {
   showLocationsList() {
     this.showLocations = !this.showLocations;
   }
-
 
   public setStateValue() {
     if (this.locationSelected) {
@@ -268,5 +269,9 @@ export class AddDeviceComponent implements OnInit {
 
   enableDrag() {
     this.dragDisabled = false;
+  }
+
+  handleCreateMultipleAction() {
+    this.createMultiple = !this.createMultiple;
   }
 }

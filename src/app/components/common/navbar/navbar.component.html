@@ -1,7 +1,4 @@
 <mat-toolbar class="d-flex justify-content-between text-white bg-black">
-<!--    <img *ngIf="!isScreenSmall" alt="Firetruck 1" src="assets/firetruck3.jpg" class="firetruck" />-->
-<!--    <img *ngIf="!isScreenSmall" alt="Firetruck 2" src="assets/firetruck2.jpg" class="firetruck" />-->
-<!--    <img *ngIf="!isScreenSmall" alt="Firetruck 2" src="assets/firetruck.jpg" class="firetruck" />-->
   <div class="d-flex align-items-center">
     <button mat-icon-button (click)="toggleAndRotate()">
       <mat-icon [style.transform]="sidenavOpen ? 'rotate(180deg)' : 'rotate(0deg)'">menu</mat-icon>
@@ -10,55 +7,64 @@
     <mat-icon class="fire-icon">local_fire_department</mat-icon>
   </div>
   <div>
-    <span *ngIf="pageName === 'Dashboard'" class="m-0 me-3">{{pageName}}</span>
+    <span *ngIf="pageName === 'Dashboard'" class="m-0 me-3">{{ pageName }}</span>
     <div *ngIf="!(pageName === 'Dashboard') && !url.includes('vehicle/edit')"
          class="m-0 me-3 d-flex align-items-center">
       <span class="cursor-pointer"
             style="font-size: 15px"
             (click)="navigateToDashboard()">Dashboard</span>
       <mat-icon>arrow_right</mat-icon>
-      {{pageName}}</div>
+      {{ pageName }}
+    </div>
     <div *ngIf="pageName === 'Fahrzeuge' && url.includes('vehicle/edit')"
          class="m-0 ms-2 me-3 d-flex align-items-center">
       <span class="cursor-pointer"
             style="font-size: 15px"
             (click)="navigateToVehicle()">Fahrzeuge</span>
       <mat-icon>arrow_right</mat-icon>
-      <span>{{objectName}}</span>
+      <span>{{ objectName }}</span>
     </div>
   </div>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="push" [autoFocus]="false">
-    <mat-nav-list>
-      <mat-list-item (click)="navigateToDashboard()">
+    <div class="d-flex flex-column h-100">
+      <mat-nav-list>
+        <mat-list-item (click)="navigateToDashboard()">
           <span class="entry">
             <mat-icon>home</mat-icon>
             <span>Dashboard</span>
           </span>
-      </mat-list-item>
-      <div class="mt-3 mb-3">
-        <mat-divider></mat-divider>
-      </div>
-      <mat-list-item (click)="navigateToVehicle()">
-          <span class="entry ">
+        </mat-list-item>
+        <div class="mt-3 mb-3">
+          <mat-divider></mat-divider>
+        </div>
+        <mat-list-item (click)="navigateToVehicle()">
+          <span class="entry">
             <mat-icon>fire_truck</mat-icon>
             <span>Fahrzeuge</span>
           </span>
-      </mat-list-item>
-      <mat-list-item (click)="navigateToLocation()">
+        </mat-list-item>
+        <mat-list-item (click)="navigateToLocation()">
           <span class="entry">
             <mat-icon>pin_drop</mat-icon>
             <span>Orte</span>
           </span>
-      </mat-list-item>
-      <mat-list-item (click)="openSettings()">
+        </mat-list-item>
+      </mat-nav-list>
+      <div class="spacer"></div>
+      <div>
+        <mat-divider></mat-divider>
+      </div>
+      <mat-nav-list>
+        <mat-list-item class="bottom-item" (click)="openSettings()">
           <span class="entry">
             <mat-icon>settings</mat-icon>
             <span>Einstellungen</span>
           </span>
-      </mat-list-item>
-    </mat-nav-list>
+        </mat-list-item>
+      </mat-nav-list>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

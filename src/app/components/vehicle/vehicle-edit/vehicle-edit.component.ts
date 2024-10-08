@@ -167,6 +167,7 @@ export class VehicleEditComponent implements OnInit {
       objectListIdsAsString.push(object.toString());
     });
 
+
     const request: MoveDevicesRequest = {
       storageId: this.storageId,
       deviceList: objectListIdsAsString,

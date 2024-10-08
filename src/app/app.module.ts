@@ -83,6 +83,7 @@ import {
   MatExpansionPanelDescription,
   MatExpansionPanelHeader, MatExpansionPanelTitle
 } from '@angular/material/expansion';
+import {MatCalendar, MatDatepicker} from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -175,7 +176,9 @@ import {
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelDescription,
-    MatExpansionPanelTitle
+    MatExpansionPanelTitle,
+    MatCalendar,
+    MatDatepicker
   ],
   providers: [
     BsModalService,

@@ -57,7 +57,7 @@ export class AddVehicleComponent {
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
-            const nameList = this.createRequestList.filter(name => name !== undefined);
+            const nameList = this.createRequestList.map(request => request.name).join(', ');
             this.errorHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
             this.isSubmitting = false;
             this.created.emit(true);

@@ -23,11 +23,16 @@
     <div *ngIf="addOneDevice" class="mb-3">
       <div class="d-flex align-items-center justify-content-between">
         <p class="m-0">Gerät zuordnen</p>
-        <button (click)="resetForm()" mat-icon-button
-                matTooltip="Formular zurücksetzen"
-                matTooltipPosition="above">
-          <mat-icon>refresh</mat-icon>
-        </button>
+        <div class="d-flex align-items-center m-0">
+          <mat-checkbox [checked]="createMultiple" matTooltip="Fenster nach Erstellung nicht schliessen." class="ms-3"
+                        matTooltipPosition="above"
+                        (click)="handleCreateMultipleAction()"></mat-checkbox>
+          <button (click)="resetForm()" mat-icon-button
+                  matTooltip="Formular zurücksetzen"
+                  matTooltipPosition="above">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
       </div>
       <div>
         <mat-tab-group (selectedTabChange)="changeToVehicleOrLocation($event)">
@@ -38,7 +43,7 @@
     </div>
 
     <div *ngIf="addOneDevice">
-<!--      Fahrzeug angewählt-->
+      <!--      Fahrzeug angewählt-->
       <form *ngIf="!locationSelected" [formGroup]="deviceFormVehicle">
         <div class="d-flex flex-column flex-wrap">
           <mat-form-field>
@@ -109,7 +114,7 @@
       </form>
     </div>
 
-<!--    Ort angewählt-->
+    <!--    Ort angewählt-->
     <form *ngIf="locationSelected && addOneDevice" [formGroup]="deviceFormLocation">
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>

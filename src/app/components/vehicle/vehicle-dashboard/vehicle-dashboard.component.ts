@@ -190,7 +190,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleRowClick(vehicle: Vehicle) {
-    if (this.vehicles!.length > 1 && this.vehicleMap.get(vehicle.uuid!)?.length === 0) {
+    if (this.vehicles.length > 1 && this.vehicleMap.get(vehicle.uuid).length === 0) {
       const index = this.selectedVehicles.indexOf(vehicle);
       if (index !== -1) {
         this.selectedVehicles.splice(index, 1);
@@ -209,12 +209,12 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     this.isChecked = !this.isChecked;
     if (this.isChecked) {
       this.vehicles!.forEach(vehicle => {
-        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.uuid!)?.length! < 1) {
+        if (!this.selectedVehicles.includes(vehicle) && this.vehicleMap.get(vehicle.uuid!).length! < 1) {
           this.selectedVehicles.push(vehicle);
         }
       });
     } else {
-      const filteredVehicleIds = this.vehicles!.map(vehicle => vehicle.uuid);
+      const filteredVehicleIds = this.vehicles.map(vehicle => vehicle.uuid);
       this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuid));
       this.selectedVehicles = this.selectedVehicles.filter(vehicle => !filteredVehicleIds.includes(vehicle.uuid));
     }

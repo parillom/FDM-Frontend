@@ -10,7 +10,7 @@ import {Device} from '../../../models/Device';
   styleUrl: './device-details.component.scss'
 })
 export class DeviceDetailsComponent implements OnInit {
-  device?: Device;
+  device: Device;
 
   constructor(private deviceService: DeviceService,
               private route: ActivatedRoute,
@@ -27,7 +27,7 @@ export class DeviceDetailsComponent implements OnInit {
   }
 
   private getDeviceDetails(uuId: number) {
-    this.deviceService.getDeviceWithUuId(uuId).subscribe(res => {
+    this.deviceService.getWithUuid(uuId).subscribe(res => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
       } else {

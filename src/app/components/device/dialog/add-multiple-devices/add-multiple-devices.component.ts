@@ -7,6 +7,10 @@ import {DeviceService} from '../../../../services/device.service';
 import {ErrorHandlerService} from '../../../../services/error-handler.service';
 import {DeviceState} from '../../../../models/DeviceState';
 import {CreateDevice} from '../../../../models/CreateDevice';
+import {StorageType} from '../../../../models/StorageType';
+import {VehicleService} from '../../../../services/vehicle.service';
+import {firstValueFrom} from 'rxjs';
+import {LocationService} from '../../../../services/location.service';
 
 @Component({
   selector: 'app-add-multiple-devices',
@@ -16,9 +20,11 @@ import {CreateDevice} from '../../../../models/CreateDevice';
 export class AddMultipleDevicesComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  extractedElements?: any[];
+  extractedElements: any[] = [];
   devices: CreateDevice[] = [];
   displayedColumns: string[] = ['Name', 'Fahrzeug', 'Ort', 'Status'];
+  location: string;
+  vehicle: string;
 
   @Output()
   devicesCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -26,6 +32,8 @@ export class AddMultipleDevicesComponent {
   constructor(public dialogRef: MatDialogRef<AddMultipleDevicesComponent>,
               private toastr: ToastrService,
               private deviceService: DeviceService,
+              private vehicleService: VehicleService,
+              private locationService: LocationService,
               private errorHandler: ErrorHandlerService,
               private cdr: ChangeDetectorRef) {
   }
@@ -39,7 +47,7 @@ export class AddMultipleDevicesComponent {
     const fileReader = new FileReader();
     fileReader.readAsBinaryString(file);
 
-    fileReader.onload = () => {
+    fileReader.onload = async() => {
       const workBook = XLSX.read(fileReader.result, {type: 'binary'});
       const sheetNames = workBook.SheetNames;
       this.extractedElements = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
@@ -47,20 +55,43 @@ export class AddMultipleDevicesComponent {
       if (this.extractedElements && this.extractedElements.length > 0) {
         const newDevices: CreateDevice[] = [];
 
-        // for (const device of this.extractedElements) {
-        //   if (this.excelIsValid(device, this.extractedElements)) {
-        //     const deviceToSave: CreateDevice = {
-        //       name: device.name,
-        //       storageUuid: device.vehicle ? {name: device.vehicle} : {name: device.location},
-        //       state: device.state,
-        //       storageType: device.vehicle ? StorageType.VEHICLE : StorageType.LOCATION
-        //     };
-        //     newDevices.push(deviceToSave);
-        //   } else {
-        //     this.resetFile();
-        //     return;
-        //   }
-        // }
+        for (const device of this.extractedElements) {
+          if (this.excelIsValid(device, this.extractedElements)) {
+            let storageId;
+
+            if (device.vehicle !== null) {
+              const res = await firstValueFrom(this.vehicleService.getVehicleByName(device.vehicle));
+              if (res && this.errorHandler.hasError(res)) {
+                this.errorHandler.setErrorMessage(res.errorMessage);
+                return;
+              } else {
+                storageId = res.object.uuid;
+                this.vehicle = res.object.name;
+              }
+            } else if (device.location !== null) {
+              const res = await firstValueFrom(this.locationService.getLocationByName(device.vehicle));
+              if (res && this.errorHandler.hasError(res)) {
+                this.errorHandler.setErrorMessage(res.errorMessage);
+                return;
+              } else {
+                storageId = res.object.uuid;
+                this.location = res.object.name;
+              }
+            }
+
+            const deviceToSave: CreateDevice = {
+              name: device.name,
+              storageId: storageId,
+              state: device.state,
+              storageType: device.vehicle ? StorageType.VEHICLE : StorageType.LOCATION
+            };
+
+            newDevices.push(deviceToSave);
+          } else {
+            this.resetFile();
+            return;
+          }
+        }
         this.devices = newDevices;
         this.cdr.detectChanges();
       }
@@ -103,7 +134,7 @@ export class AddMultipleDevicesComponent {
   }
 
   saveDevices() {
-    this.deviceService.create(this.devices!).subscribe((res) => {
+    this.deviceService.create(this.devices).subscribe((res) => {
       if (this.errorHandler.hasError(res)) {
         this.errorHandler.setErrorMessage(res.errorMessage!);
         this.devicesCreated.emit(false);

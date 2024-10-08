@@ -92,8 +92,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   getAllDevices(resetSelectedDevices: boolean) {
     this.showSpinner = true;
-    return this.deviceService.getAllDevices().subscribe(res => {
-      if (res.object) {
+    return this.deviceService.getAll().subscribe(res => {
+      if (res && !this.errorHandler.hasError(res)) {
         this.devices = res.object;
         this.filteredDevices = res.object;
         if (resetSelectedDevices) {
@@ -105,6 +105,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.selectedState = '';
         this.vehicleOrLocationSelectedValue = '';
         this.showSpinner = false;
+      } else {
+        this.errorHandler.setErrorMessage(res.errorMessage);
       }
     });
   }
@@ -314,7 +316,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.formShowing = true;
       dialogRef.componentInstance.delete!.subscribe(res => {
         if (res) {
-          this.deviceService.deleteDevice(device).subscribe(res => {
+          const objectsToDelete: string[] = [];
+          objectsToDelete.push(device.uuId);
+
+          this.deviceService.delete(objectsToDelete).subscribe(res => {
             if (this.errorHandler.hasError(res)) {
               this.errorHandler.setErrorMessage(res.errorMessage!);
               dialogRef.close();
