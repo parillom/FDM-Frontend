@@ -1,6 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {Example} from '../../models/Example';
+import {catchError, Observable, throwError} from 'rxjs';
+import {CreateStorage} from '../../models/CreateStorage';
+import {HttpClient} from '@angular/common/http';
 
 const REQUIRED = 'REQUIRED';
 const NAME_EQUALS = 'NAME_EQUALS';
@@ -15,6 +18,9 @@ export class TestComponent {
   errors: string[] = [];
   example: Example = new Example();
   examples: Example[] = [];
+
+  constructor(private http: HttpClient) {
+  }
 
   validateLength() {
     this.errors = [];
@@ -36,5 +42,15 @@ export class TestComponent {
   private create() {
     this.examples.push(this.example);
     this.example = new Example();
+  }
+
+  //so kann man zum beispiel BadRequest vom Server behandeln. Man gibt die Response erst weiter, wenn kein error
+  getValue(): Observable<CreateStorage> {
+    return this.http.get<CreateStorage>(`api/value/true`).pipe(
+      catchError(error => {
+        // new Error beinhaltet zusätzliche informationen wie stack und name
+        return throwError(() => new Error('Something went wrong ', error.status));
+      })
+    );
   }
 }

@@ -49,4 +49,7 @@ export class VehicleService {
     return this.http.post<ModelAndError>(`${COMMON_VEHICLE_URL}/moveDevices`, request);
   }
 
+  deleteAll(): Observable<ModelAndError> {
+    return this.http.delete<ModelAndError>(`${COMMON_VEHICLE_URL}/all`);
+  }
 }

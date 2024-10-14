@@ -7,16 +7,20 @@ const SERVER_CONNECTION_FAILED = 'Verbindung zum Server fehlgeschlagen';
 @Injectable({
   providedIn: 'root'
 })
-export class ErrorHandlerService {
+export class ResponseHandlerService {
 
   constructor(private toastr: ToastrService) { }
 
   setErrorMessage(errorMessage: string) {
-    this.toastr.error(errorMessage, '', {timeOut: 0});
+    this.toastr.error(errorMessage);
   }
 
   setSuccessMessage(successMessage: string) {
     this.toastr.success(successMessage);
+  }
+
+  setWarningMessage(warningMessage: string) {
+    this.toastr.warning(warningMessage);
   }
 
   noServerConnection() {

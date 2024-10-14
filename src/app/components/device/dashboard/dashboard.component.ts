@@ -20,10 +20,9 @@ import {
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {Usecase} from '../../../models/Usecase';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {Router} from '@angular/router';
 import {ExportService} from '../../../services/export.service';
-import {ScreenSizeService} from '../../../services/screen-size.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,20 +34,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild(VehicleLocationAutocompletionDashboardComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionDashboardComponent;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
-  devices?: Device[] = [];
+  devices: Device[] = [];
   filteredDevices?: Device[] = [];
   locations: Location[] = [];
   filteredLocations: Location[] = [];
   vehicles: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
-  formShowing?: boolean = false;
-  deviceSearch?: '';
+  formShowing: boolean = false;
+  deviceSearch  = '';
   selectedDevices: Device[] = [];
   isChecked = false;
   locationName: string | null | undefined = '';
   vehicleName: string | null | undefined = '';
   deviceCriteria?: DeviceSearch;
-  selectedState?: string;
+  selectedState: string = '';
   vehiclesOrLocationsSelected: boolean = false;
   stateSelected: boolean = false;
   vehicleOrLocationSelectedValue: string;
@@ -68,10 +67,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               private dialog: MatDialog,
               private locationService: LocationService,
               private vehicleService: VehicleService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private router: Router,
               private exportService: ExportService,
-              private screenSize: ScreenSizeService
   ) {
     this.dataSource = new MatTableDataSource<Device>();
   }
@@ -93,7 +91,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   getAllDevices(resetSelectedDevices: boolean) {
     this.showSpinner = true;
     return this.deviceService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.devices = res.object;
         this.filteredDevices = res.object;
         if (resetSelectedDevices) {
@@ -106,26 +104,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.vehicleOrLocationSelectedValue = '';
         this.showSpinner = false;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage);
+        this.responseHandler.setErrorMessage(res.errorMessage);
       }
     });
   }
 
   getAllLocations() {
     this.locationService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.locations = res.object;
         this.filteredLocations = this.locations;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
 
   getAllVehicles() {
     this.vehicleService.getAll().subscribe(res => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       } else {
         this.vehicles = res.object;
         this.filteredVehicles = this.vehicles;
@@ -179,7 +177,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   filterOnlyVehiclesOrLocations(deviceCriteria: DeviceSearch) {
     if (!deviceCriteria.locationName && deviceCriteria.vehicleName && !deviceCriteria.state && !this.vehicleName) {
-      this.dataSource.data = this.devices!.filter(device => {
+      this.dataSource.data = this.devices.filter(device => {
         return device.location === null && (device.vehicle !== null && device.vehicle !== undefined);
       });
     }
@@ -320,11 +318,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           objectsToDelete.push(device.uuId);
 
           this.deviceService.delete(objectsToDelete).subscribe(res => {
-            if (this.errorHandler.hasError(res)) {
-              this.errorHandler.setErrorMessage(res.errorMessage!);
+            if (this.responseHandler.hasError(res)) {
+              this.responseHandler.setErrorMessage(res.errorMessage!);
               dialogRef.close();
             } else {
-              this.errorHandler.setSuccessMessage(`Gerät ${device.name} konnte gelöscht werden`);
+              this.responseHandler.setSuccessMessage(`Gerät ${device.name} konnte gelöscht werden`);
               this.getAllDevices(true);
               dialogRef.close();
             }
@@ -487,7 +485,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       if (deleted) {
         this.getAllDevices(true);
         this.selectedDevices = [];
-        this.errorHandler.setSuccessMessage('Geräte konnten erfolgreich gelöscht werden');
+        this.responseHandler.setSuccessMessage('Geräte konnten erfolgreich gelöscht werden');
         dialogRef.close();
         if (this.isChecked) {
           this.isChecked = false;

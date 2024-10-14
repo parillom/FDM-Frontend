@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ToastrService} from 'ngx-toastr';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import * as XLSX from 'xlsx';
 import {VehicleService} from '../../../../services/vehicle.service';
 import {CreateStorage} from '../../../../models/CreateStorage';
@@ -24,7 +24,7 @@ export class AddMultipleVehiclesComponent {
   constructor(public dialogRef: MatDialogRef<AddMultipleVehiclesComponent>,
               private toastr: ToastrService,
               private vehicleService: VehicleService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private cdr: ChangeDetectorRef) {
   }
 
@@ -87,8 +87,8 @@ export class AddMultipleVehiclesComponent {
 
   addVehicles() {
     this.vehicleService.create(this.createRequestList).subscribe((res) => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
         this.vehiclesCreated.emit(false);
         this.resetFile();
       } else {

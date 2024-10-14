@@ -8,7 +8,7 @@ import {
 } from '../../common/dialog/delete-multiple-dialog/delete-multiple-dialog.component';
 import {Usecase} from '../../../models/Usecase';
 import {MatDialog} from '@angular/material/dialog';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {DeleteDialogComponent} from '../../common/dialog/delete-dialog/delete-dialog.component';
 import {AddVehicleComponent} from '../dialog/add-vehicle/add-vehicle.component';
 import {Router} from '@angular/router';
@@ -41,7 +41,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
 
   constructor(private vehicleService: VehicleService,
               private dialog: MatDialog,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private router: Router) {
     this.dataSource = new MatTableDataSource<Vehicle>();
   }
@@ -60,7 +60,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   getAllVehicles() {
     this.showSpinner = true;
     this.vehicleService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.dataSource.data! = res.object;
         this.vehicles = res.object;
         this.vehicles.forEach(vehicle => {
@@ -68,7 +68,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
         });
         this.showSpinner = false;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
@@ -123,7 +123,8 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
     void this.router.navigate(['fdm/dashboard/vehicle/edit/'], {queryParams: {id: uuid}});
   }
 
-  openDeleteModal(vehicle: Vehicle) {
+  openDeleteModal(vehicle: Vehicle, event: MouseEvent) {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       width: '400px',
       height: 'auto',
@@ -139,11 +140,11 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
         const uuIds = [];
         uuIds.push(vehicle.uuid);
         this.vehicleService.delete(uuIds).subscribe(res => {
-          if (this.errorHandler.hasError(res)) {
-            this.errorHandler.setErrorMessage(res.errorMessage!);
+          if (this.responseHandler.hasError(res)) {
+            this.responseHandler.setErrorMessage(res.errorMessage!);
             dialogRef.close();
           } else {
-            this.errorHandler.setSuccessMessage(`Fahrzeug ${vehicle.name} erfolgreich gelöscht`);
+            this.responseHandler.setSuccessMessage(`Fahrzeug ${vehicle.name} erfolgreich gelöscht`);
             this.getAllVehicles();
             dialogRef.close();
           }
@@ -240,7 +241,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
       if (deleted) {
         this.getAllVehicles();
         this.selectedVehicles = [];
-        this.errorHandler.setSuccessMessage('Fahrzeuge wurden erfolgreich gelöscht');
+        this.responseHandler.setSuccessMessage('Fahrzeuge wurden erfolgreich gelöscht');
         dialogRef.close();
         if (this.isChecked) {
           this.isChecked = false;

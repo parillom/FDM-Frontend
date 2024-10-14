@@ -4,7 +4,7 @@ import {Device} from '../../../../models/Device';
 import * as XLSX from 'xlsx';
 import {ToastrService} from 'ngx-toastr';
 import {DeviceService} from '../../../../services/device.service';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {DeviceState} from '../../../../models/DeviceState';
 import {CreateDevice} from '../../../../models/CreateDevice';
 import {StorageType} from '../../../../models/StorageType';
@@ -34,7 +34,7 @@ export class AddMultipleDevicesComponent {
               private deviceService: DeviceService,
               private vehicleService: VehicleService,
               private locationService: LocationService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private cdr: ChangeDetectorRef) {
   }
 
@@ -61,8 +61,8 @@ export class AddMultipleDevicesComponent {
 
             if (device.vehicle !== null) {
               const res = await firstValueFrom(this.vehicleService.getVehicleByName(device.vehicle));
-              if (res && this.errorHandler.hasError(res)) {
-                this.errorHandler.setErrorMessage(res.errorMessage);
+              if (res && this.responseHandler.hasError(res)) {
+                this.responseHandler.setErrorMessage(res.errorMessage);
                 return;
               } else {
                 storageId = res.object.uuid;
@@ -70,8 +70,8 @@ export class AddMultipleDevicesComponent {
               }
             } else if (device.location !== null) {
               const res = await firstValueFrom(this.locationService.getLocationByName(device.vehicle));
-              if (res && this.errorHandler.hasError(res)) {
-                this.errorHandler.setErrorMessage(res.errorMessage);
+              if (res && this.responseHandler.hasError(res)) {
+                this.responseHandler.setErrorMessage(res.errorMessage);
                 return;
               } else {
                 storageId = res.object.uuid;
@@ -135,8 +135,8 @@ export class AddMultipleDevicesComponent {
 
   saveDevices() {
     this.deviceService.create(this.devices).subscribe((res) => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
         this.devicesCreated.emit(false);
         this.resetFile();
       } else {

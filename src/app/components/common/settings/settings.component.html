@@ -10,13 +10,24 @@
     </div>
   </div>
   <mat-dialog-content>
-    <div class="d-flex justify-content-between align-items-center">
-      <p class="mb-0">Darkmode</p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <p class="mb-0">Nachtmodus</p>
       <div class="d-flex align-items-center">
         <mat-slide-toggle color="primary" [formControl]="switchTheme">
         </mat-slide-toggle>
         <mat-icon>bedtime</mat-icon>
       </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <p class="mb-0">Löschen</p>
+      <div class="d-flex align-items-center">
+        <mat-checkbox [checked]="deleteTypes.includes(DeleteType.DEVICE)" (click)="changeDeleteTypes(DeleteType.DEVICE)" color="primary">Geräte</mat-checkbox>
+        <mat-checkbox [checked]="deleteTypes.includes(DeleteType.VEHICLE)" (click)="changeDeleteTypes(DeleteType.VEHICLE)" color="primary">Fahrzeuge</mat-checkbox>
+        <mat-checkbox [checked]="deleteTypes.includes(DeleteType.LOCATION)" (click)="changeDeleteTypes(DeleteType.LOCATION)" color="primary">Orte</mat-checkbox>
+      </div>
+    </div>
+    <div *ngIf="deleteTypes.length > 0">
+      <span (click)="openConfirmDialog()" class="cursor-pointer text-decoration-underline">Auswahl bestätigen</span>
     </div>
   </mat-dialog-content>
 </div>

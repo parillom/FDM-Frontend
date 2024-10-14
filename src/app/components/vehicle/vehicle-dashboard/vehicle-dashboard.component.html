@@ -105,7 +105,7 @@
                       *ngIf="vehicleMap.get(element.uuid)?.length! > limit && !expandedMap.get(element.uuid)"
                       (click)="toggleExpand(element.uuid)">visibility_off
             </mat-icon>
-            <mat-icon matButtonIcon (click)="openDeleteModal(element)"
+            <mat-icon matButtonIcon (click)="openDeleteModal(element, $event)"
                       class="material-icons-outlined cursor-pointer"
                       matTooltip="Gerät löschen"
                       color="warn"

@@ -84,6 +84,7 @@ import {
   MatExpansionPanelHeader, MatExpansionPanelTitle
 } from '@angular/material/expansion';
 import {MatCalendar, MatDatepicker} from '@angular/material/datepicker';
+import { ObjectTypePipe } from './services/pipe/object-type.pipe';
 
 @NgModule({
   declarations: [
@@ -110,6 +111,7 @@ import {MatCalendar, MatDatepicker} from '@angular/material/datepicker';
     TestComponent,
     DeviceStatePipe,
     HighlightSearchTextPipe,
+    ObjectTypePipe,
   ],
   imports: [
     BrowserModule,
@@ -183,6 +185,9 @@ import {MatCalendar, MatDatepicker} from '@angular/material/datepicker';
   providers: [
     BsModalService,
     NavbarComponent,
+    DashboardComponent,
+    VehicleDashboardComponent,
+    LocationDashboardComponent,
     provideAnimationsAsync(),
     provideHttpClient(
       withInterceptors([errorInterceptor])

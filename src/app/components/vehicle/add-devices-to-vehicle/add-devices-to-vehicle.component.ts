@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Device} from '../../../models/Device';
 import {Vehicle} from '../../../models/Vehicle';
 import {DeviceService} from '../../../services/device.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {VehicleService} from '../../../services/vehicle.service';
 import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 import {MatDialog} from '@angular/material/dialog';
@@ -28,7 +28,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
 
   constructor(private deviceService: DeviceService,
               private vehicleService: VehicleService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private matDialog: MatDialog) {
   }
 
@@ -39,12 +39,12 @@ export class AddDevicesToVehicleComponent implements OnInit {
   private getAllDevices() {
     this.rendered = false;
     this.deviceService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.devices = res.object;
         this.devicesNotOnVehicle();
         this.rendered = true;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage);
+        this.responseHandler.setErrorMessage(res.errorMessage);
       }
     });
   }
@@ -103,12 +103,12 @@ export class AddDevicesToVehicleComponent implements OnInit {
     };
 
     this.vehicleService.moveDevices(request).subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.getAllDevices();
         this.selectedDevices.splice(0);
-        this.errorHandler.setSuccessMessage(`Die Geräte wurden erfolgreich ${this.vehicle?.name} zugewiesen`);
+        this.responseHandler.setSuccessMessage(`Die Geräte wurden erfolgreich ${this.vehicle?.name} zugewiesen`);
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }

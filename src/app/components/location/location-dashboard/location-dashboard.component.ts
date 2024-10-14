@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {LocationService} from '../../../services/location.service';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {Location} from '../../../models/Location';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
@@ -38,7 +38,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
   };
 
   constructor(private locationService: LocationService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private router: Router,
               private dialog: MatDialog) {
     this.dataSource = new MatTableDataSource<Location>();
@@ -67,16 +67,16 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private getAllLocations() {
+  public getAllLocations() {
     this.locationService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.locations = res.object;
         this.dataSource.data = this.locations;
         this.locations.forEach(location => {
           this.getDevicesFromLocation(location);
         });
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
@@ -86,7 +86,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
       if (response.object) {
         this.devicesMap.set(location.uuid, response.object);
       } else {
-        this.errorHandler.setErrorMessage(response.errorMessage!);
+        this.responseHandler.setErrorMessage(response.errorMessage!);
       }
     });
   }
@@ -125,7 +125,8 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
     return this.selectedLocations.some(selectedLocation => selectedLocation.uuid === location.uuid);
   }
 
-  openDeleteModal(location: Location) {
+  openDeleteModal(location: Location, event: MouseEvent) {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       width: '400px',
       height: 'auto',
@@ -141,11 +142,11 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
         const uuIds: string[] = [];
         uuIds.push(location.uuid);
         this.locationService.delete(uuIds).subscribe(res => {
-          if (this.errorHandler.hasError(res)) {
-            this.errorHandler.setErrorMessage(res.errorMessage!);
+          if (this.responseHandler.hasError(res)) {
+            this.responseHandler.setErrorMessage(res.errorMessage!);
             dialogRef.close();
           } else {
-            this.errorHandler.setSuccessMessage(`Ort ${location.name} erfolgreich gelöscht`);
+            this.responseHandler.setSuccessMessage(`Ort ${location.name} erfolgreich gelöscht`);
             this.getAllLocations();
             dialogRef.close();
           }
@@ -219,7 +220,7 @@ export class LocationDashboardComponent implements OnInit, AfterViewInit {
       if (deleted) {
         this.getAllLocations();
         this.selectedLocations = [];
-        this.errorHandler.setSuccessMessage('Orte wurden erfolgreich gelöscht');
+        this.responseHandler.setSuccessMessage('Orte wurden erfolgreich gelöscht');
         dialogRef.close();
         if (this.isChecked) {
           this.isChecked = false;

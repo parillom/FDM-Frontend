@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {DeviceService} from '../../../services/device.service';
 import {ActivatedRoute} from '@angular/router';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {Device} from '../../../models/Device';
 
 @Component({
@@ -14,7 +14,7 @@ export class DeviceDetailsComponent implements OnInit {
 
   constructor(private deviceService: DeviceService,
               private route: ActivatedRoute,
-              private errorHandler: ErrorHandlerService) {
+              private responseHandler: ResponseHandlerService) {
   }
 
   ngOnInit() {
@@ -28,8 +28,8 @@ export class DeviceDetailsComponent implements OnInit {
 
   private getDeviceDetails(uuId: number) {
     this.deviceService.getWithUuid(uuId).subscribe(res => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       } else {
         this.device = res.object;
       }

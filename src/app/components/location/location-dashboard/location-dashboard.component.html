@@ -23,7 +23,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf="locations?.length! > 1" class="d-none d-sm-flex row align-items-center mb-4 text-nowrap">
+  <div *ngIf="locations.length! > 1" class="d-none d-sm-flex row align-items-center mb-4 text-nowrap">
     <div class="col-9">
       <button mat-raised-button
               (click)="openDeleteMultipleDialog()"
@@ -94,7 +94,7 @@
                       *ngIf="devicesMap.get(element.uuid)?.length! > limit && !expandedMap.get(element.uuId)"
                       (click)="toggleExpand(element.uuid)">visibility_off
             </mat-icon>
-            <mat-icon matButtonIcon (click)="openDeleteModal(element)"
+            <mat-icon matButtonIcon (click)="openDeleteModal(element, $event)"
                       class="material-icons-outlined cursor-pointer"
                       matTooltip="Gerät löschen"
                       color="warn"

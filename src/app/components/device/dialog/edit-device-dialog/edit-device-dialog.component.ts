@@ -6,7 +6,7 @@ import {DeviceState} from '../../../../models/DeviceState';
 import {Location} from '../../../../models/Location';
 import {Vehicle} from '../../../../models/Vehicle';
 import {DeviceService} from '../../../../services/device.service';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {ToastrService} from 'ngx-toastr';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {UpdateDevice} from '../../../../models/UpdateDevice';
@@ -43,7 +43,7 @@ export class EditDeviceDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private matDialog: MatDialogRef<EditDeviceDialogComponent>,
               private deviceService: DeviceService,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private toastr: ToastrService,
               private vehicleService: VehicleService,
               private locationService: LocationService) {
@@ -128,8 +128,8 @@ export class EditDeviceDialogComponent implements OnInit {
       if (this.storageType === StorageType.VEHICLE) {
         state = DeviceState.ACTIVE;
         const res = await firstValueFrom(this.vehicleService.getVehicleByName(deviceData.vehicle));
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage);
           return;
         } else {
           storageId = res.object.uuid;
@@ -137,8 +137,8 @@ export class EditDeviceDialogComponent implements OnInit {
       } else if (this.storageType === StorageType.LOCATION) {
         state = deviceData.stateLocation;
         const res = await firstValueFrom(this.locationService.getLocationByName(deviceData.location));
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage);
           return;
         } else {
           storageId = res.object.uuid;
@@ -154,8 +154,8 @@ export class EditDeviceDialogComponent implements OnInit {
       };
 
       this.deviceService.update(request).subscribe(res => {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage!);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage!);
           this.updatedSuccessful.emit(false);
         } else {
           this.toastr.success(`Gerät ${res.object.name!} konnte erfolgreich bearbeitet werden`);

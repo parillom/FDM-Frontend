@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {VehicleService} from '../../../services/vehicle.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ErrorHandlerService} from '../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {Vehicle} from '../../../models/Vehicle';
 import {Location} from '../../../models/Location';
 import {Device} from '../../../models/Device';
@@ -57,7 +57,7 @@ export class VehicleEditComponent implements OnInit {
   constructor(private vehicleService: VehicleService,
               private route: ActivatedRoute,
               private router: Router,
-              private errorHandler: ErrorHandlerService,
+              private responseHandler: ResponseHandlerService,
               private locationService: LocationService,
               private navbarService: NavbarComponent,
               private dialog: MatDialog) {
@@ -76,8 +76,8 @@ export class VehicleEditComponent implements OnInit {
   getVehicle(uuId: number) {
     this.vehicleService.getVehicleByUuId(uuId).subscribe(res => {
       if (res) {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage!);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage!);
         } else {
           this.vehicle = res.object;
           this.editVehicleForm.get('vehicleName')?.setValue(this.vehicle?.name);
@@ -94,8 +94,8 @@ export class VehicleEditComponent implements OnInit {
     this.vehicleService.getDevicesFromVehicle(vehicle).subscribe(res => {
       if (res) {
         this.showSpinner = false;
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage!);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage!);
         } else {
           this.devices = res.object;
           this.filteredDevices = this.devices;
@@ -182,10 +182,10 @@ export class VehicleEditComponent implements OnInit {
 
   handleResponse(res: ModelAndError) {
     if (res) {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       } else {
-        this.errorHandler.setSuccessMessage('Die Geräte konnten erfolgreich verschoben werden');
+        this.responseHandler.setSuccessMessage('Die Geräte konnten erfolgreich verschoben werden');
         this.droppedDevices.splice(0);
         this.selectedDevices.splice(0);
         this.getVehicle(this.uuid!);
@@ -275,8 +275,8 @@ export class VehicleEditComponent implements OnInit {
   private getVehicles() {
     this.vehicleService.getAll().subscribe(res => {
       if (res) {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage!);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage!);
         } else {
           this.vehicles = res.object;
         }
@@ -286,10 +286,10 @@ export class VehicleEditComponent implements OnInit {
 
   private getLocations() {
     this.locationService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.locations = res.object;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
@@ -338,11 +338,11 @@ export class VehicleEditComponent implements OnInit {
       };
 
       this.vehicleService.update(request).subscribe(res => {
-        if (res && !this.errorHandler.hasError(res)) {
-          this.errorHandler.setSuccessMessage(`${res.object.name} erfolgreich bearbeitet`);
+        if (res && !this.responseHandler.hasError(res)) {
+          this.responseHandler.setSuccessMessage(`${res.object.name} erfolgreich bearbeitet`);
           this.editVehicleForm.get('vehicleName').setValue(res.object.name);
         } else {
-          this.errorHandler.setErrorMessage(res.errorMessage!);
+          this.responseHandler.setErrorMessage(res.errorMessage!);
         }
       });
     }

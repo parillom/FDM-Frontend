@@ -5,7 +5,7 @@ import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component
 import {Usecase} from '../../../../models/Usecase';
 import {VehicleService} from '../../../../services/vehicle.service';
 import {LocationService} from '../../../../services/location.service';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {ModelAndError} from '../../../../models/ModelAndError';
 
 @Component({
@@ -32,7 +32,7 @@ export class DeleteMultipleDialogComponent {
               private matDialog: MatDialog,
               private vehicleService: VehicleService,
               private locationService: LocationService,
-              private errorHandler: ErrorHandlerService) {
+              private responseHandler: ResponseHandlerService) {
     this.objectsToDelete = this.data.objectsToDelete;
     this.useCase = this.data.useCase;
   }
@@ -70,10 +70,10 @@ export class DeleteMultipleDialogComponent {
         } else if (this.useCase === Usecase.LOCATION){
           this.objectToDeleteUuIds = this.objectsToDelete.map(location => location.uuid);
           this.locationService.delete(this.objectToDeleteUuIds).subscribe(res => {
-            if (res && !this.errorHandler.hasError(res)) {
+            if (res && !this.responseHandler.hasError(res)) {
               this.deleted!.emit(true);
             } else {
-              this.errorHandler.setErrorMessage(res.errorMessage!);
+              this.responseHandler.setErrorMessage(res.errorMessage!);
             }
           });
         }
@@ -82,9 +82,9 @@ export class DeleteMultipleDialogComponent {
   }
 
   private handleResponse(res: ModelAndError) {
-    if (this.errorHandler.hasError(res)) {
+    if (this.responseHandler.hasError(res)) {
       this.deleted!.emit(false);
-      this.errorHandler.setErrorMessage(res.errorMessage!);
+      this.responseHandler.setErrorMessage(res.errorMessage!);
     } else {
       this.deleted!.emit(true);
     }

@@ -7,7 +7,7 @@ import {Vehicle} from '../../../../models/Vehicle';
 import {VehicleService} from '../../../../services/vehicle.service';
 import {DeviceState} from '../../../../models/DeviceState';
 import {DeviceService} from '../../../../services/device.service';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {CreateDevice} from '../../../../models/CreateDevice';
 import {StorageType} from '../../../../models/StorageType';
@@ -52,7 +52,7 @@ export class AddDeviceComponent implements OnInit {
               private locationService: LocationService,
               private vehicleService: VehicleService,
               private deviceService: DeviceService,
-              private errorHandler: ErrorHandlerService) {
+              private responseHandler: ResponseHandlerService) {
   }
 
   ngOnInit() {
@@ -63,19 +63,19 @@ export class AddDeviceComponent implements OnInit {
 
   private getLocations() {
     this.locationService.getAll().subscribe(res => {
-      if (res && !this.errorHandler.hasError(res)) {
+      if (res && !this.responseHandler.hasError(res)) {
         this.locations = res.object;
         this.filteredLocations = this.locations;
       } else {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       }
     });
   }
 
   private getVehicles() {
     this.vehicleService.getAll().subscribe(res => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage!);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage!);
       } else {
         this.vehicles = res.object;
         this.filteredVehicles = this.vehicles;
@@ -131,8 +131,8 @@ export class AddDeviceComponent implements OnInit {
 
       //getting the current location
       this.locationService.getLocationByName(locationForm.location).subscribe(res => {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage);
           return;
         } else {
           location = res.object;
@@ -162,8 +162,8 @@ export class AddDeviceComponent implements OnInit {
 
       // getting the current Vehicle
       this.vehicleService.getVehicleByName(vehicleForm.vehicle).subscribe(res => {
-        if (this.errorHandler.hasError(res)) {
-          this.errorHandler.setErrorMessage(res.errorMessage);
+        if (this.responseHandler.hasError(res)) {
+          this.responseHandler.setErrorMessage(res.errorMessage);
           return;
         } else {
           vehicle = res.object;
@@ -185,12 +185,12 @@ export class AddDeviceComponent implements OnInit {
 
   performSaveCall(devices: CreateDevice[]) {
     this.deviceService.create(devices).subscribe(res => {
-      if (this.errorHandler.hasError(res)) {
-        this.errorHandler.setErrorMessage(res.errorMessage);
+      if (this.responseHandler.hasError(res)) {
+        this.responseHandler.setErrorMessage(res.errorMessage);
         this.createdSuccessful.emit(false);
         this.isSubmitting = false;
       } else {
-        this.errorHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
+        this.responseHandler.setSuccessMessage(`Gerät ${res.object.name} erfolgreich erstellt!`);
         this.createdSuccessful.emit(true);
         this.clearNameInput();
         this.getLocations();

@@ -1,7 +1,7 @@
 import {Component, EventEmitter} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {LocationService} from '../../../../services/location.service';
 import {CreateStorage} from '../../../../models/CreateStorage';
@@ -23,7 +23,7 @@ export class AddLocationComponent {
 
   constructor(public dialogRef: MatDialogRef<AddLocationComponent>,
               private locationService: LocationService,
-              private errorHandler: ErrorHandlerService) {
+              private responseHandler: ResponseHandlerService) {
   }
 
   closeDialog() {
@@ -49,12 +49,12 @@ export class AddLocationComponent {
 
       this.locationService.create(request).subscribe((res) => {
         if (res) {
-          if (this.errorHandler.hasError(res)) {
-            this.errorHandler.setErrorMessage(res.errorMessage!);
+          if (this.responseHandler.hasError(res)) {
+            this.responseHandler.setErrorMessage(res.errorMessage!);
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
-            this.errorHandler.setSuccessMessage(`Ort ${request.name} konnte erfolgreich erstellt werden`);
+            this.responseHandler.setSuccessMessage(`Ort ${request.name} konnte erfolgreich erstellt werden`);
             this.isSubmitting = false;
             this.created.emit(true);
           }

@@ -44,4 +44,8 @@ export class LocationService {
     return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/moveDevicesToVehicle`, request);
   }
 
+  deleteAll(): Observable<ModelAndError> {
+    return this.http.delete<ModelAndError>(`${COMMON_LOCATION_URL}/all`);
+  }
+
 }

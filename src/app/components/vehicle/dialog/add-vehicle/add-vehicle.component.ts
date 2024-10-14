@@ -3,7 +3,7 @@ import {MatDialogRef} from '@angular/material/dialog';
 import {MatTabChangeEvent} from '@angular/material/tabs';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {VehicleService} from '../../../../services/vehicle.service';
-import {ErrorHandlerService} from '../../../../services/error-handler.service';
+import {ResponseHandlerService} from '../../../../services/response-handler.service';
 import {CreateStorage} from '../../../../models/CreateStorage';
 
 @Component({
@@ -24,7 +24,7 @@ export class AddVehicleComponent {
 
   constructor(public dialogRef: MatDialogRef<AddVehicleComponent>,
               private vehicleService: VehicleService,
-              private errorHandler: ErrorHandlerService) {
+              private responseHandler: ResponseHandlerService) {
   }
 
   closeDialog() {
@@ -52,13 +52,13 @@ export class AddVehicleComponent {
 
       this.vehicleService.create(this.createRequestList).subscribe((res) => {
         if (res) {
-          if (this.errorHandler.hasError(res)) {
-            this.errorHandler.setErrorMessage(res.errorMessage!);
+          if (this.responseHandler.hasError(res)) {
+            this.responseHandler.setErrorMessage(res.errorMessage!);
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
             const nameList = this.createRequestList.map(request => request.name).join(', ');
-            this.errorHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
+            this.responseHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
             this.isSubmitting = false;
             this.created.emit(true);
           }
