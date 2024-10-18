@@ -1,8 +1,10 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Vehicle} from '../../../models/Vehicle';
 import {Location} from '../../../models/Location';
 import {DeviceState} from '../../../models/DeviceState';
 import {DeviceSearch} from '../../../models/DeviceSearch';
+import {StorageType} from '../../../models/StorageType';
+import {UpdateType} from '../../../models/UpdateType';
 
 @Component({
   selector: 'app-vehicle-location-autocompletion-dashboard',
@@ -10,9 +12,6 @@ import {DeviceSearch} from '../../../models/DeviceSearch';
   styleUrl: './vehicle-location-autocompletion-dashboard.component.scss'
 })
 export class VehicleLocationAutocompletionDashboardComponent {
-  @ViewChild('vehicleSearch') vehicleSearch!: ElementRef<HTMLInputElement>;
-  @ViewChild('locationSearch') locationSearch!: ElementRef<HTMLInputElement>;
-
   @Output()
   filterByVehicleName: EventEmitter<string> = new EventEmitter<string>();
 
@@ -23,18 +22,26 @@ export class VehicleLocationAutocompletionDashboardComponent {
   doFilter: EventEmitter<DeviceSearch | null> = new EventEmitter<DeviceSearch | null>();
 
   @Input()
-  vehicles?: Vehicle[];
+  vehicles: Vehicle[] = [];
 
   @Input()
-  locations?: Location[];
+  locations: Location[] = [];
+
+  @Input()
+  fromDate?: Date;
+
+  @Input()
+  toDate?: Date;
 
   enableVehicleInput: boolean = false;
   enableLocationInput: boolean = false;
   currentState: DeviceState | undefined;
-  filteredVehicles?: Vehicle[];
-  filteredLocations?: Location[];
+  protected readonly StorageType = StorageType;
   showInputs: boolean = true;
   deviceCriteria?: DeviceSearch;
+  vehicleName?: string;
+  locationName?: string;
+  @Input() updateType?: UpdateType;
 
   @Input()
   set currentStateValue(state: DeviceState | undefined) {
@@ -44,59 +51,55 @@ export class VehicleLocationAutocompletionDashboardComponent {
   }
 
   resetFields() {
-    this.vehicleSearch.nativeElement.value = '';
-    this.locationSearch.nativeElement.value = '';
+    this.vehicleName = undefined;
+    this.locationName = undefined;
     this.showInputs = true;
   }
 
-  filter(event: any, isVehicleSearch: boolean): void {
-    if (!event.target.value && !this.currentState) {
-      this.doFilter.emit(null)
-    } else if (!event.target.value && this.currentState) {
-      this.deviceCriteria = {
-        state: this.currentState
-      }
-      this.doFilter.emit(this.deviceCriteria)
-    }
-    if (isVehicleSearch) {
-      this.locationSearch.nativeElement.value = '';
-      const filterValue = this.vehicleSearch.nativeElement.value.toLowerCase();
-      this.filteredVehicles = this.vehicles!.filter(v => v.name?.toLowerCase().includes(filterValue));
-    } else {
-      this.vehicleSearch.nativeElement.value = '';
-      const filterValue = this.locationSearch.nativeElement.value.toLowerCase();
-      this.filteredLocations = this.locations!.filter(l => l.name?.toLowerCase().includes(filterValue));
-    }
+  filter(): void {
+    this.deviceCriteria = {
+      state: this.currentState,
+      vehicleName: this.vehicleName,
+      locationName: this.locationName,
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      updateType: this.updateType
+    };
+
+    this.doFilter.emit(this.deviceCriteria);
   }
 
-  filterName(name: string | undefined, nameIsVehicle: boolean) {
-    if (nameIsVehicle && this.currentState) {
+  resetLocationName() {
+    this.locationName = undefined;
+    this.filter();
+  }
+
+  resetVehicleName() {
+    this.vehicleName = undefined;
+    this.filter();
+  }
+
+  filterAfterOptionClick(storageName: string, type: StorageType) {
+    if (type === StorageType.VEHICLE) {
       this.deviceCriteria = {
         state: this.currentState,
-        vehicleName: name
-      }
-      this.doFilter.emit(this.deviceCriteria);
-    }
-    else if (nameIsVehicle && !this.currentState) {
-      this.deviceCriteria = {
-        state: null,
-        vehicleName: name
-      }
-      this.doFilter.emit(this.deviceCriteria);
-    }
-    else if (!nameIsVehicle && this.currentState) {
+        vehicleName: storageName,
+        locationName: undefined,
+        fromDate: this.fromDate,
+        toDate: this.toDate,
+        updateType: this.updateType
+      };
+    } else {
       this.deviceCriteria = {
         state: this.currentState,
-        locationName: name
-      }
-      this.doFilter.emit(this.deviceCriteria);
+        vehicleName: undefined,
+        locationName: storageName,
+        fromDate: this.fromDate,
+        toDate: this.toDate,
+        updateType: this.updateType
+      };
     }
-    else if (!nameIsVehicle && !this.currentState) {
-      this.deviceCriteria = {
-        state: null,
-        locationName: name
-      }
-      this.doFilter.emit(this.deviceCriteria);
-    }
+
+    this.doFilter.emit(this.deviceCriteria);
   }
 }

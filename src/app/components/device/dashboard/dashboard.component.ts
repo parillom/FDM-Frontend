@@ -23,6 +23,7 @@ import {Usecase} from '../../../models/Usecase';
 import {ResponseHandlerService} from '../../../services/response-handler.service';
 import {Router} from '@angular/router';
 import {ExportService} from '../../../services/export.service';
+import {UpdateType} from '../../../models/UpdateType';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,29 +36,33 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   devices: Device[] = [];
-  filteredDevices?: Device[] = [];
+  filteredDevices: Device[] = [];
   locations: Location[] = [];
   filteredLocations: Location[] = [];
   vehicles: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
   formShowing: boolean = false;
-  deviceSearch  = '';
+  deviceSearch = '';
   selectedDevices: Device[] = [];
   isChecked = false;
-  locationName: string | null | undefined = '';
-  vehicleName: string | null | undefined = '';
-  deviceCriteria?: DeviceSearch;
-  selectedState: string = '';
+  locationName: string | undefined;
+  vehicleName: string | undefined;
+  deviceCriteria: DeviceSearch;
   vehiclesOrLocationsSelected: boolean = false;
   stateSelected: boolean = false;
   vehicleOrLocationSelectedValue: string;
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
-  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Aktionen'];
+  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Letztes Update', 'Art der Änderung', 'Aktionen'];
   dataSource!: MatTableDataSource<Device>;
   showSpinner: boolean = false;
   disableRowClick: boolean = false;
-  openExportMenu = false;
+  expandFilter = false;
+  toDate: Date;
+  fromDate: Date;
+  showDateError: boolean = false;
+  protected readonly UpdateType = UpdateType;
+  updateType: UpdateType;
 
   columnWidths = {
     'Geräte-ID': '15%'
@@ -97,10 +102,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         if (resetSelectedDevices) {
           this.selectedDevices.splice(0);
         }
-        this.dataSource.data! = this.filteredDevices!;
+        this.dataSource.data! = this.filteredDevices;
         this.stateSelected = false;
         this.vehiclesOrLocationsSelected = false;
-        this.selectedState = '';
+        this.currentState = undefined;
         this.vehicleOrLocationSelectedValue = '';
         this.showSpinner = false;
       } else {
@@ -134,27 +139,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   stateFilterChanged(value: DeviceState) {
     this.currentState = value;
     this.stateSelected = true;
-    if (!this.vehicleName && !this.locationName) {
-      this.deviceCriteria = {
-        state: this.currentState,
-      };
-      this.filterWithSpecifiedProperties(this.deviceCriteria);
-    } else {
-      if (this.vehicleName) {
-        this.deviceCriteria = {
-          state: this.currentState,
-          vehicleName: this.vehicleName
-        };
-        this.filterWithSpecifiedProperties(this.deviceCriteria);
-      }
-      if (this.locationName) {
-        this.deviceCriteria = {
-          state: this.currentState,
-          locationName: this.locationName
-        };
-        this.filterWithSpecifiedProperties(this.deviceCriteria);
-      }
+
+    if (value === DeviceState.STORAGE || value === DeviceState.REESTABLISH) {
+      this.vehicleName = undefined;
     }
+    if (value === DeviceState.ACTIVE) {
+      this.locationName = undefined;
+    }
+
+    this.deviceCriteria = {
+      state: this.currentState,
+      vehicleName: this.vehicleName,
+      locationName: this.locationName,
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      updateType: this.updateType
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
   }
 
   vehicleOrLocationSelected(value: any) {
@@ -167,11 +169,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       };
       this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
     } else {
-        this.deviceCriteria = {
-          locationName: value,
-          vehicleName: null
-        };
-        this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
+      this.deviceCriteria = {
+        locationName: value,
+        vehicleName: null
+      };
+      this.filterOnlyVehiclesOrLocations(this.deviceCriteria);
     }
   }
 
@@ -200,47 +202,59 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  filterWithSpecifiedProperties(deviceCriteria: DeviceSearch | null) {
-    this.isChecked = false;
-    this.vehicleName = deviceCriteria?.vehicleName;
-    this.locationName = deviceCriteria?.locationName;
-    if (deviceCriteria === null) {
-      this.dataSource.data = this.devices!;
-    } else {
-      if (deviceCriteria!.state && !(deviceCriteria!.vehicleName && deviceCriteria!.locationName)) {
-        this.dataSource.data = this.devices!.filter(device => {
-          return device.state === deviceCriteria.state;
-        });
-      }
-      if (deviceCriteria!.state && deviceCriteria!.vehicleName) {
-        this.dataSource.data = this.devices!.filter(device => {
-          const matchesState = device.state === deviceCriteria.state;
-          const matchesVehicleName = device.vehicle?.name === deviceCriteria!.vehicleName;
+  filterWithSpecifiedProperties(deviceCriteria: DeviceSearch) {
+    this.filteredDevices = this.devices
+      .filter(device => !deviceCriteria?.state || device.state === deviceCriteria.state)
+      .filter(device => !deviceCriteria?.vehicleName || device.vehicle?.name === deviceCriteria.vehicleName)
+      .filter(device => !deviceCriteria?.locationName || device.location?.name === deviceCriteria.locationName)
+      .filter(device => {
+        const lastUpdateDate = new Date(device.lastUpdate);
+        return !deviceCriteria?.fromDate || lastUpdateDate.getTime() >= deviceCriteria.fromDate.getTime();
+      })
+      .filter(device => {
+        const lastUpdateDate = new Date(device.lastUpdate);
+        const toDate = new Date(deviceCriteria?.toDate);
+        toDate.setHours(0, 0, 0, 0);
 
-          return matchesState && matchesVehicleName;
-        });
-      }
-      if (deviceCriteria!.state && deviceCriteria!.locationName) {
-        this.dataSource.data = this.devices.filter(device => {
-          const matchesState = device.state === deviceCriteria!.state;
-          const matchesLocationName = device?.location?.name === deviceCriteria?.locationName;
+        lastUpdateDate.setHours(0, 0, 0, 0);
 
-          return matchesState && matchesLocationName;
-        });
-      }
-      if (deviceCriteria!.vehicleName && !deviceCriteria?.state) {
-        this.isChecked = false;
-        this.dataSource.data = this.devices!.filter(device => {
-          return device.vehicle?.name === deviceCriteria?.vehicleName;
-        });
-      }
-      if (deviceCriteria!.locationName && !deviceCriteria!.state) {
-        this.isChecked = false;
-        this.dataSource.data = this.devices!.filter(device => {
-          return device.location?.name === deviceCriteria?.locationName;
-        });
-      }
-    }
+        return !deviceCriteria?.toDate || lastUpdateDate <= toDate;
+      })
+      .filter(device => !deviceCriteria?.updateType || device.updateType === deviceCriteria.updateType);
+
+    this.dataSource.data! = this.filteredDevices;
+  }
+
+  filterWithFromDate(fromDate: Date) {
+    this.showDateError = this.toDate !== undefined && fromDate.getDate() > this.toDate.getTime();
+
+    this.fromDate = fromDate;
+    this.deviceCriteria = {
+      state: this.currentState,
+      locationName: this.locationName,
+      vehicleName: this.vehicleName,
+      fromDate: fromDate,
+      toDate: this.toDate,
+      updateType: this.updateType
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
+  }
+
+  filterWithToDate(toDate: Date) {
+    this.toDate = toDate;
+    this.showDateError = this.fromDate !== undefined && this.fromDate.getTime() > toDate.getTime();
+
+    this.deviceCriteria = {
+      state: this.currentState,
+      locationName: this.locationName,
+      vehicleName: this.vehicleName,
+      fromDate: this.fromDate,
+      toDate: toDate,
+      updateType: this.updateType
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
   }
 
   openCreateDeviceDialog() {
@@ -338,8 +352,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   refreshDevices() {
     this.getAllDevices(true);
-    this.handleFocusAndResetState();
+    this.vehicleOrLocationSelectedValue = '';
+    this.vehiclesOrLocationsSelected = false;
+    if (this.vehicleLocationAutoCompletion) {
+      this.vehicleLocationAutoCompletion.resetFields();
+    }
+    if (this.showDateError) {
+      this.showDateError = false;
+    }
     this.isChecked = false;
+    this.resetFilters();
   }
 
   getLocationText(device: Device) {
@@ -498,40 +520,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  handleFocusAndResetState() {
-    this.selectedState = '';
-    this.stateSelected = false;
-    this.vehicleOrLocationSelectedValue = '';
-    this.vehiclesOrLocationsSelected = false;
-    if (this.vehicleLocationAutoCompletion) {
-      this.vehicleLocationAutoCompletion.resetFields();
-    }
-  }
-
   resetStatus() {
-    this.selectedState = '';
+    this.currentState = undefined;
     this.stateSelected = false;
     this.vehiclesOrLocationsSelected = false;
     this.vehicleOrLocationSelectedValue = '';
     this.isChecked = false;
-    this.currentState = undefined;
-    if (!this.vehicleName && !this.locationName) {
-      this.getAllDevices(false);
-    } else if (this.vehicleName) {
-      this.deviceCriteria = {
-        vehicleName: this.vehicleName
-      };
-      this.filterWithSpecifiedProperties(this.deviceCriteria);
-    } else if (this.locationName) {
-      this.deviceCriteria = {
-        locationName: this.locationName
-      };
-      this.filterWithSpecifiedProperties(this.deviceCriteria);
-    }
-  }
 
-  openExportOption() {
-    this.openExportMenu = !this.openExportMenu;
+    this.deviceCriteria = {
+      locationName: this.locationName,
+      vehicleName: this.vehicleName,
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      state: this.currentState
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
   }
 
   export(type: string) {
@@ -543,7 +547,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       } else {
         this.exportService.exportExcel(this.dataSource.data);
       }
-      this.openExportMenu = false;
     } else {
       if (this.selectedDevices.length > 0) {
         this.exportService.exportPfd(this.selectedDevices);
@@ -552,9 +555,50 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       } else {
         this.exportService.exportPfd(this.dataSource.data);
       }
-      this.openExportMenu = false;
       window.location.reload();
     }
   }
 
+  setNameOfVehicleOrLocation(request: DeviceSearch) {
+    if (request) {
+      if (request.vehicleName && request.vehicleName.trim() !== '') {
+        this.vehicleName = request.vehicleName;
+        this.locationName = undefined;
+      } else if (request.locationName && request.locationName.trim() !== '') {
+        this.locationName = request.locationName;
+        this.vehicleName = undefined;
+      } else {
+        this.locationName = undefined;
+        this.vehicleName = undefined;
+      }
+      this.filterWithSpecifiedProperties(request);
+    }
+  }
+
+  updateTypeFilterChanged(type: UpdateType) {
+    this.updateType = type;
+    this.deviceCriteria = {
+      vehicleName: this.vehicleName,
+      locationName: this.locationName,
+      state: this.currentState,
+      toDate: this.toDate,
+      fromDate: this.fromDate,
+      updateType: this.updateType
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
+  }
+
+  resetFilters() {
+    this.fromDate = undefined;
+    this.toDate = undefined;
+    this.locationName = undefined;
+    this.vehicleName = undefined;
+    this.currentState = undefined;
+    this.updateType = undefined;
+  }
+
+  navigateToWorkflow(element: Device) {
+    void this.router.navigate([`fdm/dashboard/device/workflow`], {queryParams: {uuId: element.uuId}});
+  }
 }

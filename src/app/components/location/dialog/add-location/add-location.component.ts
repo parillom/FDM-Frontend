@@ -16,6 +16,7 @@ export class AddLocationComponent {
   isSubmitting: boolean = false;
   dragDisabled = true;
   created: EventEmitter<boolean> = new EventEmitter<boolean>();
+  locationsToCreate: CreateStorage[] = [];
 
   locationForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -47,7 +48,9 @@ export class AddLocationComponent {
         name: form.name
       };
 
-      this.locationService.create(request).subscribe((res) => {
+      this.locationsToCreate.push(request);
+
+      this.locationService.create(this.locationsToCreate).subscribe((res) => {
         if (res) {
           if (this.responseHandler.hasError(res)) {
             this.responseHandler.setErrorMessage(res.errorMessage!);

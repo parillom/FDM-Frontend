@@ -4,6 +4,7 @@ import {Example} from '../../models/Example';
 import {catchError, Observable, throwError} from 'rxjs';
 import {CreateStorage} from '../../models/CreateStorage';
 import {HttpClient} from '@angular/common/http';
+import {MatDatepicker} from '@angular/material/datepicker';
 
 const REQUIRED = 'REQUIRED';
 const NAME_EQUALS = 'NAME_EQUALS';
@@ -18,6 +19,7 @@ export class TestComponent {
   errors: string[] = [];
   example: Example = new Example();
   examples: Example[] = [];
+  @ViewChild('picker') picker: MatDatepicker<any>;
 
   constructor(private http: HttpClient) {
   }
@@ -44,7 +46,7 @@ export class TestComponent {
     this.example = new Example();
   }
 
-  //so kann man zum beispiel BadRequest vom Server behandeln. Man gibt die Response erst weiter, wenn kein error
+  //so kann man zum beispiel BadRequest vom Server behandeln. Man gibt die Response erst weiter, wenn kein error vorhanden ist
   getValue(): Observable<CreateStorage> {
     return this.http.get<CreateStorage>(`api/value/true`).pipe(
       catchError(error => {

@@ -55,6 +55,8 @@ export class NavbarComponent implements OnInit {
         return 'Fahrzeuge';
     } else if (url === '/fdm/dashboard/location' || url.includes('/fdm/dashboard/location/edit')) {
       return 'Orte';
+    } else if (url.includes('/fdm/dashboard/device/workflow')) {
+      return 'Workflow';
     } else {
       return '';
     }

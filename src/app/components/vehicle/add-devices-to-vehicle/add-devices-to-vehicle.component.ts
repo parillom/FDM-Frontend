@@ -41,7 +41,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
     this.deviceService.getAll().subscribe(res => {
       if (res && !this.responseHandler.hasError(res)) {
         this.devices = res.object;
-        this.devicesNotOnVehicle();
+        this.filterDevicesFromVehicle();
         this.rendered = true;
       } else {
         this.responseHandler.setErrorMessage(res.errorMessage);
@@ -49,9 +49,9 @@ export class AddDevicesToVehicleComponent implements OnInit {
     });
   }
 
-  devicesNotOnVehicle() {
-    this.filteredDevices = this.devices.filter(device => device.vehicle?.name !== this.vehicle?.name);
-    this.devicesForSearch = this.filteredDevices;
+  filterDevicesFromVehicle() {
+    this.devicesForSearch = this.devices.filter(device => device.vehicle?.name !== this.vehicle?.name);
+    this.filteredDevices = this.devicesForSearch;
   }
 
   getTooltipInfoText(): string {
@@ -68,7 +68,8 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   filterWithAllProperties() {
-    const name = this.deviceSearch.toLowerCase() || '';
+    const name = this.deviceSearch.toUpperCase() || '';
+
     this.filteredDevices = this.devicesForSearch.filter(device => {
       return device.name!.includes(name);
     });
@@ -116,4 +117,6 @@ export class AddDevicesToVehicleComponent implements OnInit {
   isSelected(device: Device) {
     return this.selectedDevices.includes(device);
   }
+
+  protected readonly DeviceState = DeviceState;
 }

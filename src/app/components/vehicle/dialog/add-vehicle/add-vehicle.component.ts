@@ -12,10 +12,10 @@ import {CreateStorage} from '../../../../models/CreateStorage';
   styleUrl: './add-vehicle.component.scss'
 })
 export class AddVehicleComponent {
+  @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
   addOneVehicle: boolean = true;
   isSubmitting: boolean = false;
   created: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() manyCreatedSuccessful = new EventEmitter<boolean>();
   createRequestList: CreateStorage[] = [];
 
   vehicleForm: FormGroup = new FormGroup({
@@ -57,8 +57,13 @@ export class AddVehicleComponent {
             this.isSubmitting = false;
             this.created.emit(false);
           } else {
-            const nameList = this.createRequestList.map(request => request.name).join(', ');
-            this.responseHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
+            if (this.createRequestList.length > 1) {
+              const nameList = this.createRequestList.map(request => request.name.toUpperCase()).join(', ');
+              this.responseHandler.setSuccessMessage(`Fahrzeuge ${nameList} konnten erfolgreich erstellt werden`);
+            } else {
+              this.responseHandler.setSuccessMessage(`Fahrzeug ${this.createRequestList[0].name.toUpperCase()} konnte erfolgreich erstellt werden`);
+            }
+
             this.isSubmitting = false;
             this.created.emit(true);
           }

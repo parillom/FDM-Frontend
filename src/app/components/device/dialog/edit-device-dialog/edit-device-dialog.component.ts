@@ -199,13 +199,12 @@ export class EditDeviceDialogComponent implements OnInit {
     this.showVehicleSearch = false;
   }
 
-
   filteredVehicles() {
-    return this.vehicles.filter(vehicle => vehicle.name !== this.device.vehicle.name);
+    return this.vehicles.filter(vehicle => vehicle.name !== this.device.vehicle?.name);
   }
 
   filteredLocations() {
-    return this.locations.filter(location => location.name !== this.device.location.name);
+    return this.locations.filter(location => location.name !== this.device.location?.name);
   }
 
   disableDrag() {

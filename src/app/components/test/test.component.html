@@ -24,3 +24,18 @@
 <div class="mt-5" *ngFor="let example of examples">
   <p>{{example.value}}</p>
 </div>
+
+<mat-form-field class="mt-5">
+  <mat-label>Choose a date</mat-label>
+  <input
+    matInput
+    [matDatepicker]="picker"
+    #dateInput
+  >
+  <mat-hint>MM/DD/YYYY</mat-hint>
+  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+
+<!-- Button to log the selected date -->
+<button>Log Selected Date</button>

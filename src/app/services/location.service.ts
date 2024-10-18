@@ -5,6 +5,7 @@ import {ModelAndError} from '../models/ModelAndError';
 import {Location} from '../models/Location';
 import {MoveDevicesRequest} from '../models/MoveDevicesRequest';
 import {CreateStorage} from '../models/CreateStorage';
+import {Storage} from '../models/Storage';
 
 const COMMON_LOCATION_URL = 'fdm/api/locations';
 
@@ -20,7 +21,7 @@ export class LocationService {
   }
 
   getDevicesFromLocation(location: Location): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/devices-from-location/${location.uuid}`);
+    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/devices-from-vehicle/${location.uuid}`);
   }
 
   delete(uuIds: string[]): Observable<ModelAndError> {
@@ -28,24 +29,27 @@ export class LocationService {
     return this.http.delete<ModelAndError>(`${COMMON_LOCATION_URL}/${ids}`);
   }
 
-  create(request: CreateStorage): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}`, request);
+  create(requests: CreateStorage[]): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}`, requests);
   }
 
-  getLocation(uuId: number): Observable<ModelAndError> {
-    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/${uuId}`);
+  update(request: Storage): Observable<ModelAndError> {
+    return this.http.patch<ModelAndError>(`${COMMON_LOCATION_URL}`, request);
   }
 
   getLocationByName(name: string): Observable<ModelAndError> {
     return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/by-name/${name}`);
   }
 
-  moveDevicesToLocation(request: MoveDevicesRequest): Observable<ModelAndError> {
-    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/moveDevicesToVehicle`, request);
+  getLocationByUuId(uuid: string): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_LOCATION_URL}/${uuid}`);
+  }
+
+  moveDevices(request: MoveDevicesRequest): Observable<ModelAndError> {
+    return this.http.post<ModelAndError>(`${COMMON_LOCATION_URL}/moveDevices`, request);
   }
 
   deleteAll(): Observable<ModelAndError> {
     return this.http.delete<ModelAndError>(`${COMMON_LOCATION_URL}/all`);
   }
-
 }

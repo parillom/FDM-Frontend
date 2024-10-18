@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {LOCALE_ID, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -76,15 +76,24 @@ import {SettingsComponent} from './components/common/settings/settings.component
 import { TestComponent } from './components/test/test.component';
 import { DeviceStatePipe } from './services/pipe/device-state.pipe';
 import { HighlightSearchTextPipe } from './services/pipe/highlight.search-text.pipe';
-import {NgOptimizedImage} from '@angular/common';
+import {NgOptimizedImage, registerLocaleData} from '@angular/common';
 import {
   MatAccordion,
   MatExpansionPanel,
   MatExpansionPanelDescription,
   MatExpansionPanelHeader, MatExpansionPanelTitle
 } from '@angular/material/expansion';
-import {MatCalendar, MatDatepicker} from '@angular/material/datepicker';
-import { ObjectTypePipe } from './services/pipe/object-type.pipe';
+import {MatCalendar, MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
+import { EntityTypePipe } from './services/pipe/entity-type.pipe';
+import {provideNativeDateAdapter} from '@angular/material/core';
+import localeDe from '@angular/common/locales/de';
+import {UpdateTypePipe} from './services/pipe/update-type.pipe';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import { DeviceWorkflowComponent } from './components/device/device-workflow/device-workflow.component';
+import { LocationEditComponent } from './components/location/location-edit/location-edit.component';
+import { AddDevicesToLocationComponent } from './components/location/add-devices-to-location/add-devices-to-location.component';
+
+registerLocaleData(localeDe);
 
 @NgModule({
   declarations: [
@@ -111,7 +120,12 @@ import { ObjectTypePipe } from './services/pipe/object-type.pipe';
     TestComponent,
     DeviceStatePipe,
     HighlightSearchTextPipe,
-    ObjectTypePipe,
+    UpdateTypePipe,
+    EntityTypePipe,
+    UpdateTypePipe,
+    DeviceWorkflowComponent,
+    LocationEditComponent,
+    AddDevicesToLocationComponent
   ],
   imports: [
     BrowserModule,
@@ -180,7 +194,12 @@ import { ObjectTypePipe } from './services/pipe/object-type.pipe';
     MatExpansionPanelDescription,
     MatExpansionPanelTitle,
     MatCalendar,
-    MatDatepicker
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger
   ],
   providers: [
     BsModalService,
@@ -188,6 +207,8 @@ import { ObjectTypePipe } from './services/pipe/object-type.pipe';
     DashboardComponent,
     VehicleDashboardComponent,
     LocationDashboardComponent,
+    { provide: LOCALE_ID, useValue: 'de-DE' },
+    provideNativeDateAdapter(),
     provideAnimationsAsync(),
     provideHttpClient(
       withInterceptors([errorInterceptor])

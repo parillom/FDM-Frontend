@@ -1,7 +1,7 @@
 <mat-form-field class="common-margin-top-search-input w-100 mb-1">
   <mat-label>Gerät suchen</mat-label>
   <input #searchInput matInput placeholder="ID, Name" [(ngModel)]="deviceSearch"
-         (ngModelChange)="filterWithAllProperties()" (focus)="handleFocusAndResetState()">
+         (ngModelChange)="filterWithAllProperties()" (focus)="refreshDevices()">
 </mat-form-field>
 
 <div class="mt-3 ms-5 me-5 mb-5">
@@ -42,18 +42,78 @@
   <mat-divider class="d-sm-none"></mat-divider>
   <div class="mb-3">
     <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected" (change)="stateFilterChanged($event.value)"
-                     [(ngModel)]="selectedState">
+                     [(ngModel)]="currentState">
       <mat-radio-button class="me-2" [value]="DeviceState.ACTIVE">AKTIV</mat-radio-button>
       <mat-radio-button class="me-2" [value]="DeviceState.STORAGE">LAGER</mat-radio-button>
       <mat-radio-button [value]="DeviceState.REESTABLISH">RETABLIEREN</mat-radio-button>
     </mat-radio-group>
   </div>
 
-  <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
-                                                 *ngIf="!vehiclesOrLocationsSelected"
-                                                 [currentStateValue]="currentState"
-                                                 (doFilter)="filterWithSpecifiedProperties($event)">
-  </app-vehicle-location-autocompletion-dashboard>
+  @if (expandFilter) {
+    <div class="mb-3">
+      <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
+                                                     *ngIf="!vehiclesOrLocationsSelected" [fromDate]="fromDate"
+                                                     [currentStateValue]="currentState" [toDate]="toDate" [updateType]="updateType"
+                                                     (doFilter)="setNameOfVehicleOrLocation($event)">
+      </app-vehicle-location-autocompletion-dashboard>
+
+      <div>
+        <h2 class="mb-2">Filter letzte Updates</h2>
+        <div class="row">
+          <!-- From-Date -->
+          <mat-form-field class="col-12 col-md-3 mt-1">
+            <mat-label>MM/DD/YYYY</mat-label>
+            <input
+              matInput
+              [matDatepicker]="fromPicker"
+              [(ngModel)]="fromDate"
+              (ngModelChange)="filterWithFromDate($event)"
+              #dateInput
+            >
+            <mat-hint>Wähle ein Von-Datum</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromPicker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- To-Date -->
+          <mat-form-field class="col-12 col-md-3 mt-1">
+            <mat-label>MM/DD/YYYY</mat-label>
+            <input
+              matInput
+              [matDatepicker]="toPicker"
+              [(ngModel)]="toDate"
+              (ngModelChange)="filterWithToDate($event)"
+              #dateInput2
+            >
+            <mat-hint>Wähle ein Bis-Datum</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+            <mat-datepicker #toPicker></mat-datepicker>
+          </mat-form-field>
+
+          <div class="mt-1">
+            <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected"
+                             (change)="updateTypeFilterChanged($event.value)"
+                             [(ngModel)]="updateType">
+              <mat-radio-button class="me-2" [value]="UpdateType.CREATED">Erstellung</mat-radio-button>
+              <mat-radio-button class="me-2" [value]="UpdateType.MOVE">Verschiebung</mat-radio-button>
+              <mat-radio-button [value]="UpdateType.NAME_CHANGED">Namensänderung</mat-radio-button>
+              <mat-radio-button [value]="UpdateType.STATE_CHANGED">Statuswechsel</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+        </div>
+
+        @if (showDateError) {
+          <mat-error>Das Von-Datum muss vor dem Bis-Datum liegen!</mat-error>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="mb-4 cursor-pointer">
+    <span *ngIf="!expandFilter" (click)="expandFilter = true" class="text-info text-decoration-underline">Erweiterter Filter anzeigen</span>
+    <span *ngIf="expandFilter" (click)="expandFilter = false" class="text-info text-decoration-underline">Erweiterter Filter schliessen</span>
+  </div>
 
   <div class="mb-4">
     <mat-divider></mat-divider>
@@ -76,14 +136,14 @@
         Alle auswählen
       </mat-checkbox>
 
-      <button class="me-2" (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
+      <button [matMenuTriggerFor]="menu_export" matTooltip="Geräte exportieren" matTooltipPosition="above"
               mat-icon-button>
         <mat-icon>upgrade</mat-icon>
       </button>
-      <div *ngIf="openExportMenu">
-        <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
-        <button mat-raised-button (click)="export('PDF')">PDF</button>
-      </div>
+      <mat-menu #menu_export="matMenu" yPosition="above">
+        <button (click)="export('PDF')" mat-menu-item>PDF</button>
+        <button (click)="export('EXCEL')" mat-menu-item>EXCEL</button>
+      </mat-menu>
     </div>
   </div>
 
@@ -114,14 +174,14 @@
                     [checked]="isChecked">
         Alle auswählen
       </mat-checkbox>
-      <button (click)="openExportOption()" matTooltip="Geräte exportieren" matTooltipPosition="above"
-              mat-icon-button>
+      <button matTooltip="Geräte exportieren" matTooltipPosition="above"
+              mat-icon-button [matMenuTriggerFor]="menu_export">
         <mat-icon>upgrade</mat-icon>
       </button>
-    </div>
-    <div class="col-12" *ngIf="openExportMenu">
-      <button class="me-2" mat-raised-button (click)="export('EXCEL')">Excel</button>
-      <button mat-raised-button (click)="export('PDF')">PDF</button>
+      <mat-menu #menu_export="matMenu" yPosition="above">
+        <button (click)="export('PDF')" mat-menu-item>PDF</button>
+        <button (click)="export('EXCEL')" mat-menu-item>EXCEL</button>
+      </mat-menu>
     </div>
   </div>
 
@@ -167,9 +227,24 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="Letztes Update">
+        <th mat-header-cell *matHeaderCellDef>Letztes Update</th>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{ element.lastUpdate | date: 'dd. MMMM yyyy' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Art der Änderung">
+        <th mat-header-cell *matHeaderCellDef>Art der Änderung</th>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}"> {{ element.updateType | updateType }}
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="Aktionen">
         <th mat-header-cell *matHeaderCellDef>Aktionen<span class="ms-1"
-                                                            *ngIf="selectedDevices.length > 0">({{ selectedDevices.length }})</span></th>
+                                                            *ngIf="selectedDevices.length > 0">({{ selectedDevices.length }}
+          )</span></th>
         <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}">
           <div class="d-flex align-items-center">
             <mat-icon (click)="openEditModal(element)"
@@ -177,19 +252,28 @@
                       matTooltip="Gerät bearbeiten"
                       matTooltipPosition="above">edit
             </mat-icon>
-            <span class="ms-3"></span>
+            <span class="ms-2"></span>
             <mat-icon matButtonIcon (click)="openDeleteModal(element); disableRowClick = true"
                       class="material-icons-outlined cursor-pointer"
                       matTooltip="Gerät löschen"
                       color="warn"
                       matTooltipPosition="above">delete
             </mat-icon>
-            <span class="ms-3"></span>
+            <span class="ms-2"></span>
             <mat-checkbox color="primary"
                           *ngIf="devices.length! > 1"
                           [checked]="isDeviceSelected(element)"
                           (click)="handleCheckboxClick(element, $event)">
             </mat-checkbox>
+            <mat-icon matButtonIcon (click)="disableRowClick = true"
+                      class="cursor-pointer ms-2"
+                      matTooltip="Mehr Optionen"
+                      [matMenuTriggerFor]="menu_more"
+                      matTooltipPosition="above">more_vert
+            </mat-icon>
+            <mat-menu #menu_more="matMenu" xPosition="after">
+              <button (click)="navigateToWorkflow(element)" mat-menu-item>Workflow ansehen</button>
+            </mat-menu>
           </div>
         </td>
       </ng-container>

@@ -4,7 +4,6 @@ import {HttpClient} from '@angular/common/http';
 import {ModelAndError} from '../models/ModelAndError';
 import {CreateDevice} from '../models/CreateDevice';
 import {UpdateDevice} from '../models/UpdateDevice';
-import {ToastrService} from 'ngx-toastr';
 
 const COMMON_DEVICE_URL = 'fdm/api/devices';
 
@@ -13,8 +12,7 @@ const COMMON_DEVICE_URL = 'fdm/api/devices';
 })
 export class DeviceService {
 
-  constructor(private http: HttpClient,
-              private toastr: ToastrService) {
+  constructor(private http: HttpClient) {
   }
 
   getAll(): Observable<ModelAndError> {
@@ -41,6 +39,5 @@ export class DeviceService {
   deleteAll(): Observable<ModelAndError> {
     return this.http.delete<ModelAndError>(`${COMMON_DEVICE_URL}/all`);
   }
-
 }
 
