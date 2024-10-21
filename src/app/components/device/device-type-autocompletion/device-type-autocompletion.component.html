@@ -1,0 +1,15 @@
+<mat-form-field class="w-100">
+  <mat-label>Typ</mat-label>
+  <input #typeSearch
+         type="text"
+         placeholder="Wählen"
+         matInput
+         [matAutocomplete]="type"
+         (input)="filterTypes($event)">
+  <mat-autocomplete #type="matAutocomplete">
+    <mat-option *ngFor="let type of filteredTypes"
+                [value]="type" (click)="setTypeValue(type)">
+      {{type}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

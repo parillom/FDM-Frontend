@@ -4,7 +4,6 @@ import {Location} from '../../../models/Location';
 import {DeviceState} from '../../../models/DeviceState';
 import {DeviceSearch} from '../../../models/DeviceSearch';
 import {StorageType} from '../../../models/StorageType';
-import {UpdateType} from '../../../models/UpdateType';
 
 @Component({
   selector: 'app-vehicle-location-autocompletion-dashboard',
@@ -27,12 +26,6 @@ export class VehicleLocationAutocompletionDashboardComponent {
   @Input()
   locations: Location[] = [];
 
-  @Input()
-  fromDate?: Date;
-
-  @Input()
-  toDate?: Date;
-
   enableVehicleInput: boolean = false;
   enableLocationInput: boolean = false;
   currentState: DeviceState | undefined;
@@ -41,7 +34,6 @@ export class VehicleLocationAutocompletionDashboardComponent {
   deviceCriteria?: DeviceSearch;
   vehicleName?: string;
   locationName?: string;
-  @Input() updateType?: UpdateType;
 
   @Input()
   set currentStateValue(state: DeviceState | undefined) {
@@ -61,9 +53,6 @@ export class VehicleLocationAutocompletionDashboardComponent {
       state: this.currentState,
       vehicleName: this.vehicleName,
       locationName: this.locationName,
-      fromDate: this.fromDate,
-      toDate: this.toDate,
-      updateType: this.updateType
     };
 
     this.doFilter.emit(this.deviceCriteria);
@@ -85,18 +74,12 @@ export class VehicleLocationAutocompletionDashboardComponent {
         state: this.currentState,
         vehicleName: storageName,
         locationName: undefined,
-        fromDate: this.fromDate,
-        toDate: this.toDate,
-        updateType: this.updateType
       };
     } else {
       this.deviceCriteria = {
         state: this.currentState,
         vehicleName: undefined,
         locationName: storageName,
-        fromDate: this.fromDate,
-        toDate: this.toDate,
-        updateType: this.updateType
       };
     }
 

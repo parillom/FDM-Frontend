@@ -1,4 +1,4 @@
-<div cdkDrag [cdkDragDisabled]="dragDisabled" cdkDragRootElement=".cdk-overlay-pane">
+<div>
   <div class="d-flex justify-content-between align-items-center">
     <p class="fs-5" mat-dialog-title>Gerät/e hinzufügen</p>
     <div class="d-flex align-items-center">
@@ -34,88 +34,9 @@
           </button>
         </div>
       </div>
-      <div>
-        <mat-tab-group (selectedTabChange)="changeToVehicleOrLocation($event)">
-          <mat-tab label="Fahrzeug"></mat-tab>
-          <mat-tab label="Ort"></mat-tab>
-        </mat-tab-group>
-      </div>
     </div>
 
-    <div *ngIf="addOneDevice">
-      <!--      Fahrzeug angewählt-->
-      <form *ngIf="!locationSelected" [formGroup]="deviceFormVehicle">
-        <div class="d-flex flex-column flex-wrap">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input class="mb-0"
-                   formControlName="name"
-                   matInput
-                   (focus)="disableDrag()"
-                   (blur)="enableDrag()">
-            <mat-error class="mt-0"
-                       *ngIf="deviceFormVehicle.get('name')?.invalid && deviceFormVehicle.get('name')?.touched">
-              Name ist ein Pflichtfeld!
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Fahrzeug</mat-label>
-            <input formControlName="vehicle"
-                   matInput
-                   (focus)="disableDrag()"
-                   (blur)="enableDrag()">
-            <mat-error
-              *ngIf="deviceFormVehicle.get('vehicle')?.invalid && deviceFormVehicle.get('vehicle')?.touched">
-              Fahrzeug ist ein Pflichtfeld!
-            </mat-error>
-          </mat-form-field>
-
-          <div class="d-flex mb-4 flex-wrap mt-2">
-            <button *ngIf="!locationSelected"
-                    mat-raised-button
-                    type="button"
-                    (click)="handleVehicleList()"
-                    [disabled]="vehicles.length === 0">
-              Fahrzeuge suchen
-            </button>
-          </div>
-
-          <app-vehicle-location-autocompletion *ngIf="showVehicles"
-                                               (focus)="disableDrag()"
-                                               (blur)="enableDrag()"
-                                               [showVehicleInput]="true"
-                                               [showLocationInput]="false"
-                                               [vehicles]="vehicles"
-                                               (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
-
-          <mat-form-field>
-            <mat-label>Status</mat-label>
-            <mat-select formControlName="state">
-              <mat-option value="ACTIVE">AKTIV</mat-option>
-            </mat-select>
-            <mat-error
-              *ngIf="deviceFormVehicle.get('state')?.invalid && deviceFormVehicle.get('state')?.touched">
-              Status ist ein Pflichtfeld!
-            </mat-error>
-          </mat-form-field>
-
-          <div mat-dialog-actions class="d-flex justify-content-end">
-            <button type="submit"
-                    class="btn text-white w-100"
-                    mat-raised-button
-                    [disabled]="isSubmitting"
-                    (click)="saveDevice()"
-                    color="primary">
-              Speichern
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <!--    Ort angewählt-->
-    <form *ngIf="locationSelected && addOneDevice" [formGroup]="deviceFormLocation">
+    <form *ngIf="addOneDevice" [formGroup]="deviceForm">
       <div class="d-flex flex-column flex-wrap">
         <mat-form-field>
           <mat-label>Name</mat-label>
@@ -123,42 +44,66 @@
                  matInput
                  (focus)="disableDrag()"
                  (blur)="enableDrag()">
+
           <mat-error class="mt-0"
-                     *ngIf="deviceFormLocation.get('name')?.invalid && deviceFormLocation.get('name')?.touched">
+                     *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
             Name ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>
 
         <mat-form-field>
-          <mat-label>Ort</mat-label>
-          <input formControlName="location"
+          <mat-label>Typ</mat-label>
+          <input #noticeSearch
+                 type="text"
+                 placeholder="Wählen"
+                 formControlName="type"
                  matInput
-                 (focus)="disableDrag()"
-                 (blur)="enableDrag()">
-          <mat-error
-            *ngIf="deviceFormLocation.get('location')?.invalid && deviceFormLocation.get('location')?.touched">
-            Ort ist ein Pflichtfeld!
-          </mat-error>
+                 [matAutocomplete]="type"
+                 (input)="filterTypes($event)">
+          <mat-autocomplete #type="matAutocomplete">
+            <mat-option *ngFor="let type of filteredTypes"
+                        [value]="type">
+              {{type}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="deviceForm.get('type').invalid && deviceForm.get('type').touched">Typ ist ein Pflichtfeld!</mat-error>
         </mat-form-field>
 
-        <div class="d-flex mb-4 flex-wrap mt-2">
-          <button *ngIf="locationSelected" class="me-2 mb-2 mb-md-0"
-                  mat-raised-button
-                  type="button"
-                  (click)="showLocationsList()"
-                  [disabled]="locations?.length === 0">
-            Orte suchen
-          </button>
-        </div>
+        <mat-form-field>
+          <mat-label>Bemerkung</mat-label>
+          <input #noticeSearch
+                 type="text"
+                 placeholder="Wählen"
+                 formControlName="notice"
+                 matInput
+                 [matAutocomplete]="notice"
+                 (input)="filterNotices($event)">
+          <mat-autocomplete #notice="matAutocomplete">
+            <mat-option *ngFor="let notice of filteredNotices"
+                        [value]="notice">
+              {{notice}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="deviceForm.get('notice').invalid && deviceForm.get('notice').touched">Bemerkung ist ein Pflichtfeld!</mat-error>
+        </mat-form-field>
 
-        <app-vehicle-location-autocompletion *ngIf="showLocations"
-                                             (focus)="disableDrag()"
-                                             (blur)="enableDrag()"
-                                             [showVehicleInput]="false"
-                                             [showLocationInput]="true"
-                                             [locations]="locations"
-                                             (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
-
+        <mat-form-field>
+          <mat-label>Ort</mat-label>
+          <input #noticeSearch
+                 type="text"
+                 placeholder="Wählen"
+                 formControlName="location"
+                 matInput
+                 [matAutocomplete]="location"
+                 (input)="filterLocations($event)">
+          <mat-autocomplete #location="matAutocomplete">
+            <mat-option *ngFor="let location of filteredLocations"
+                        [value]="location.name">
+              {{location.name}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="deviceForm.get('location').invalid && deviceForm.get('location').touched">Ort ist ein Pflichtfeld!</mat-error>
+        </mat-form-field>
 
         <mat-form-field>
           <mat-label>Status</mat-label>
@@ -167,7 +112,7 @@
             <mat-option value="REESTABLISH">RETABLIEREN</mat-option>
           </mat-select>
           <mat-error
-            *ngIf="deviceFormLocation.get('state')?.invalid && deviceFormLocation.get('state')?.touched">
+            *ngIf="deviceForm.get('state')?.invalid && deviceForm.get('state')?.touched">
             Status ist ein Pflichtfeld!
           </mat-error>
         </mat-form-field>

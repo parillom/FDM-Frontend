@@ -6,7 +6,9 @@ import {Location} from './Location';
 import {Vehicle} from './Vehicle';
 import {DeviceState} from './DeviceState';
 import {StorageType} from './StorageType';
-import {UpdateType} from './UpdateType';
+import {DeviceHistory} from './DeviceHistory';
+import {DeviceType} from './DeviceType';
+import {DeviceNotice} from './DeviceNotice';
 
 export interface Device {
   uuId: string;
@@ -15,7 +17,7 @@ export interface Device {
   vehicle: Vehicle | null;
   state: DeviceState;
   storageType: StorageType;
-  creationDate: Date;
-  lastUpdate: Date;
-  updateType: UpdateType;
+  type: DeviceType,
+  notice: DeviceNotice,
+  historyEntries: DeviceHistory[];
 }

@@ -1,1 +1,62 @@
-<p>device-workflow works!</p>
+<div class="common-margin-top ms-5">
+  <h1 class="mb-4">History</h1>
+  <div>
+    <h2 class="mb-2">Filter letzte Updates</h2>
+    <div class="row">
+      <!-- From-Date -->
+      <mat-form-field class="col-12 col-md-3 mt-1">
+        <mat-label>MM/DD/YYYY</mat-label>
+        <input
+          matInput
+          [matDatepicker]="fromPicker"
+          [(ngModel)]="fromDate"
+          #dateInput
+        >
+        <mat-hint>Wähle ein Von-Datum</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- To-Date -->
+      <mat-form-field class="col-12 col-md-3 mt-1">
+        <mat-label>MM/DD/YYYY</mat-label>
+        <input
+          matInput
+          [matDatepicker]="toPicker"
+          [(ngModel)]="toDate"
+          #dateInput2
+        >
+        <mat-hint>Wähle ein Bis-Datum</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+      </mat-form-field>
+
+      <div class="mt-1">
+        <mat-radio-group color="primary"
+                         [(ngModel)]="updateType">
+          <mat-radio-button class="me-2" [value]="UpdateType.CREATED">Erstellung</mat-radio-button>
+          <mat-radio-button class="me-2" [value]="UpdateType.MOVE">Verschiebung</mat-radio-button>
+          <mat-radio-button [value]="UpdateType.NAME_CHANGED">Namensänderung</mat-radio-button>
+          <mat-radio-button [value]="UpdateType.STATE_CHANGED">Statuswechsel</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+    </div>
+
+    @if (showDateError) {
+      <mat-error>Das Von-Datum muss vor dem Bis-Datum liegen!</mat-error>
+    }
+  </div>
+
+  <div *ngIf="device?.historyEntries?.length > 0; else noHistory">
+    <div *ngFor="let entry of device.historyEntries">
+      <span class="me-3">{{ entry.updateDate | date: 'dd.MMMM yyyy'}}</span>
+      <span class="me-3">{{ entry.storageName}}</span>
+      <span class="me-3">{{ entry.storageType}}</span>
+      <span class="me-3">{{ entry.updateType}}</span>
+    </div>
+  </div>
+  <ng-template #noHistory>
+    <p>No history entries available.</p>
+  </ng-template>
+</div>

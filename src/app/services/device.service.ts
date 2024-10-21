@@ -12,8 +12,7 @@ const COMMON_DEVICE_URL = 'fdm/api/devices';
 })
 export class DeviceService {
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   getAll(): Observable<ModelAndError> {
     return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}`);

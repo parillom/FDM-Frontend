@@ -16,7 +16,6 @@ import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MoveDevicesRequest} from '../../../models/MoveDevicesRequest';
 import {StorageType} from '../../../models/StorageType';
-import {CreateStorage} from '../../../models/CreateStorage';
 import {Storage} from '../../../models/Storage';
 
 @Component({
@@ -47,7 +46,6 @@ export class VehicleEditComponent implements OnInit {
   rendered: boolean = false;
   isVehicle: boolean = false;
   nameValid = false;
-  createRequestList: CreateStorage[] = [];
   private storageId: string;
 
   editVehicleForm: FormGroup = new FormGroup({

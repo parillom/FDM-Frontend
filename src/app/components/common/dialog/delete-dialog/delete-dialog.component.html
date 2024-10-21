@@ -20,7 +20,7 @@
     </div>
 
     <div class="mt-3" *ngIf="showDetails && useCase === Usecase.DEVICE">
-      <p>Geräte-ID: <span style="color: lightslategrey">{{object?.id}}</span></p>
+      <p>Geräte-ID: <span style="color: lightslategrey">{{object?.uuId}}</span></p>
       <p>Gerätename: <span style="color: lightslategrey">{{object?.name}}</span></p>
       <p>Aktuelles Fahrzeug: <span style="color: lightslategrey">{{getVehicleName()}}</span></p>
       <p>Aktueller Ort: <span style="color: lightslategrey">{{getLocationName()}}</span></p>
@@ -28,12 +28,12 @@
     </div>
 
     <div class="mt-3" *ngIf="showDetails && useCase === Usecase.VEHICLE">
-      <p>Fahrzeug-ID: <span style="color: lightslategrey">{{object?.uuId}}</span></p>
+      <p>Fahrzeug-ID: <span style="color: lightslategrey">{{object?.uuid}}</span></p>
       <p>Fahrzeugname: <span style="color: lightslategrey">{{object?.name}}</span></p>
     </div>
 
     <div class="mt-3" *ngIf="showDetails && useCase === Usecase.LOCATION">
-      <p>Ort-ID: <span style="color: lightslategrey">{{object?.uuId}}</span></p>
+      <p>Ort-ID: <span style="color: lightslategrey">{{object?.uuid}}</span></p>
       <p>Ortsname: <span style="color: lightslategrey">{{object?.name}}</span></p>
     </div>
   </div>

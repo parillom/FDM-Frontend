@@ -49,70 +49,24 @@
     </mat-radio-group>
   </div>
 
-  @if (expandFilter) {
-    <div class="mb-3">
-      <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
-                                                     *ngIf="!vehiclesOrLocationsSelected" [fromDate]="fromDate"
-                                                     [currentStateValue]="currentState" [toDate]="toDate" [updateType]="updateType"
-                                                     (doFilter)="setNameOfVehicleOrLocation($event)">
-      </app-vehicle-location-autocompletion-dashboard>
+  <div class="mb-3">
+    <app-vehicle-location-autocompletion-dashboard [vehicles]="vehicles" [locations]="locations"
+                                                   *ngIf="!vehiclesOrLocationsSelected"
+                                                   [currentStateValue]="currentState"
+                                                   (doFilter)="setNameOfVehicleOrLocation($event)">
+    </app-vehicle-location-autocompletion-dashboard>
 
-      <div>
-        <h2 class="mb-2">Filter letzte Updates</h2>
-        <div class="row">
-          <!-- From-Date -->
-          <mat-form-field class="col-12 col-md-3 mt-1">
-            <mat-label>MM/DD/YYYY</mat-label>
-            <input
-              matInput
-              [matDatepicker]="fromPicker"
-              [(ngModel)]="fromDate"
-              (ngModelChange)="filterWithFromDate($event)"
-              #dateInput
-            >
-            <mat-hint>Wähle ein Von-Datum</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #fromPicker></mat-datepicker>
-          </mat-form-field>
+    <div class="row">
+      <app-device-type-autocompletion [vehicleName]="vehicleName"
+                                      [locationName]="locationName" [state]="currentState" [notice]="notice"
+                                      class="col-12 col-md-3" (doFilter)="setType($event)">
+      </app-device-type-autocompletion>
 
-          <!-- To-Date -->
-          <mat-form-field class="col-12 col-md-3 mt-1">
-            <mat-label>MM/DD/YYYY</mat-label>
-            <input
-              matInput
-              [matDatepicker]="toPicker"
-              [(ngModel)]="toDate"
-              (ngModelChange)="filterWithToDate($event)"
-              #dateInput2
-            >
-            <mat-hint>Wähle ein Bis-Datum</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
-            <mat-datepicker #toPicker></mat-datepicker>
-          </mat-form-field>
-
-          <div class="mt-1">
-            <mat-radio-group color="primary" *ngIf="!vehiclesOrLocationsSelected"
-                             (change)="updateTypeFilterChanged($event.value)"
-                             [(ngModel)]="updateType">
-              <mat-radio-button class="me-2" [value]="UpdateType.CREATED">Erstellung</mat-radio-button>
-              <mat-radio-button class="me-2" [value]="UpdateType.MOVE">Verschiebung</mat-radio-button>
-              <mat-radio-button [value]="UpdateType.NAME_CHANGED">Namensänderung</mat-radio-button>
-              <mat-radio-button [value]="UpdateType.STATE_CHANGED">Statuswechsel</mat-radio-button>
-            </mat-radio-group>
-          </div>
-
-        </div>
-
-        @if (showDateError) {
-          <mat-error>Das Von-Datum muss vor dem Bis-Datum liegen!</mat-error>
-        }
-      </div>
+      <app-device-notice-autocompletion [vehicleName]="vehicleName"
+                                        [type]="type" [locationName]="locationName"
+                                        [state]="currentState" (doFilter)="setNotice($event)" class="col-12 col-md-3"></app-device-notice-autocompletion>
     </div>
-  }
 
-  <div class="mb-4 cursor-pointer">
-    <span *ngIf="!expandFilter" (click)="expandFilter = true" class="text-info text-decoration-underline">Erweiterter Filter anzeigen</span>
-    <span *ngIf="expandFilter" (click)="expandFilter = false" class="text-info text-decoration-underline">Erweiterter Filter schliessen</span>
   </div>
 
   <div class="mb-4">
@@ -190,18 +144,25 @@
 
   <div class="mat-elevation-z8">
     <table *ngIf="!showSpinner" mat-table [dataSource]="dataSource">
-      <ng-container style="width: 4%" matColumnDef="Geräte-ID">
-        <th mat-header-cell *matHeaderCellDef [ngStyle]="{'width': columnWidths['Geräte-ID']}">Geräte-ID</th>
-        <td mat-cell *matCellDef="let element" [ngStyle]="{'width': columnWidths['Geräte-ID']}"
-            [ngClass]="{'selected': isDeviceSelected(element)}"
-            [innerHtml]="element.uuId | highlightSearchText: deviceSearch"></td>
-      </ng-container>
-
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let element"
             [ngClass]="{'selected': isDeviceSelected(element)}"
             [innerHtml]="element.name | highlightSearchText: deviceSearch"></td>
+      </ng-container>
+
+      <ng-container matColumnDef="Type">
+        <th mat-header-cell *matHeaderCellDef>Typ</th>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}">{{ element.type }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Notice">
+        <th mat-header-cell *matHeaderCellDef>Bemerkung</th>
+        <td mat-cell *matCellDef="let element"
+            [ngClass]="{'selected': isDeviceSelected(element)}">{{ element.notice }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="Fahrzeug">
@@ -227,24 +188,9 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="Letztes Update">
-        <th mat-header-cell *matHeaderCellDef>Letztes Update</th>
-        <td mat-cell *matCellDef="let element"
-            [ngClass]="{'selected': isDeviceSelected(element)}"> {{ element.lastUpdate | date: 'dd. MMMM yyyy' }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="Art der Änderung">
-        <th mat-header-cell *matHeaderCellDef>Art der Änderung</th>
-        <td mat-cell *matCellDef="let element"
-            [ngClass]="{'selected': isDeviceSelected(element)}"> {{ element.updateType | updateType }}
-        </td>
-      </ng-container>
-
       <ng-container matColumnDef="Aktionen">
         <th mat-header-cell *matHeaderCellDef>Aktionen<span class="ms-1"
-                                                            *ngIf="selectedDevices.length > 0">({{ selectedDevices.length }}
-          )</span></th>
+                                                            *ngIf="selectedDevices.length > 0">({{ selectedDevices.length }})</span></th>
         <td mat-cell *matCellDef="let element" [ngClass]="{'selected': isDeviceSelected(element)}">
           <div class="d-flex align-items-center">
             <mat-icon (click)="openEditModal(element)"

@@ -24,6 +24,8 @@ import {ResponseHandlerService} from '../../../services/response-handler.service
 import {Router} from '@angular/router';
 import {ExportService} from '../../../services/export.service';
 import {UpdateType} from '../../../models/UpdateType';
+import {DeviceType} from '../../../models/DeviceType';
+import {DeviceNotice} from '../../../models/DeviceNotice';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,20 +55,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   vehicleOrLocationSelectedValue: string;
   protected readonly DeviceState = DeviceState;
   currentState?: DeviceState;
-  displayedColumns: string[] = ['Geräte-ID', 'Name', 'Ort', 'Fahrzeug', 'Status', 'Letztes Update', 'Art der Änderung', 'Aktionen'];
+  displayedColumns: string[] = ['Name', 'Type', 'Notice', 'Fahrzeug', 'Ort', 'Status', 'Aktionen'];
   dataSource!: MatTableDataSource<Device>;
   showSpinner: boolean = false;
   disableRowClick: boolean = false;
-  expandFilter = false;
   toDate: Date;
   fromDate: Date;
   showDateError: boolean = false;
-  protected readonly UpdateType = UpdateType;
   updateType: UpdateType;
-
-  columnWidths = {
-    'Geräte-ID': '15%'
-  };
+  type: DeviceType;
+  notice: DeviceNotice;
 
   constructor(private deviceService: DeviceService,
               private dialog: MatDialog,
@@ -151,9 +149,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       state: this.currentState,
       vehicleName: this.vehicleName,
       locationName: this.locationName,
-      fromDate: this.fromDate,
-      toDate: this.toDate,
-      updateType: this.updateType
     };
 
     this.filterWithSpecifiedProperties(this.deviceCriteria);
@@ -207,54 +202,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       .filter(device => !deviceCriteria?.state || device.state === deviceCriteria.state)
       .filter(device => !deviceCriteria?.vehicleName || device.vehicle?.name === deviceCriteria.vehicleName)
       .filter(device => !deviceCriteria?.locationName || device.location?.name === deviceCriteria.locationName)
-      .filter(device => {
-        const lastUpdateDate = new Date(device.lastUpdate);
-        return !deviceCriteria?.fromDate || lastUpdateDate.getTime() >= deviceCriteria.fromDate.getTime();
-      })
-      .filter(device => {
-        const lastUpdateDate = new Date(device.lastUpdate);
-        const toDate = new Date(deviceCriteria?.toDate);
-        toDate.setHours(0, 0, 0, 0);
-
-        lastUpdateDate.setHours(0, 0, 0, 0);
-
-        return !deviceCriteria?.toDate || lastUpdateDate <= toDate;
-      })
-      .filter(device => !deviceCriteria?.updateType || device.updateType === deviceCriteria.updateType);
+      .filter(device => !deviceCriteria?.type || device.type === deviceCriteria.type)
+      .filter(device => !deviceCriteria?.notice || device.notice === deviceCriteria.notice);
 
     this.dataSource.data! = this.filteredDevices;
-  }
-
-  filterWithFromDate(fromDate: Date) {
-    this.showDateError = this.toDate !== undefined && fromDate.getDate() > this.toDate.getTime();
-
-    this.fromDate = fromDate;
-    this.deviceCriteria = {
-      state: this.currentState,
-      locationName: this.locationName,
-      vehicleName: this.vehicleName,
-      fromDate: fromDate,
-      toDate: this.toDate,
-      updateType: this.updateType
-    };
-
-    this.filterWithSpecifiedProperties(this.deviceCriteria);
-  }
-
-  filterWithToDate(toDate: Date) {
-    this.toDate = toDate;
-    this.showDateError = this.fromDate !== undefined && this.fromDate.getTime() > toDate.getTime();
-
-    this.deviceCriteria = {
-      state: this.currentState,
-      locationName: this.locationName,
-      vehicleName: this.vehicleName,
-      fromDate: this.fromDate,
-      toDate: toDate,
-      updateType: this.updateType
-    };
-
-    this.filterWithSpecifiedProperties(this.deviceCriteria);
   }
 
   openCreateDeviceDialog() {
@@ -530,8 +481,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.deviceCriteria = {
       locationName: this.locationName,
       vehicleName: this.vehicleName,
-      fromDate: this.fromDate,
-      toDate: this.toDate,
       state: this.currentState
     };
 
@@ -575,20 +524,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  updateTypeFilterChanged(type: UpdateType) {
-    this.updateType = type;
-    this.deviceCriteria = {
-      vehicleName: this.vehicleName,
-      locationName: this.locationName,
-      state: this.currentState,
-      toDate: this.toDate,
-      fromDate: this.fromDate,
-      updateType: this.updateType
-    };
-
-    this.filterWithSpecifiedProperties(this.deviceCriteria);
-  }
-
   resetFilters() {
     this.fromDate = undefined;
     this.toDate = undefined;
@@ -600,5 +535,39 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   navigateToWorkflow(element: Device) {
     void this.router.navigate([`fdm/dashboard/device/workflow`], {queryParams: {uuId: element.uuId}});
+  }
+
+  setNotice(request: DeviceSearch) {
+    if (request.notice && request.notice.trim() !== '') {
+      this.notice = request.notice;
+      this.filterWithSpecifiedProperties(request);
+    } else {
+      this.notice = undefined;
+      this.deviceCriteria = {
+        vehicleName: this.vehicleName,
+        locationName: this.locationName,
+        state: this.currentState,
+        type: this.type,
+        notice: this.notice
+      };
+      this.filterWithSpecifiedProperties(this.deviceCriteria);
+    }
+  }
+
+  setType(request: DeviceSearch) {
+    if (request.type && request.type.trim() !== '') {
+      this.type = request.type;
+      this.filterWithSpecifiedProperties(request);
+    } else {
+      this.type = undefined;
+      this.deviceCriteria = {
+        vehicleName: this.vehicleName,
+        locationName: this.locationName,
+        state: this.currentState,
+        type: this.type,
+        notice: this.notice
+      };
+      this.filterWithSpecifiedProperties(this.deviceCriteria);
+    }
   }
 }

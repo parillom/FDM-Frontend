@@ -7,7 +7,7 @@ import {Location} from '../../../models/Location';
   templateUrl: './vehicle-location-autocompletion.component.html',
   styleUrl: './vehicle-location-autocompletion.component.scss'
 })
-export class VehicleLocationAutocompletionComponent implements OnInit{
+export class VehicleLocationAutocompletionComponent implements OnInit {
 
   @Output() setVehicleInput: EventEmitter<Vehicle> = new EventEmitter<Vehicle>();
 
@@ -40,5 +40,6 @@ export class VehicleLocationAutocompletionComponent implements OnInit{
       this.filteredLocations = this.locations?.filter(l => l.name!.toLowerCase().includes(event.target.value.toLowerCase()));
     }
   }
+
 
 }

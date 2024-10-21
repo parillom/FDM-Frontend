@@ -1,0 +1,15 @@
+<mat-form-field class="w-100">
+  <mat-label>Bemerkung</mat-label>
+  <input #noticeSearch
+         type="text"
+         placeholder="Wählen"
+         matInput
+         [matAutocomplete]="notice"
+         (input)="filterNotices($event)">
+  <mat-autocomplete #notice="matAutocomplete">
+    <mat-option *ngFor="let notice of filteredNotices"
+                [value]="notice" (click)="setNoticeValue(notice)">
+      {{notice}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

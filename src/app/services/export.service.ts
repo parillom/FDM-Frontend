@@ -34,7 +34,7 @@ export class ExportService {
     ];
 
     workSheet['!cols'] = wscols;
-    workSheet['!rows'] = [{hpt: 30}, {hpt: 30}]
+    workSheet['!rows'] = [{hpt: 30}, {hpt: 30}];
 
     const workBook: XLSX.WorkBook = XLSX.utils.book_new();
 

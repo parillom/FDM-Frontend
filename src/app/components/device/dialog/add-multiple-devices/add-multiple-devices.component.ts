@@ -81,6 +81,8 @@ export class AddMultipleDevicesComponent {
 
             const deviceToSave: CreateDevice = {
               name: device.name,
+              type: device.type,
+              notice: device.notice,
               storageId: storageId,
               state: device.state,
               storageType: device.vehicle ? StorageType.VEHICLE : StorageType.LOCATION

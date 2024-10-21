@@ -92,6 +92,9 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import { DeviceWorkflowComponent } from './components/device/device-workflow/device-workflow.component';
 import { LocationEditComponent } from './components/location/location-edit/location-edit.component';
 import { AddDevicesToLocationComponent } from './components/location/add-devices-to-location/add-devices-to-location.component';
+import { DeviceTypeAutocompletionComponent } from './components/device/device-type-autocompletion/device-type-autocompletion.component';
+import { DeviceNoticeAutocompletionComponent } from './components/device/device-notice-autocompletion/device-notice-autocompletion.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 registerLocaleData(localeDe);
 
@@ -125,7 +128,9 @@ registerLocaleData(localeDe);
     UpdateTypePipe,
     DeviceWorkflowComponent,
     LocationEditComponent,
-    AddDevicesToLocationComponent
+    AddDevicesToLocationComponent,
+    DeviceTypeAutocompletionComponent,
+    DeviceNoticeAutocompletionComponent,
   ],
   imports: [
     BrowserModule,
@@ -199,7 +204,8 @@ registerLocaleData(localeDe);
     MatDatepickerToggle,
     MatMenu,
     MatMenuItem,
-    MatMenuTrigger
+    MatMenuTrigger,
+    MatFormFieldModule
   ],
   providers: [
     BsModalService,
