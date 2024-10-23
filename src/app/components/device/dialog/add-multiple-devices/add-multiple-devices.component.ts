@@ -11,6 +11,8 @@ import {StorageType} from '../../../../models/StorageType';
 import {VehicleService} from '../../../../services/vehicle.service';
 import {firstValueFrom} from 'rxjs';
 import {LocationService} from '../../../../services/location.service';
+import {DeviceType} from '../../../../models/DeviceType';
+import {DeviceNotice} from '../../../../models/DeviceNotice';
 
 @Component({
   selector: 'app-add-multiple-devices',
@@ -22,7 +24,7 @@ export class AddMultipleDevicesComponent {
 
   extractedElements: any[] = [];
   devices: CreateDevice[] = [];
-  displayedColumns: string[] = ['Name', 'Fahrzeug', 'Ort', 'Status'];
+  displayedColumns: string[] = ['Name', 'Typ', 'Bemerkung', 'Fahrzeug', 'Ort', 'Status'];
   location: string;
   vehicle: string;
 
@@ -36,10 +38,6 @@ export class AddMultipleDevicesComponent {
               private locationService: LocationService,
               private responseHandler: ResponseHandlerService,
               private cdr: ChangeDetectorRef) {
-  }
-
-  closeDialog(): void {
-    this.dialogRef.close();
   }
 
   readExcel(event: any) {
@@ -58,8 +56,10 @@ export class AddMultipleDevicesComponent {
         for (const device of this.extractedElements) {
           if (this.excelIsValid(device, this.extractedElements)) {
             let storageId;
+            const hasVehicle = device.vehicle && device.vehicle.trim() !== '';
+            const hasLocation = device.location && device.location.trim() !== '';
 
-            if (device.vehicle !== null) {
+            if (hasVehicle) {
               const res = await firstValueFrom(this.vehicleService.getVehicleByName(device.vehicle));
               if (res && this.responseHandler.hasError(res)) {
                 this.responseHandler.setErrorMessage(res.errorMessage);
@@ -68,8 +68,8 @@ export class AddMultipleDevicesComponent {
                 storageId = res.object.uuid;
                 this.vehicle = res.object.name;
               }
-            } else if (device.location !== null) {
-              const res = await firstValueFrom(this.locationService.getLocationByName(device.vehicle));
+            } else if (hasLocation) {
+              const res = await firstValueFrom(this.locationService.getLocationByName(device.location));
               if (res && this.responseHandler.hasError(res)) {
                 this.responseHandler.setErrorMessage(res.errorMessage);
                 return;
@@ -101,23 +101,27 @@ export class AddMultipleDevicesComponent {
   }
 
   private excelIsValid(device: any, deviceList: string[]) {
+    const hasLocation = device.location && device.location.trim() !== '';
+    const types = Object.values(DeviceType);
+    const notices = Object.values(DeviceNotice);
+
     if (this.hasDuplicateDeviceNames(deviceList)) {
       this.toastr.error('Einige Geräte haben den selben Namen.', 'Bitte überprüfen Sie Ihre Excel-Datei.');
       return false;
     } else if (!(device.name)) {
       this.toastr.error('Nicht alle Geräte haben einen Namen.', 'Bitte überprüfen Sie Ihre Excel-Datei.');
       return false;
-    } else if (!(device.vehicle) && !(device.location)) {
-      this.toastr.error('Weder Fahrzeug noch Ort wurden definiert.', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät: ${device.name}`);
-      return false;
-    } else if (device.vehicle && device.location) {
-      this.toastr.error('Es darf nicht ein Ort und ein Fahrzeug definiert sein.', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät: ${device.name}`);
-      return false;
-    } else if (device.vehicle && device.state !== DeviceState.ACTIVE) {
-      this.toastr.error('Wenn ein Fahrzeug definiert ist, muss der Status ACTIVE sein.', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät ${device.name}`);
+    } else if (!hasLocation) {
+      this.toastr.error('Es muss ein Ort definiert sein', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät: ${device.name}`);
       return false;
     } else if (device.location && device.state !== DeviceState.STORAGE && device.state !== DeviceState.REESTABLISH) {
       this.toastr.error('Wenn ein Ort definiert ist, muss der Status STORAGE oder REESTABLISH sein.', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät ${device.name}`);
+      return false;
+    } else if (!types.includes(device.type)) {
+      this.toastr.error('Der Typ entspricht nicht der vorgegebenen Liste', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät: ${device.name}`);
+      return false;
+    } else if (!notices.includes(device.notice)) {
+      this.toastr.error('Die Bemerkung entspricht nicht der vorgegebenen Liste', `Bitte überprüfen Sie Ihre Excel-Datei. Gerät: ${device.name}`);
       return false;
     } else {
       return true;

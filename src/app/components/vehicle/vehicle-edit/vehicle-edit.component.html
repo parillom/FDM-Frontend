@@ -1,22 +1,39 @@
 <div class="common-margin-top ms-5 me-5 mb-5" xmlns="http://www.w3.org/1999/html">
-  <div class="d-flex align-items-center justify-content-between align-items-center mb-5 w-50">
-    <h1 class="m-0">
-      ID: <span>{{uuid}}</span>
-    </h1>
-    <h3 class="ms-4 mb-0 cursor-pointer" (click)="navigateToVehicleDashboard()">Zur Fahrzeugübersicht</h3>
+  <div>
+    @if (isAdmin === true) {
+      <h3 class="ms-4 mb-0 cursor-pointer" (click)="navigateToVehicleDashboard()">Zur Fahrzeugübersicht</h3>
+    } @else {
+
+    }
+  </div>
+  <div *ngIf="vehicle && vehicle.name" class="d-flex bg-gradient align-items-center p-3 justify-content-between align-items-center mb-5 rounded">
+    <div (click)="navigateToUserVehicleDashboard()" class="d-flex align-items-center">
+      <mat-icon class="me-2">arrow_back</mat-icon><h2 class="m-0">Zurück</h2>
+    </div>
+    <div>
+      <h1 class="m-0">
+        {{vehicle.name}}
+      </h1>
+    </div>
+    <div class="d-flex align-items-center">
+      <mat-icon class="invisible m2-2">arrow_back</mat-icon><h3 class="invisible m-0">Zurück</h3>
+    </div>
   </div>
 
-  <form class="mb-5" [formGroup]="editVehicleForm">
-    <div class="w-50">
-      <mat-form-field class="mt-3 w-100">
-        <mat-label>Fahrzeugname</mat-label>
-        <input (input)="checkIfNameHasChanged()" matInput formControlName="vehicleName">
-      </mat-form-field>
-      <button (click)="updateVehicle()" mat-raised-button [disabled]="!nameValid">Übernehmen</button>
-    </div>
-  </form>
+  @if (isAdmin === true) {
+    <form class="mb-5" [formGroup]="editVehicleForm">
+      <div class="w-50">
+        <mat-form-field class="mt-3 w-100">
+          <mat-label>Fahrzeugname</mat-label>
+          <input (input)="checkIfNameHasChanged()" matInput formControlName="vehicleName">
+        </mat-form-field>
+        <button (click)="updateVehicle()" mat-raised-button [disabled]="!nameValid">Übernehmen</button>
+      </div>
+    </form>
+  }
 
-  <mat-tab-group class="mb-2 d-flex flex-column flex-md-row"
+  <mat-tab-group class="mb-2"
+                 [(selectedIndex)]="selectedTabIndex"
                  (selectedTabChange)="changeVehicleOption($event)">
     <mat-tab label="Geräte entfernen"></mat-tab>
     <mat-tab label="Geräte hinzufügen"></mat-tab>
@@ -46,7 +63,6 @@
             mat-raised-button>
       Verschieben ({{ selectedDevices.length! }})
     </button>
-
 
     <div class="row mt-2" cdkDropListGroup>
       <div class="col-12 col-sm-6 mb-3">
@@ -88,18 +104,23 @@
                         (click)="selectAllDropList()" color="primary"
                         matTooltip="Alle anwählen" matTooltipPosition="above"></mat-checkbox>
         </div>
-        <div class="row d-flex">
-          <app-vehicle-location-autocompletion class="col-12 col-md-6"
-                                               *ngIf="!selected"
-                                               [showVehicleInput]="true"
-                                               [vehicles]="filterVehicles(vehicles)"
-                                               (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
-          <app-vehicle-location-autocompletion class="col-12 col-md-6"
-                                               *ngIf="!selected"
-                                               [showLocationInput]="true"
-                                               [locations]="locations"
-                                               (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
+        <div class="row">
+          @if (isAdmin === true) {
+            <app-vehicle-location-autocompletion class="col-12 col-md-6"
+                                                 *ngIf="!selected"
+                                                 [showVehicleInput]="true"
+                                                 [vehicles]="filterVehicles(vehicles)"
+                                                 (setVehicleInput)="setVehicleInput($event)"></app-vehicle-location-autocompletion>
+            <app-vehicle-location-autocompletion class="col-12 col-md-6"
+                                                 *ngIf="!selected"
+                                                 [showLocationInput]="true"
+                                                 [locations]="locations"
+                                                 (setLocationInput)="setLocationInput($event)"></app-vehicle-location-autocompletion>
+          } @else {
+            <app-vehicle-location-autocompletion [showLocationInput]="true" [locations]="locations"></app-vehicle-location-autocompletion>
+          }
         </div>
+
 
         <div class="row mb-3 d-flex align-items-center">
           <h3 class="m-0 d-flex align-items-center col-12 col-lg-9" *ngIf="selected && selectedVehicleName">

@@ -48,7 +48,7 @@
     }
   </div>
 
-  <div *ngIf="device?.historyEntries?.length > 0; else noHistory">
+  <div class="mt-5" *ngIf="device?.historyEntries?.length > 0; else noHistory">
     <div *ngFor="let entry of device.historyEntries">
       <span class="me-3">{{ entry.updateDate | date: 'dd.MMMM yyyy'}}</span>
       <span class="me-3">{{ entry.storageName}}</span>
@@ -59,4 +59,5 @@
   <ng-template #noHistory>
     <p>No history entries available.</p>
   </ng-template>
+
 </div>

@@ -22,7 +22,7 @@ export class VehicleDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild('searchInput') searchInputField!: ElementRef;
 
-  displayedColumns: string[] = ['Fahrzeug-ID', 'Name', 'Geräte', 'Aktionen'];
+  displayedColumns: string[] = ['Name', 'Geräte', 'Aktionen'];
   dataSource!: MatTableDataSource<Vehicle>;
   vehicles: Vehicle[] = [];
   vehicleSearch?: '';

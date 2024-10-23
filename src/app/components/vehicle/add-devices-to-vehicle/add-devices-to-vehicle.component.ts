@@ -9,6 +9,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../common/dialog/confirm-dialog/confirm-dialog.component';
 import {DeviceState} from '../../../models/DeviceState';
 import {StorageType} from '../../../models/StorageType';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-add-devices-to-vehicle',
@@ -23,8 +24,11 @@ export class AddDevicesToVehicleComponent implements OnInit {
   devicesForSearch: Device[] = [];
   filteredDevices: Device[] = [];
   selectedDevices: Device[] = [];
+  droppedDevices: Device[] = [];
   deviceSearch = '';
   rendered = false;
+
+  protected readonly DeviceState = DeviceState;
 
   constructor(private deviceService: DeviceService,
               private vehicleService: VehicleService,
@@ -38,7 +42,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
 
   private getAllDevices() {
     this.rendered = false;
-    this.deviceService.getAll().subscribe(res => {
+    this.deviceService.getAssignable().subscribe(res => {
       if (res && !this.responseHandler.hasError(res)) {
         this.devices = res.object;
         this.filterDevicesFromVehicle();
@@ -76,7 +80,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   save() {
-    if (this.selectedDevices.length > 0) {
+    if (this.droppedDevices.length > 0) {
       const modal = this.matDialog.open(ConfirmDialogComponent, {
         autoFocus: false
       });
@@ -89,7 +93,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
   }
 
   moveDevices() {
-    const objectListIds = this.selectedDevices.map(device => device.uuId);
+    const objectListIds = this.droppedDevices.map(device => device.uuId);
     const objectListIdsAsString: string[] = [];
 
     objectListIds.forEach(object => {
@@ -106,7 +110,7 @@ export class AddDevicesToVehicleComponent implements OnInit {
     this.vehicleService.moveDevices(request).subscribe(res => {
       if (res && !this.responseHandler.hasError(res)) {
         this.getAllDevices();
-        this.selectedDevices.splice(0);
+        this.droppedDevices.splice(0);
         this.responseHandler.setSuccessMessage(`Die Geräte wurden erfolgreich ${this.vehicle?.name} zugewiesen`);
       } else {
         this.responseHandler.setErrorMessage(res.errorMessage!);
@@ -118,5 +122,29 @@ export class AddDevicesToVehicleComponent implements OnInit {
     return this.selectedDevices.includes(device);
   }
 
-  protected readonly DeviceState = DeviceState;
+  isDeviceSelected(device: Device) {
+    return this.selectedDevices.includes(device);
+  }
+
+  drop(event: CdkDragDrop<Device[], any>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data!, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data!,
+        event.previousIndex,
+        event.currentIndex,
+      );
+    }
+  }
+
+  handleCheckboxClickDropped(device: Device) {
+    const index = this.selectedDevices.findIndex(selectedDevice => selectedDevice.uuId === device.uuId);
+    if (index !== -1) {
+      this.selectedDevices.splice(index, 1);
+    } else {
+      this.selectedDevices.push(device);
+    }
+  }
 }

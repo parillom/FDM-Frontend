@@ -1,30 +1,70 @@
 <div class="mt-5">
-  <div class="row mb-3" *ngIf="selectedDevices.length > 0">
+  <div class="row mb-3">
     <mat-form-field class="col-12 col-md-6 mb-2">
       <mat-label>Gerät suchen</mat-label>
-      <input matInput placeholder="Id, Name" [(ngModel)]="deviceSearch"
+      <input matInput placeholder="Name" [(ngModel)]="deviceSearch"
              (ngModelChange)="filterWithAllProperties()">
     </mat-form-field>
-    <button [disabled]="selectedDevices.length < 1" color="primary" (click)="save()" class="col-12 col-md-3 offset-lg-2"
-            mat-raised-button>Geräte verschieben ({{selectedDevices.length}})
+    <button *ngIf="droppedDevices.length > 0" color="primary" (click)="save()" class="col-12 col-md-3 offset-lg-2"
+            mat-raised-button>Speichern ({{ droppedDevices.length }})
     </button>
   </div>
 
   <div class="d-flex align-items-center mb-3" *ngIf="rendered">
-    Zur Verfügung stehende Geräte Geräte: {{filteredDevices.length}}
+    Zur Verfügung stehende Geräte Geräte: {{ filteredDevices.length }}
     <mat-icon class="material-icons-outlined ms-2" matTooltip="{{getTooltipInfoText()}}"
               matTooltipPosition="above">info
     </mat-icon>
   </div>
 
-  <div class="row" *ngIf="filteredDevices.length > 0">
-    <div class="col-12 col-md-6" *ngFor="let device of filteredDevices">
-      <mat-card class="w-100 mb-2 cursor-pointer">
-        <mat-card-actions (click)="handleCheckboxClick(device)" class="d-flex row align-items-center">
-          <p class="col-12 col-sm-10 m-0">{{device.name}}</p>
-          <mat-checkbox [checked]="isSelected(device)" class="col-12 col-sm-2" color="primary"></mat-checkbox>
-        </mat-card-actions>
-      </mat-card>
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <div cdkDropList
+           #deviceList="cdkDropList"
+           class="example-list"
+           [cdkDropListData]="filteredDevices"
+           (cdkDropListDropped)="drop($event)"
+           [cdkDropListConnectedTo]="[movedList]">
+        <div *ngFor="let device of filteredDevices">
+          <mat-card class="m-1 drag drag-preview" cdkDrag>
+            <mat-card-content class="row d-flex align-items-center">
+              <div class="col-10">
+                {{ device.name }}
+              </div>
+              <mat-checkbox (click)="handleCheckboxClick(device)"
+                            [checked]="isDeviceSelected(device)"
+                            color="primary"
+                            class="col-1 me-2"></mat-checkbox>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
     </div>
+
+    <div class="col-6">
+      <div cdkDropList
+           #movedList="cdkDropList"
+           [cdkDropListData]="droppedDevices"
+           [cdkDropListConnectedTo]="[deviceList]"
+           class="example-list"
+           (cdkDropListDropped)="drop($event)">
+    <span class="p-2 d-flex justify-content-center"
+          *ngIf="droppedDevices.length < 1">Geräte hier platzieren</span>
+        <div *ngFor="let device of droppedDevices">
+          <mat-card class="m-1 drag w-100" cdkDrag>
+            <mat-card-content class="row d-flex align-items-center">
+              <div class="col-10">
+                {{ device.name }}
+              </div>
+              <mat-checkbox (click)="handleCheckboxClickDropped(device)"
+                            [checked]="isDeviceSelected(device)"
+                            color="primary"
+                            class="col-1 me-2"></mat-checkbox>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

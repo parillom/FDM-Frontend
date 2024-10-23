@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import {DashboardComponent} from './components/device/dashboard/dashboard.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {VehicleDashboardComponent} from './components/vehicle/vehicle-dashboard/vehicle-dashboard.component';
 import {DeviceDetailsComponent} from './components/device/device-details/device-details.component';
 import {VehicleEditComponent} from './components/vehicle/vehicle-edit/vehicle-edit.component';
@@ -8,6 +7,9 @@ import {LocationDashboardComponent} from './components/location/location-dashboa
 import {TestComponent} from './components/test/test.component';
 import {DeviceWorkflowComponent} from './components/device/device-workflow/device-workflow.component';
 import {LocationEditComponent} from './components/location/location-edit/location-edit.component';
+import {UserVehicleDashboardComponent} from './components/user/user-vehicle-dashboard/user-vehicle-dashboard.component';
+import {DashboardComponent} from './components/device/dashboard/dashboard.component';
+import {UserDashboardComponent} from './components/user/user-dashboard/user-dashboard.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/fdm/dashboard', pathMatch: 'full'},
@@ -22,6 +24,9 @@ const routes: Routes = [
       { path: 'dashboard/location/edit', component: LocationEditComponent},
       { path: 'dashboard/location', component: LocationDashboardComponent},
       { path: 'dashboard/test', component: TestComponent},
+      { path: 'user/dashboard', component: UserDashboardComponent},
+      { path: 'user/vehicles', component: UserVehicleDashboardComponent},
+      { path: 'user/vehicles/edit', component: VehicleEditComponent},
     ]
   }
 ];

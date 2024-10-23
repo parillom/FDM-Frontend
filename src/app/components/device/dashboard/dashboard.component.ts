@@ -210,7 +210,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   openCreateDeviceDialog() {
     const addDeviceDialog = this.dialog.open(AddDeviceComponent, {
-      width: '400px',
+      width: 'auto',
       height: 'auto',
       autoFocus: false,
       hasBackdrop: false,

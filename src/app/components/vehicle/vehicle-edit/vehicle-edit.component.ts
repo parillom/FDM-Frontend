@@ -47,10 +47,12 @@ export class VehicleEditComponent implements OnInit {
   isVehicle: boolean = false;
   nameValid = false;
   private storageId: string;
+  isAdmin: boolean = false;
 
   editVehicleForm: FormGroup = new FormGroup({
     vehicleName: new FormControl<string | null>('', Validators.required),
   });
+  selectedTabIndex = 0;
 
   constructor(private vehicleService: VehicleService,
               private route: ActivatedRoute,
@@ -64,6 +66,9 @@ export class VehicleEditComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(param => {
       this.uuid = param['id'];
+    });
+    this.route.queryParams.subscribe(param => {
+      this.isAdmin = param['admin'];
     });
     this.getVehicle(this.uuid!);
     this.getVehicles();
@@ -230,7 +235,7 @@ export class VehicleEditComponent implements OnInit {
   }
 
   updateIsCheckedState() {
-    this.isChecked = this.filteredDevices?.length === this.selectedDevices.length!;
+    this.isChecked = this.filteredDevices.length === this.selectedDevices.length!;
   }
 
   handleCheckboxClickDropped(device: Device) {
@@ -353,5 +358,9 @@ export class VehicleEditComponent implements OnInit {
 
   filterVehicles(vehicles: Vehicle[]) {
     return vehicles.filter(vehicle => vehicle.name !== this.vehicle.name);
+  }
+
+  navigateToUserVehicleDashboard() {
+    void this.router.navigate(['/fdm/user/vehicles']);
   }
 }

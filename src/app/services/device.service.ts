@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {ModelAndError} from '../models/ModelAndError';
 import {CreateDevice} from '../models/CreateDevice';
 import {UpdateDevice} from '../models/UpdateDevice';
+import {DeviceState} from '../models/DeviceState';
 
 const COMMON_DEVICE_URL = 'fdm/api/devices';
 
@@ -37,6 +38,14 @@ export class DeviceService {
 
   deleteAll(): Observable<ModelAndError> {
     return this.http.delete<ModelAndError>(`${COMMON_DEVICE_URL}/all`);
+  }
+
+  getAllWithState(state: DeviceState): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}/all-with-state/${state}`);
+  }
+
+  getAssignable(): Observable<ModelAndError> {
+    return this.http.get<ModelAndError>(`${COMMON_DEVICE_URL}/assignable`);
   }
 }
 

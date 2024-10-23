@@ -27,7 +27,9 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ToastrModule} from 'ngx-toastr';
 import {DeleteDialogComponent} from './components/common/dialog/delete-dialog/delete-dialog.component';
-import {AddMultipleDevicesComponent} from './components/device/dialog/add-multiple-devices/add-multiple-devices.component';
+import {
+  AddMultipleDevicesComponent
+} from './components/device/dialog/add-multiple-devices/add-multiple-devices.component';
 import {errorInterceptor} from './services/interceptor/error.interceptor';
 import {
   DeleteMultipleDialogComponent
@@ -71,30 +73,41 @@ import {
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {LocationDashboardComponent} from './components/location/location-dashboard/location-dashboard.component';
 import {AddLocationComponent} from './components/location/dialog/add-location/add-location.component';
-import {AddMultipleVehiclesComponent} from './components/vehicle/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
+import {
+  AddMultipleVehiclesComponent
+} from './components/vehicle/dialog/add-multiple-vehicles/add-multiple-vehicles.component';
 import {SettingsComponent} from './components/common/settings/settings.component';
-import { TestComponent } from './components/test/test.component';
-import { DeviceStatePipe } from './services/pipe/device-state.pipe';
-import { HighlightSearchTextPipe } from './services/pipe/highlight.search-text.pipe';
+import {TestComponent} from './components/test/test.component';
+import {DeviceStatePipe} from './services/pipe/device-state.pipe';
+import {HighlightSearchTextPipe} from './services/pipe/highlight.search-text.pipe';
 import {NgOptimizedImage, registerLocaleData} from '@angular/common';
 import {
   MatAccordion,
   MatExpansionPanel,
   MatExpansionPanelDescription,
-  MatExpansionPanelHeader, MatExpansionPanelTitle
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
 } from '@angular/material/expansion';
 import {MatCalendar, MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import { EntityTypePipe } from './services/pipe/entity-type.pipe';
+import {EntityTypePipe} from './services/pipe/entity-type.pipe';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import localeDe from '@angular/common/locales/de';
 import {UpdateTypePipe} from './services/pipe/update-type.pipe';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import { DeviceWorkflowComponent } from './components/device/device-workflow/device-workflow.component';
-import { LocationEditComponent } from './components/location/location-edit/location-edit.component';
-import { AddDevicesToLocationComponent } from './components/location/add-devices-to-location/add-devices-to-location.component';
-import { DeviceTypeAutocompletionComponent } from './components/device/device-type-autocompletion/device-type-autocompletion.component';
-import { DeviceNoticeAutocompletionComponent } from './components/device/device-notice-autocompletion/device-notice-autocompletion.component';
+import {DeviceWorkflowComponent} from './components/device/device-workflow/device-workflow.component';
+import {LocationEditComponent} from './components/location/location-edit/location-edit.component';
+import {
+  AddDevicesToLocationComponent
+} from './components/location/add-devices-to-location/add-devices-to-location.component';
+import {
+  DeviceTypeAutocompletionComponent
+} from './components/device/device-type-autocompletion/device-type-autocompletion.component';
+import {
+  DeviceNoticeAutocompletionComponent
+} from './components/device/device-notice-autocompletion/device-notice-autocompletion.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {UserDashboardComponent} from './components/user/user-dashboard/user-dashboard.component';
+import {UserVehicleDashboardComponent} from './components/user/user-vehicle-dashboard/user-vehicle-dashboard.component';
 
 registerLocaleData(localeDe);
 
@@ -131,6 +144,8 @@ registerLocaleData(localeDe);
     AddDevicesToLocationComponent,
     DeviceTypeAutocompletionComponent,
     DeviceNoticeAutocompletionComponent,
+    UserDashboardComponent,
+    UserVehicleDashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -205,7 +220,7 @@ registerLocaleData(localeDe);
     MatMenu,
     MatMenuItem,
     MatMenuTrigger,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   providers: [
     BsModalService,
