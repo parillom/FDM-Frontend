@@ -32,8 +32,8 @@ export class VehicleLocationAutocompletionDashboardComponent {
   protected readonly StorageType = StorageType;
   showInputs: boolean = true;
   deviceCriteria?: DeviceSearch;
-  vehicleName?: string;
-  locationName?: string;
+  vehicleName: string = '';
+  locationName: string = '';
 
   @Input()
   set currentStateValue(state: DeviceState | undefined) {

@@ -4,6 +4,7 @@
          type="text"
          placeholder="Wählen"
          matInput
+         [(ngModel)]="typeAutocomplete"
          [matAutocomplete]="type"
          (input)="filterTypes($event)">
   <mat-autocomplete #type="matAutocomplete">

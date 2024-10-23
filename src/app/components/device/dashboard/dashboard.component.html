@@ -1,4 +1,4 @@
-<mat-form-field class="common-margin-top-search-input w-100 mb-1">
+<mat-form-field class="common-margin-top-search-input w-100">
   <mat-label>Gerät suchen</mat-label>
   <input #searchInput matInput placeholder="ID, Name" [(ngModel)]="deviceSearch"
          (ngModelChange)="filterWithAllProperties()" (focus)="refreshDevices()">
@@ -33,8 +33,8 @@
       <mat-radio-button class="me-2" value="vehicle">Nur Fahrzeuge</mat-radio-button>
       <mat-radio-button class="me-2" value="location">Nur Orte</mat-radio-button>
     </mat-radio-group>
-    <button matTooltip="Statusfilter zurücksetzen" class="ms-1"
-            matTooltipPosition="above" (click)="resetStatus()" mat-icon-button>
+    <button matTooltip="Filter zurücksetzen" class="ms-1"
+            matTooltipPosition="above" (click)="resetFilter()" mat-icon-button>
       <mat-icon>history</mat-icon>
     </button>
   </div>

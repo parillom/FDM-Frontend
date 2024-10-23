@@ -26,6 +26,10 @@ import {ExportService} from '../../../services/export.service';
 import {UpdateType} from '../../../models/UpdateType';
 import {DeviceType} from '../../../models/DeviceType';
 import {DeviceNotice} from '../../../models/DeviceNotice';
+import {DeviceTypeAutocompletionComponent} from '../device-type-autocompletion/device-type-autocompletion.component';
+import {
+  DeviceNoticeAutocompletionComponent
+} from '../device-notice-autocompletion/device-notice-autocompletion.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,6 +39,8 @@ import {DeviceNotice} from '../../../models/DeviceNotice';
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInputField!: ElementRef;
   @ViewChild(VehicleLocationAutocompletionDashboardComponent) vehicleLocationAutoCompletion!: VehicleLocationAutocompletionDashboardComponent;
+  @ViewChild(DeviceTypeAutocompletionComponent) typeAutoCompletion!: DeviceTypeAutocompletionComponent;
+  @ViewChild(DeviceNoticeAutocompletionComponent) noticeAutoCompletion!: DeviceNoticeAutocompletionComponent;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   devices: Device[] = [];
@@ -308,6 +314,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (this.vehicleLocationAutoCompletion) {
       this.vehicleLocationAutoCompletion.resetFields();
     }
+    if (this.typeAutoCompletion) {
+      this.typeAutoCompletion.resetFields();
+    }
     if (this.showDateError) {
       this.showDateError = false;
     }
@@ -471,7 +480,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  resetStatus() {
+  resetFilters() {
     this.currentState = undefined;
     this.stateSelected = false;
     this.vehiclesOrLocationsSelected = false;
@@ -524,13 +533,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  resetFilters() {
-    this.fromDate = undefined;
-    this.toDate = undefined;
+  resetFilter() {
     this.locationName = undefined;
     this.vehicleName = undefined;
     this.currentState = undefined;
-    this.updateType = undefined;
+    if (this.typeAutoCompletion) {
+      this.typeAutoCompletion.resetFields();
+    }
+    if (this.noticeAutoCompletion) {
+      this.noticeAutoCompletion.resetFields();
+    }
+    if (this.vehicleLocationAutoCompletion) {
+      this.vehicleLocationAutoCompletion.resetFields();
+    }
+
+    this.deviceCriteria = {
+      locationName: undefined,
+      vehicleName: undefined,
+      state: undefined,
+      notice: undefined,
+      type: undefined
+    };
+
+    this.filterWithSpecifiedProperties(this.deviceCriteria);
   }
 
   navigateToWorkflow(element: Device) {

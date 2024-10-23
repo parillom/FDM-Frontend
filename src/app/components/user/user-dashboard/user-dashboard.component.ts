@@ -14,4 +14,8 @@ export class UserDashboardComponent {
   navigateToVehicles() {
     void this.router.navigate(['/fdm/user/vehicles']);
   }
+
+  navigateToAs() {
+    void this.router.navigate(['/fdm/user/as']);
+  }
 }

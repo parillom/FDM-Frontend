@@ -10,6 +10,7 @@ import {LocationEditComponent} from './components/location/location-edit/locatio
 import {UserVehicleDashboardComponent} from './components/user/user-vehicle-dashboard/user-vehicle-dashboard.component';
 import {DashboardComponent} from './components/device/dashboard/dashboard.component';
 import {UserDashboardComponent} from './components/user/user-dashboard/user-dashboard.component';
+import {UserAsDashboardComponent} from './components/user/user-as-dashboard/user-as-dashboard.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/fdm/dashboard', pathMatch: 'full'},
@@ -25,6 +26,7 @@ const routes: Routes = [
       { path: 'dashboard/location', component: LocationDashboardComponent},
       { path: 'dashboard/test', component: TestComponent},
       { path: 'user/dashboard', component: UserDashboardComponent},
+      { path: 'user/as', component: UserAsDashboardComponent},
       { path: 'user/vehicles', component: UserVehicleDashboardComponent},
       { path: 'user/vehicles/edit', component: VehicleEditComponent},
     ]

@@ -1,7 +1,13 @@
-<div class="common-margin-top ms-5">
-  <h1 class="mb-4">History</h1>
-  <div>
-    <h2 class="mb-2">Filter letzte Updates</h2>
+<div class="common-margin-top ms-5 me-5">
+  <h1 class="mb-1">Workflow</h1>
+  <h3 class="mb-2" *ngIf="device && device.name">{{ device.name }}</h3>
+  <mat-divider></mat-divider>
+
+  <div class="mb-5 mt-3">
+    <div class="d-flex align-items-center mb-2">
+      <h2 class="m-0">Filter letzte Updates</h2>
+      <mat-icon class="ms-2 cursor-pointer" matTooltip="Filter zurücksetzen" matTooltipPosition="above" (click)="resetFilter()">history</mat-icon>
+    </div>
     <div class="row">
       <!-- From-Date -->
       <mat-form-field class="col-12 col-md-3 mt-1">
@@ -11,7 +17,7 @@
           [matDatepicker]="fromPicker"
           [(ngModel)]="fromDate"
           #dateInput
-        >
+          (ngModelChange)="filter()">
         <mat-hint>Wähle ein Von-Datum</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
         <mat-datepicker #fromPicker></mat-datepicker>
@@ -25,7 +31,7 @@
           [matDatepicker]="toPicker"
           [(ngModel)]="toDate"
           #dateInput2
-        >
+          (ngModelChange)="filter()">
         <mat-hint>Wähle ein Bis-Datum</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
         <mat-datepicker #toPicker></mat-datepicker>
@@ -33,7 +39,7 @@
 
       <div class="mt-1">
         <mat-radio-group color="primary"
-                         [(ngModel)]="updateType">
+                         [(ngModel)]="updateType" (change)="filter()">
           <mat-radio-button class="me-2" [value]="UpdateType.CREATED">Erstellung</mat-radio-button>
           <mat-radio-button class="me-2" [value]="UpdateType.MOVE">Verschiebung</mat-radio-button>
           <mat-radio-button [value]="UpdateType.NAME_CHANGED">Namensänderung</mat-radio-button>
@@ -41,6 +47,7 @@
         </mat-radio-group>
       </div>
 
+      <p class="mt-2" *ngIf="filteredHistoryEntries.length === 0" style="font-style: italic">Es konnten keine Einträge gefunden werden</p>
     </div>
 
     @if (showDateError) {
@@ -48,16 +55,15 @@
     }
   </div>
 
-  <div class="mt-5" *ngIf="device?.historyEntries?.length > 0; else noHistory">
-    <div *ngFor="let entry of device.historyEntries">
-      <span class="me-3">{{ entry.updateDate | date: 'dd.MMMM yyyy'}}</span>
-      <span class="me-3">{{ entry.storageName}}</span>
-      <span class="me-3">{{ entry.storageType}}</span>
-      <span class="me-3">{{ entry.updateType}}</span>
+  <div class="timeline mb-5" *ngFor="let entry of filteredHistoryEntries">
+    <div class="timeline-item">
+      <div class="timeline-date">{{ entry.updateDate | date: 'dd. MMMM yyyy, HH:mm' }}</div>
+      <div class="p-2 w-25 bg-gradient rounded">
+        <h2>{{ entry.updateType | updateType }}</h2>
+        <h3>{{ translateStorageType(entry.storageType) }}: {{ entry.storageName }}</h3>
+        <h3>Status: {{ entry.deviceState | deviceState }}</h3>
+      </div>
     </div>
   </div>
-  <ng-template #noHistory>
-    <p>No history entries available.</p>
-  </ng-template>
 
 </div>

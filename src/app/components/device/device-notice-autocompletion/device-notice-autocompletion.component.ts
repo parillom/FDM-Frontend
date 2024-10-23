@@ -15,6 +15,7 @@ export class DeviceNoticeAutocompletionComponent implements OnInit {
   filteredNotices: DeviceNotice[] = [];
   @Output() doFilter = new EventEmitter<DeviceSearch>();
   deviceSearch = new DeviceSearch();
+  notice: string = '';
 
   @Input()
   state?: DeviceState;
@@ -57,6 +58,10 @@ export class DeviceNoticeAutocompletionComponent implements OnInit {
     };
 
     this.doFilter.emit(this.deviceSearch);
+  }
+
+  resetFields() {
+    this.notice = undefined;
   }
 
 }

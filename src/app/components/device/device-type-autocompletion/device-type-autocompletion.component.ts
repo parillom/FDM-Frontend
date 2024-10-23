@@ -14,6 +14,7 @@ export class DeviceTypeAutocompletionComponent implements OnInit {
   filteredTypes: DeviceType[] = [];
   @Output() doFilter = new EventEmitter<DeviceSearch>();
   deviceSearch = new DeviceSearch();
+  typeAutocomplete: string = '';
 
   @Input()
   state?: DeviceState;
@@ -56,6 +57,10 @@ export class DeviceTypeAutocompletionComponent implements OnInit {
     };
 
     this.doFilter.emit(this.deviceSearch);
+  }
+
+  resetFields() {
+    this.typeAutocomplete = undefined;
   }
 
 

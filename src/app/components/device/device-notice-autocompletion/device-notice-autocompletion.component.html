@@ -4,9 +4,10 @@
          type="text"
          placeholder="Wählen"
          matInput
-         [matAutocomplete]="notice"
+         [matAutocomplete]="noticeAutocompletion"
+         [(ngModel)]="notice"
          (input)="filterNotices($event)">
-  <mat-autocomplete #notice="matAutocomplete">
+  <mat-autocomplete #noticeAutocompletion="matAutocomplete">
     <mat-option *ngFor="let notice of filteredNotices"
                 [value]="notice" (click)="setNoticeValue(notice)">
       {{notice}}

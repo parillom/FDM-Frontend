@@ -329,7 +329,11 @@ export class VehicleEditComponent implements OnInit {
   }
 
   navigateToVehicleDashboard() {
-    void this.router.navigate(['fdm/dashboard/vehicle']);
+    if (this.isAdmin) {
+      void this.router.navigate(['fdm/dashboard/vehicle']);
+    } else {
+      void this.router.navigate(['/fdm/user/vehicles']);
+    }
   }
 
   updateVehicle() {

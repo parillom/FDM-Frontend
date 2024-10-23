@@ -26,15 +26,11 @@
            (cdkDropListDropped)="drop($event)"
            [cdkDropListConnectedTo]="[movedList]">
         <div *ngFor="let device of filteredDevices">
-          <mat-card class="m-1 drag drag-preview" cdkDrag>
+          <mat-card class="m-1 drag" cdkDrag>
             <mat-card-content class="row d-flex align-items-center">
               <div class="col-10">
                 {{ device.name }}
               </div>
-              <mat-checkbox (click)="handleCheckboxClick(device)"
-                            [checked]="isDeviceSelected(device)"
-                            color="primary"
-                            class="col-1 me-2"></mat-checkbox>
             </mat-card-content>
           </mat-card>
         </div>
@@ -51,15 +47,11 @@
     <span class="p-2 d-flex justify-content-center"
           *ngIf="droppedDevices.length < 1">Geräte hier platzieren</span>
         <div *ngFor="let device of droppedDevices">
-          <mat-card class="m-1 drag w-100" cdkDrag>
+          <mat-card class="m-1 drag" cdkDrag>
             <mat-card-content class="row d-flex align-items-center">
               <div class="col-10">
                 {{ device.name }}
               </div>
-              <mat-checkbox (click)="handleCheckboxClickDropped(device)"
-                            [checked]="isDeviceSelected(device)"
-                            color="primary"
-                            class="col-1 me-2"></mat-checkbox>
             </mat-card-content>
           </mat-card>
         </div>

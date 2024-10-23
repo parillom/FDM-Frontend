@@ -108,6 +108,7 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {UserDashboardComponent} from './components/user/user-dashboard/user-dashboard.component';
 import {UserVehicleDashboardComponent} from './components/user/user-vehicle-dashboard/user-vehicle-dashboard.component';
+import { UserAsDashboardComponent } from './components/user/user-as-dashboard/user-as-dashboard.component';
 
 registerLocaleData(localeDe);
 
@@ -146,6 +147,7 @@ registerLocaleData(localeDe);
     DeviceNoticeAutocompletionComponent,
     UserDashboardComponent,
     UserVehicleDashboardComponent,
+    UserAsDashboardComponent,
   ],
   imports: [
     BrowserModule,
